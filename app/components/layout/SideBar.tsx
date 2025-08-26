@@ -6,6 +6,7 @@ import {
 } from "@heroicons/react/24/outline";
 import type { JSX } from "react";
 import { Link, useLocation } from "react-router";
+import { Tooltip } from "antd";
 
 interface SidebarIconProps {
   icon: JSX.Element;
@@ -17,7 +18,7 @@ interface SidebarIconProps {
 const Sidebar = () => {
   const location = useLocation();
   return (
-    <aside className="w-20 h-screen bg-white text-white flex flex-col items-center py-5 space-y-6 fixed">
+    <aside className="w-20 h-screen bg-white text-white flex flex-col items-center py-5 space-y-6 fixed border-r border-blue-50">
       <header className="flex items-center justify-center p-2 cursor-pointer">
         <Link to={"/"} className="font-bold text-xl text-white">
           <img src="/logo.jpg" alt="Logo" className="w-full h-full" />
@@ -40,7 +41,7 @@ const Sidebar = () => {
             icon={
               <UserIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
             }
-            tooltip="Tài khoản"
+            tooltip="Quản lý người dùng"
             to="/users"
             active={location.pathname === "/users"}
           />
@@ -67,25 +68,22 @@ const Sidebar = () => {
   );
 };
 
-// Sidebar Icon Component
 const SidebarIcon: React.FC<SidebarIconProps> = ({
   icon,
   tooltip,
   to,
   active,
 }) => (
-  <Link to={to} className={`relative group flex items-center justify-center`}>
-    <div
-      className={`p-2 rounded-lg cursor-pointer transition-all ${
-        active ? "bg-[#f1f5f9]" : "hover:bg-gray-200"
-      }`}
-    >
-      {icon}
-    </div>
-    <span className="absolute left-15 px-2 py-1 bg-gray-800 text-white text-xs rounded-md opacity-0 group-hover:opacity-100">
-      {tooltip}
-    </span>
-  </Link>
+  <Tooltip title={tooltip} placement="right">
+    <Link to={to} className="flex items-center justify-center">
+      <div
+        className={`p-2 rounded-lg cursor-pointer transition-all ${
+          active ? "bg-[#f1f5f9]" : "hover:bg-gray-200"
+        }`}
+      >
+        {icon}
+      </div>
+    </Link>
+  </Tooltip>
 );
-
 export default Sidebar;
