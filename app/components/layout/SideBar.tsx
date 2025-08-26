@@ -3,6 +3,8 @@ import {
   UserIcon,
   CogIcon,
   StarIcon,
+  BuildingLibraryIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import type { JSX } from "react";
 import { Link, useLocation } from "react-router";
@@ -48,11 +50,26 @@ const Sidebar = () => {
 
           <SidebarIcon
             icon={
-              <StarIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
+              <BuildingLibraryIcon
+                className="w-6 h-6 hover:text-[#000]"
+                color="#64748b"
+              />
             }
-            tooltip="Review"
-            to="/reviews"
-            active={location.pathname === "/reviews"}
+            tooltip="Quản lý bệnh viện"
+            to="/hospitals"
+            active={location.pathname === "/hospitals"}
+          />
+
+          <SidebarIcon
+            icon={
+              <UserGroupIcon
+                className="w-6 h-6 hover:text-[#000]"
+                color="#64748b"
+              />
+            }
+            tooltip="Quản lý bác sĩ"
+            to="/doctors"
+            active={location.pathname === "/doctors"}
           />
         </div>
         <SidebarIcon
