@@ -18,18 +18,21 @@ const Sidebar = () => {
   const location = useLocation();
   return (
     <aside className="w-20 h-screen bg-white text-white flex flex-col items-center py-5 space-y-6 fixed">
-      <header className="flex items-center justify-center bg-[#0F172A] text-black p-3 rounded-[50%] w-9 h-9 cursor-pointer">
+      <header className="flex items-center justify-center p-2 cursor-pointer">
         <Link to={"/"} className="font-bold text-xl text-white">
-          ▲
+          <img src="/logo.jpg" alt="Logo" className="w-full h-full" />
         </Link>
       </header>
       <main className="flex flex-col justify-between w-full h-full">
         <div id="menu">
           <SidebarIcon
             icon={
-              <HomeIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
+              <HomeIcon
+                className="w-auto h-6 hover:text-[#000]"
+                color="#64748b"
+              />
             }
-            tooltip="Dashboard"
+            tooltip="Trang Chủ"
             to="/"
             active={location.pathname === "/"}
           />
@@ -37,7 +40,7 @@ const Sidebar = () => {
             icon={
               <UserIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
             }
-            tooltip="Users"
+            tooltip="Tài khoản"
             to="/users"
             active={location.pathname === "/users"}
           />
