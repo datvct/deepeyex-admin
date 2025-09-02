@@ -1,41 +1,81 @@
-import {
-  Table,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Select,
-  Typography,
-} from "antd";
 import { useState } from "react";
-
-const { Option } = Select;
+import { Button, Space, Modal, Form, Input, Select } from "antd";
+import { Typography } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   PlusCircleFilled,
-  UploadOutlined,
 } from "@ant-design/icons";
+import type { ColumnsType } from "antd/es/table";
+import CrudTable from "~/components/CrudTable";
 
+const { Option } = Select;
 const { Title, Text } = Typography;
 
+interface Doctor {
+  doctor_id: number;
+  full_name: string;
+  specialty: string;
+  hospital: string;
+  email: string;
+  phone?: string;
+}
+
 export default function DoctorsPage() {
-  const [visible, setVisible] = useState(false);
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [form] = Form.useForm();
 
-  const columns = [
-    { title: "ID", dataIndex: "doctor_id", key: "doctor_id" },
-    { title: "Tên", dataIndex: "full_name", key: "full_name" },
-    { title: "Chuyên khoa", dataIndex: "specialty", key: "specialty" },
-    { title: "Bệnh viện", dataIndex: "hospital", key: "hospital" },
-    { title: "Email", dataIndex: "email", key: "email" },
+  const handleAdd = () => {
+    setEditingDoctor(null);
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (doctor: Doctor) => {
+    setEditingDoctor(doctor);
+    form.setFieldsValue(doctor);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      if (editingDoctor) {
+        console.log("Update doctor:", { ...editingDoctor, ...values });
+      } else {
+        console.log("Create doctor:", values);
+      }
+      setIsModalOpen(false);
+      form.resetFields();
+    } catch (err) {
+      console.log("Validation failed:", err);
+    }
+  };
+
+  const columns: ColumnsType<Doctor> = [
+    { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: 80 },
+    { title: "Tên", dataIndex: "full_name", key: "full_name", width: 180 },
     {
-      title: "Action",
-      key: "action",
-      render: () => (
+      title: "Chuyên khoa",
+      dataIndex: "specialty",
+      key: "specialty",
+      width: 150,
+    },
+    { title: "Bệnh viện", dataIndex: "hospital", key: "hospital", width: 200 },
+    { title: "Email", dataIndex: "email", key: "email", width: 220 },
+    {
+      title: "Hành động",
+      key: "actions",
+      width: 160,
+      render: (_, record) => (
         <Space>
-          <Button type="link" icon={<EditOutlined />}>
+          <Button
+            type="link"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+          >
             Sửa
           </Button>
           <Button type="link" danger icon={<DeleteOutlined />}>
@@ -47,57 +87,73 @@ export default function DoctorsPage() {
   ];
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Title level={3}>Quản lý Bác sĩ</Title>
-        <Text type="secondary">Danh sách Bác sĩ</Text>
-        <Button
-          type="primary"
-          className="float-right"
-          onClick={() => setVisible(true)}
-        >
-          <PlusCircleFilled style={{ marginRight: 8 }} />
-          Thêm Bác sĩ
-        </Button>
-      </div>
-      <Table rowKey="doctor_id" dataSource={[]} columns={columns} />
+    <>
+      <CrudTable
+        title="Quản lý Bác sĩ"
+        subtitle="Danh sách Bác sĩ"
+        rowKey="doctor_id"
+        columns={columns}
+        dataSource={doctors.map((doctor) => ({
+          ...doctor,
+          id: doctor.doctor_id,
+        }))}
+        addButtonText="Thêm Bác sĩ"
+        onAdd={handleAdd}
+        onEdit={handleEdit}
+        onDelete={(record) => console.log("Delete doctor", record)}
+      />
 
       <Modal
-        title="Thêm / Sửa Bác sĩ"
-        open={visible}
-        onOk={() => setVisible(false)}
-        onCancel={() => setVisible(false)}
+        title={editingDoctor ? "Sửa Bác sĩ" : "Thêm Bác sĩ"}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        onOk={handleSubmit}
+        destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="full_name"
             label="Tên bác sĩ"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: "Tên không được để trống" }]}
           >
-            <Input />
+            <Input placeholder="Nhập tên bác sĩ" />
           </Form.Item>
+
           <Form.Item
             name="specialty"
             label="Chuyên khoa"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true, message: "Chuyên khoa không được để trống" },
+            ]}
           >
-            <Select>
+            <Select placeholder="Chọn chuyên khoa">
               <Option value="Nội khoa">Nội khoa</Option>
               <Option value="Ngoại khoa">Ngoại khoa</Option>
               <Option value="Nhãn khoa">Nhãn khoa</Option>
             </Select>
           </Form.Item>
-          <Form.Item name="hospital" label="Bệnh viện">
-            <Select>{/* load list hospital từ API */}</Select>
+
+          <Form.Item
+            name="hospital"
+            label="Bệnh viện"
+            rules={[{ required: true, message: "Vui lòng chọn bệnh viện" }]}
+          >
+            <Select placeholder="Chọn bệnh viện">{/* load từ API */}</Select>
           </Form.Item>
-          <Form.Item name="email" label="Email">
-            <Input />
+
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[{ type: "email", message: "Email không hợp lệ" }]}
+          >
+            <Input placeholder="Nhập email" />
           </Form.Item>
+
           <Form.Item name="phone" label="SĐT">
-            <Input />
+            <Input placeholder="Nhập số điện thoại" />
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

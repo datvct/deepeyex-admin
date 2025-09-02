@@ -1,65 +1,44 @@
-import {
-  Table,
-  Button,
-  Space,
-  Modal,
-  Form,
-  Input,
-  Typography,
-  Select,
-} from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusCircleFilled,
-  UploadOutlined,
-} from "@ant-design/icons";
+import { Form, Input, Modal } from "antd";
 import { useState } from "react";
-
-const { Title, Text } = Typography;
+import CrudTable from "~/components/CrudTable";
 
 export default function HospitalsPage() {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
-
-  const columns = [
-    { title: "ID", dataIndex: "hospital_id", key: "hospital_id" },
-    { title: "Tên", dataIndex: "name", key: "name" },
-    { title: "Địa chỉ", dataIndex: "address", key: "address" },
-    { title: "SĐT", dataIndex: "phone", key: "phone" },
-    { title: "Email", dataIndex: "email", key: "email" },
+  const hospitals = [
     {
-      title: "Action",
-      key: "action",
-      render: () => (
-        <Space>
-          <Button type="link" icon={<EditOutlined />}>
-            Sửa
-          </Button>
-          <Button type="link" danger icon={<DeleteOutlined />}>
-            Xoá
-          </Button>
-        </Space>
-      ),
+      hospital_id: 1,
+      name: "BV A",
+      address: "HN",
+      phone: "0123",
+      email: "a@gmail.com",
     },
   ];
 
-  return (
-    <div className="p-6">
-      <div className="mb-6">
-        <Title level={3}>Quản lý Bệnh viện</Title>
-        <Text type="secondary">Danh sách bệnh viện</Text>
-        <Button
-          type="primary"
-          className="float-right"
-          onClick={() => setVisible(true)}
-        >
-          <PlusCircleFilled style={{ marginRight: 8 }} />
-          Thêm bệnh viện
-        </Button>
-      </div>
+  const hospitalColumns = [
+    { title: "ID", dataIndex: "hospital_id", key: "hospital_id", width: 80 },
+    { title: "Tên", dataIndex: "name", key: "name", width: 200 },
+    { title: "Địa chỉ", dataIndex: "address", key: "address", width: 250 },
+    { title: "SĐT", dataIndex: "phone", key: "phone", width: 150 },
+    { title: "Email", dataIndex: "email", key: "email", width: 200 },
+  ];
 
-      <Table rowKey="hospital_id" dataSource={[]} columns={columns} />
+  return (
+    <>
+      <CrudTable
+        title="Quản lý Bệnh viện"
+        subtitle="Danh sách bệnh viện"
+        rowKey="hospital_id"
+        columns={hospitalColumns}
+        dataSource={hospitals.map((hospital) => ({
+          ...hospital,
+          id: hospital.hospital_id,
+        }))}
+        addButtonText="Thêm bệnh viện"
+        onAdd={() => setVisible(true)}
+        onEdit={(record) => console.log("Edit hospital", record)}
+        onDelete={(record) => console.log("Delete hospital", record)}
+      />
 
       <Modal
         title="Thêm / Sửa Bệnh viện"
@@ -73,19 +52,19 @@ export default function HospitalsPage() {
             label="Tên bệnh viện"
             rules={[{ required: true }]}
           >
-            <Input />
+            <Input placeholder="Nhập tên bệnh viện" />
           </Form.Item>
           <Form.Item name="address" label="Địa chỉ">
-            <Input />
+            <Input placeholder="Nhập địa chỉ bệnh viện" />
           </Form.Item>
           <Form.Item name="phone" label="SĐT">
-            <Input />
+            <Input placeholder="Nhập số điện thoại của bệnh viện" />
           </Form.Item>
           <Form.Item name="email" label="Email">
-            <Input />
+            <Input placeholder="Nhập gmail của bệnh viện" />
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }

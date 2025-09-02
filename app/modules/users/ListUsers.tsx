@@ -1,175 +1,69 @@
-import { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Space,
-  Typography,
-  message,
-  Modal,
-  Form,
-  Input,
-  Select,
-  Upload,
-} from "antd";
+import { useState } from "react";
+import { Button, Space, Typography, Modal, Form, Input, Select } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
   PlusCircleFilled,
-  UploadOutlined,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import { toast } from "react-toastify";
+import CrudTable from "~/components/CrudTable";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 
 interface User {
   id: number;
-  fullName: string;
-  email: string;
-  phone: string;
+  username: string;
   role: string;
-  avatar?: string;
   createdAt?: string;
 }
 
 export default function ListUsers() {
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
-  // const fetchUsers = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const data = await getAllUsers();
-  //     setUsers(data);
-  //     toast.success("Lấy danh sách người dùng thành công");
-  //   } catch (error) {
-  //     toast.error("Lỗi khi tải danh sách người dùng");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
+  // mở modal thêm user
   const handleAddUser = () => {
     setEditingUser(null);
     form.resetFields();
-    setFileList([]);
     setIsModalOpen(true);
   };
 
+  // mở modal sửa user
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     form.setFieldsValue(user);
-    setFileList(
-      user.avatar
-        ? [
-            {
-              uid: "-1",
-              name: "avatar.png",
-              status: "done",
-              url: user.avatar,
-            },
-          ]
-        : []
-    );
     setIsModalOpen(true);
   };
 
-  // const handleDeleteUser = async (id: number) => {
-  //   try {
-  //     await deleteUser(id);
-  //     toast.success("Xóa người dùng thành công");
-  //     fetchUsers();
-  //   } catch (error) {
-  //     toast.error("Lỗi khi xóa người dùng");
-  //   }
-  // };
+  // submit form
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      if (editingUser) {
+        console.log("Update user:", { ...editingUser, ...values });
+      } else {
+        console.log("Create new user:", values);
+      }
+      setIsModalOpen(false);
+      form.resetFields();
+    } catch (err) {
+      console.log("Validate Failed:", err);
+    }
+  };
 
-  // const handleSubmit = async () => {
-  //   try {
-  //     const values = await form.validateFields();
-
-  //     const formData = new FormData();
-  //     formData.append("fullName", values.fullName);
-  //     formData.append("email", values.email);
-  //     formData.append("phone", values.phone);
-  //     formData.append("role", values.role);
-
-  //     // Nếu có file ảnh, thêm file vào FormData
-  //     if (fileList.length > 0) {
-  //       const file = fileList[0].originFileObj; // Lấy file thực tế
-  //       formData.append("avatar", file); // Key phải là "avatar"
-  //     } else if (editingUser?.avatar) {
-  //       // Nếu không có file mới, gửi URL avatar cũ
-  //       formData.append("avatar", editingUser.avatar);
-  //     }
-
-  //     if (!editingUser) {
-  //       formData.append("password", values.password);
-  //       await createUser(formData);
-  //       toast.success("Tạo người dùng thành công");
-  //     } else {
-  //       await updateUser(editingUser.id.toString(), formData);
-  //       toast.success("Cập nhật người dùng thành công");
-  //     }
-
-  //     setIsModalOpen(false);
-  //     fetchUsers();
-  //   } catch (error: any) {
-  //     if (error.response?.status === 409) {
-  //       const errorMessage = error.response.data.message;
-
-  //       if (
-  //         errorMessage.includes("Email") ||
-  //         errorMessage.includes("số điện thoại")
-  //       ) {
-  //         form.setFields([
-  //           {
-  //             name: "phone",
-  //             errors: ["Email hoặc số điện thoại đã tồn tại!"],
-  //           },
-  //         ]);
-  //       }
-  //     } else {
-  //       toast.error("Đã xảy ra lỗi, vui lòng thử lại");
-  //     }
-  //   }
-  // };
-
+  // cột bảng
   const columns: ColumnsType<User> = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "Tài khoản",
-      dataIndex: "username",
-      key: "username",
-      width: "15%",
-    },
-    {
-      title: "Vai Trò",
-      dataIndex: "role",
-      key: "role",
-    },
-    {
-      title: "Ngày tạo",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
+    { title: "ID", dataIndex: "id", key: "id", width: 80 },
+    { title: "Tài khoản", dataIndex: "username", key: "username", width: 200 },
+    { title: "Vai trò", dataIndex: "role", key: "role", width: 150 },
+    { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt", width: 180 },
     {
       title: "Hành động",
       key: "actions",
-      width: "15%",
+      width: 160,
       render: (_, record) => (
         <Space>
           <Button
@@ -179,12 +73,7 @@ export default function ListUsers() {
           >
             Sửa
           </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            // onClick={() => handleDeleteUser(record.id)}
-          >
+          <Button type="link" danger icon={<DeleteOutlined />}>
             Xoá
           </Button>
         </Space>
@@ -193,30 +82,25 @@ export default function ListUsers() {
   ];
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <div className="mb-6">
-        <Title level={3}>Quản lý người dùng</Title>
-        <Text type="secondary">Danh sách người dùng</Text>
-        <Button type="primary" className="float-right" onClick={handleAddUser}>
-          <PlusCircleFilled style={{ marginRight: 8 }} />
-          Thêm người dùng
-        </Button>
-      </div>
-
-      <Table
+    <>
+      <CrudTable
+        title="Quản lý người dùng"
+        subtitle="Danh sách người dùng"
         rowKey="id"
-        loading={loading}
         columns={columns}
         dataSource={users}
-        pagination={{ pageSize: 10 }}
-        bordered
+        addButtonText="Thêm người dùng"
+        onAdd={handleAddUser}
+        onEdit={handleEditUser}
+        onDelete={(record) => console.log("Delete user", record)}
       />
 
       <Modal
         title={editingUser ? "Sửa người dùng" : "Thêm người dùng"}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        // onOk={handleSubmit}
+        onOk={handleSubmit}
+        destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
@@ -226,7 +110,7 @@ export default function ListUsers() {
               { required: true, message: "Tài khoản không được để trống" },
             ]}
           >
-            <Input placeholder="Nhập tài khoản của người dùng" />
+            <Input placeholder="Nhập tài khoản người dùng" />
           </Form.Item>
 
           <Form.Item
@@ -235,9 +119,9 @@ export default function ListUsers() {
             rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
           >
             <Select placeholder="Chọn vai trò">
-              <Option value="customer">Admin</Option>
-              <Option value="admin">Bệnh nhân</Option>
-              <Option value="seller">Bác sĩ</Option>
+              <Option value="admin">Admin</Option>
+              <Option value="customer">Bệnh nhân</Option>
+              <Option value="doctor">Bác sĩ</Option>
             </Select>
           </Form.Item>
 
@@ -255,11 +139,21 @@ export default function ListUsers() {
               </Form.Item>
 
               <Form.Item
-                name="password"
+                name="confirmPassword"
                 label="Nhập lại mật khẩu"
+                dependencies={["password"]}
                 rules={[
-                  { required: true, message: "Mật khẩu không được để trống" },
-                  { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+                  { required: true, message: "Vui lòng nhập lại mật khẩu" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (!value || getFieldValue("password") === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Mật khẩu nhập lại không khớp!")
+                      );
+                    },
+                  }),
                 ]}
               >
                 <Input.Password placeholder="Nhập lại mật khẩu" />
@@ -268,6 +162,6 @@ export default function ListUsers() {
           )}
         </Form>
       </Modal>
-    </div>
+    </>
   );
 }
