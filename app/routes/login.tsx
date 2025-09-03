@@ -1,4 +1,4 @@
-import LoginPage from "~/features/auth/loginPage";
+import LoginPage from "~/modules/auth/page";
 
 export default function LoginIndex() {
   return <LoginPage />;

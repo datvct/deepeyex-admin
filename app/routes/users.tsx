@@ -1,4 +1,4 @@
-import ListUsers from "~/features/users/page";
+import ListUsers from "~/modules/users/page";
 
 export default function Users() {
   return <ListUsers />;
