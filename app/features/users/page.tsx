@@ -1,12 +1,8 @@
 import { useState } from "react";
 import { Button, Space, Typography, Modal, Form, Input, Select } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusCircleFilled,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import CrudTable from "~/components/CrudTable";
+import CrudTable from "~/shared/components/CrudTable";
 
 const { Title, Text } = Typography;
 const { Option } = Select;

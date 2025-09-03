@@ -1,4 +1,4 @@
-import HospitalsPage from "~/modules/hospitals/HospitalsPage";
+import HospitalsPage from "~/features/hospitals/page";
 
 export default function Hospitals() {
   return <HospitalsPage />;

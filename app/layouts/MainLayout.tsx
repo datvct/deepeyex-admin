@@ -1,5 +1,5 @@
-import { Navigate, Outlet } from "react-router";
-import Sidebar from "./SideBar";
+import { Outlet } from "react-router";
+import Sidebar from "../shared/components/SideBar";
 import { ToastContainer } from "react-toastify";
 import HeaderLayout from "./HeaderLayout";
 

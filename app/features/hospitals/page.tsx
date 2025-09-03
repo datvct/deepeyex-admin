@@ -1,6 +1,6 @@
 import { Form, Input, Modal } from "antd";
 import { useState } from "react";
-import CrudTable from "~/components/CrudTable";
+import CrudTable from "~/shared/components/CrudTable";
 
 export default function HospitalsPage() {
   const [visible, setVisible] = useState(false);

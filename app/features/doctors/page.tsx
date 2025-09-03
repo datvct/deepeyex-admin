@@ -7,7 +7,7 @@ import {
   PlusCircleFilled,
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
-import CrudTable from "~/components/CrudTable";
+import CrudTable from "~/shared/components/CrudTable";
 
 const { Option } = Select;
 const { Title, Text } = Typography;

@@ -1,4 +1,4 @@
-import DoctorsPage from "~/modules/doctors/DoctorsPage";
+import DoctorsPage from "~/features/doctors/page";
 
 export default function Doctors() {
   return <DoctorsPage />;
