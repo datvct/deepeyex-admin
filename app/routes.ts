@@ -6,6 +6,7 @@ export default [
     route("users", "routes/users.tsx"),
     route("hospitals", "routes/hospitals.tsx"),
     route("doctors", "routes/doctors.tsx"),
+    route("patients", "routes/patients.tsx"),
   ]),
   route("login", "routes/login.tsx"),
 ];

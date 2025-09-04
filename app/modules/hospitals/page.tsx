@@ -17,6 +17,7 @@ export default function HospitalsPage() {
 
   const hospitalColumns = [
     { title: "ID", dataIndex: "hospital_id", key: "hospital_id", width: 80 },
+    { title: "Hình ảnh", dataIndex: "avatar", key: "avatar", width: 100 },
     { title: "Tên", dataIndex: "name", key: "name", width: 200 },
     { title: "Địa chỉ", dataIndex: "address", key: "address", width: 250 },
     { title: "SĐT", dataIndex: "phone", key: "phone", width: 150 },
@@ -47,11 +48,7 @@ export default function HospitalsPage() {
         onCancel={() => setVisible(false)}
       >
         <Form form={form} layout="vertical">
-          <Form.Item
-            name="name"
-            label="Tên bệnh viện"
-            rules={[{ required: true }]}
-          >
+          <Form.Item name="name" label="Tên bệnh viện" rules={[{ required: true }]}>
             <Input placeholder="Nhập tên bệnh viện" />
           </Form.Item>
           <Form.Item name="address" label="Địa chỉ">

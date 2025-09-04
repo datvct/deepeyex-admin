@@ -5,6 +5,7 @@ import {
   StarIcon,
   BuildingLibraryIcon,
   UserGroupIcon,
+  UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import type { JSX } from "react";
 import { Link, useLocation } from "react-router";
@@ -29,53 +30,40 @@ const Sidebar = () => {
       <main className="flex flex-col justify-between w-full h-full">
         <div id="menu">
           <SidebarIcon
-            icon={
-              <HomeIcon
-                className="w-auto h-6 hover:text-[#000]"
-                color="#64748b"
-              />
-            }
+            icon={<HomeIcon className="w-auto h-6 hover:text-[#000]" color="#64748b" />}
             tooltip="Trang Chủ"
             to="/"
             active={location.pathname === "/"}
           />
           <SidebarIcon
-            icon={
-              <UserIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
-            }
+            icon={<UserIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />}
             tooltip="Quản lý người dùng"
             to="/users"
             active={location.pathname === "/users"}
           />
 
           <SidebarIcon
-            icon={
-              <BuildingLibraryIcon
-                className="w-6 h-6 hover:text-[#000]"
-                color="#64748b"
-              />
-            }
+            icon={<BuildingLibraryIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />}
             tooltip="Quản lý bệnh viện"
             to="/hospitals"
             active={location.pathname === "/hospitals"}
           />
 
           <SidebarIcon
-            icon={
-              <UserGroupIcon
-                className="w-6 h-6 hover:text-[#000]"
-                color="#64748b"
-              />
-            }
+            icon={<UserGroupIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />}
             tooltip="Quản lý bác sĩ"
             to="/doctors"
             active={location.pathname === "/doctors"}
           />
+          <SidebarIcon
+            icon={<UserCircleIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />}
+            tooltip="Quản lý bệnh nhân"
+            to="/patients"
+            active={location.pathname === "/patients"}
+          />
         </div>
         <SidebarIcon
-          icon={
-            <CogIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />
-          }
+          icon={<CogIcon className="w-6 h-6 hover:text-[#000]" color="#64748b" />}
           tooltip="Settings"
           to="/"
           active={location.pathname === "/setting"}
@@ -85,12 +73,7 @@ const Sidebar = () => {
   );
 };
 
-const SidebarIcon: React.FC<SidebarIconProps> = ({
-  icon,
-  tooltip,
-  to,
-  active,
-}) => (
+const SidebarIcon: React.FC<SidebarIconProps> = ({ icon, tooltip, to, active }) => (
   <Tooltip title={tooltip} placement="right">
     <Link to={to} className="flex items-center justify-center">
       <div

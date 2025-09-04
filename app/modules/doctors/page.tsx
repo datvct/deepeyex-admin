@@ -1,11 +1,7 @@
 import { useState } from "react";
 import { Button, Space, Modal, Form, Input, Select } from "antd";
 import { Typography } from "antd";
-import {
-  EditOutlined,
-  DeleteOutlined,
-  PlusCircleFilled,
-} from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusCircleFilled } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import CrudTable from "~/shared/components/CrudTable";
 
@@ -19,6 +15,7 @@ interface Doctor {
   hospital: string;
   email: string;
   phone?: string;
+  image?: string;
 }
 
 export default function DoctorsPage() {
@@ -56,6 +53,7 @@ export default function DoctorsPage() {
 
   const columns: ColumnsType<Doctor> = [
     { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: 80 },
+    { title: "Hình ảnh", dataIndex: "image", key: "image", width: 200 },
     { title: "Tên", dataIndex: "full_name", key: "full_name", width: 180 },
     {
       title: "Chuyên khoa",
@@ -65,25 +63,21 @@ export default function DoctorsPage() {
     },
     { title: "Bệnh viện", dataIndex: "hospital", key: "hospital", width: 200 },
     { title: "Email", dataIndex: "email", key: "email", width: 220 },
-    {
-      title: "Hành động",
-      key: "actions",
-      width: 160,
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit(record)}
-          >
-            Sửa
-          </Button>
-          <Button type="link" danger icon={<DeleteOutlined />}>
-            Xoá
-          </Button>
-        </Space>
-      ),
-    },
+    // {
+    //   title: "Hành động",
+    //   key: "actions",
+    //   width: 160,
+    //   render: (_, record) => (
+    //     <Space>
+    //       <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
+    //         Sửa
+    //       </Button>
+    //       <Button type="link" danger icon={<DeleteOutlined />}>
+    //         Xoá
+    //       </Button>
+    //     </Space>
+    //   ),
+    // },
   ];
 
   return (
@@ -122,9 +116,7 @@ export default function DoctorsPage() {
           <Form.Item
             name="specialty"
             label="Chuyên khoa"
-            rules={[
-              { required: true, message: "Chuyên khoa không được để trống" },
-            ]}
+            rules={[{ required: true, message: "Chuyên khoa không được để trống" }]}
           >
             <Select placeholder="Chọn chuyên khoa">
               <Option value="Nội khoa">Nội khoa</Option>
