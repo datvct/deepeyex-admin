@@ -1,0 +1,8 @@
+{
+  "editor.codeActionsOnSave": ["source.organizeImports", "source.fixAll"],
+  "editor.formatOnSave": true,
+  "editor.rulers": [120],
+  "editor.tabSize": 2,
+  "search.exclude": {},
+  "typescript.preferences.importModuleSpecifier": "non-relative"
+}
