@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
+import { FaChevronRight } from "react-icons/fa";
 import React from "react";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -19,11 +19,9 @@ const Breadcrumbs = () => {
 
         return (
           <div key={routeTo} className="flex items-center space-x-2">
-            <ChevronRightIcon className="w-4 h-4" />
+            <FaChevronRight className="w-4 h-4" />
             {isLast ? (
-              <span className="font-semibold text-gray-800 uppercase">
-                {name}
-              </span>
+              <span className="font-semibold text-gray-800 uppercase">{name}</span>
             ) : (
               <Link to={routeTo} className="hover:underline">
                 {name}
