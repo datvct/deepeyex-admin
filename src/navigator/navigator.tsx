@@ -3,13 +3,13 @@ import { Route, Routes } from "react-router-dom";
 import history from ".";
 import { HistoryRouter } from "./history-router";
 import MainLayout from "../layouts/MainLayout";
-import DashboardPage from "../modules/dashboard/page";
 import { Paths } from "../constants/path-routers";
-import UserPage from "../modules/users/page";
-import DoctorsPage from "../modules/doctors/page";
-import HospitalsPage from "../modules/hospitals/page";
-import PatientsPage from "../modules/patients/page";
-import LoginPage from "../modules/auth/page";
+import LoginPage from "../pages/auth";
+import DashboardPage from "../pages/dashboard";
+import UserPage from "../pages/users";
+import DoctorsPage from "../pages/doctors";
+import HospitalsPage from "../pages/hospitals";
+import PatientsPage from "../pages/patients";
 
 export const Navigator = () => {
   return (
