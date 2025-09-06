@@ -1,27 +1,27 @@
-import { useState } from "react";
-import { Modal, Form, Input, DatePicker, Select } from "antd";
+import { useState, useEffect } from "react";
+import { Modal, Form, Input, DatePicker, Select, Alert, Spin } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import React from "react";
 import CrudTable from "../../shares/components/CrudTable";
+import { useListPatientsQuery } from "../../modules/patients/hooks/queries/use-get-patients.query";
+import { Patient } from "../../modules/patients/types/patient";
 
 const { Option } = Select;
 
-interface Patient {
-  patient_id: number;
-  full_name: string;
-  dob: string;
-  gender: string;
-  address: string;
-  phone: string;
-  email: string;
-}
-
 export default function PatientsPage() {
-  const [patients, setPatients] = useState<Patient[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [form] = Form.useForm();
+
+  const { data, isLoading, isError } = useListPatientsQuery();
+  const [patients, setPatients] = useState<Patient[]>([]);
+
+  // Cập nhật patients khi data thay đổi
+  useEffect(() => {
+    if (data?.data) {
+      setPatients(data.data);
+    }
+  }, [data]);
 
   // ---- Thêm bệnh nhân ----
   const handleAdd = () => {
@@ -34,8 +34,12 @@ export default function PatientsPage() {
   const handleEdit = (patient: Patient) => {
     setEditingPatient(patient);
     form.setFieldsValue({
-      ...patient,
-      dob: patient.dob ? dayjs(patient.dob) : null, // convert sang dayjs cho DatePicker
+      full_name: patient.fullName,
+      dob: patient.dob ? dayjs(patient.dob) : null,
+      gender: patient.gender,
+      address: patient.address,
+      phone: patient.phone,
+      email: patient.email,
     });
     setIsModalOpen(true);
   };
@@ -55,10 +59,10 @@ export default function PatientsPage() {
           ...editingPatient,
           ...formattedValues,
         });
-        // TODO: Gọi API update patient
+        // TODO: call update API
       } else {
         console.log("Create patient:", formattedValues);
-        // TODO: Gọi API create patient
+        // TODO: call create API
       }
 
       setIsModalOpen(false);
@@ -108,20 +112,28 @@ export default function PatientsPage() {
 
   return (
     <>
-      <CrudTable
-        title="Quản lý Bệnh nhân"
-        subtitle="Danh sách Bệnh nhân"
-        rowKey="patient_id"
-        columns={columns}
-        dataSource={patients.map((patient) => ({
-          ...patient,
-          id: patient.patient_id,
-        }))}
-        addButtonText="Thêm Bệnh nhân"
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={(record) => console.log("Delete patient", record)}
-      />
+      {isError && (
+        <Alert
+          message="Lỗi tải dữ liệu"
+          description="Không thể lấy danh sách bệnh nhân. Vui lòng thử lại sau."
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      )}
+      <Spin spinning={isLoading}>
+        <CrudTable
+          title="Quản lý Bệnh nhân"
+          subtitle="Danh sách Bệnh nhân"
+          rowKey="patient_id"
+          columns={columns}
+          dataSource={patients}
+          addButtonText="Thêm Bệnh nhân"
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={(record) => console.log("Delete patient", record)}
+        />
+      </Spin>
 
       <Modal
         title={editingPatient ? "Sửa Bệnh nhân" : "Thêm Bệnh nhân"}
@@ -135,9 +147,7 @@ export default function PatientsPage() {
           <Form.Item
             name="full_name"
             label="Họ và tên"
-            rules={[
-              { required: true, message: "Họ và tên không được để trống" },
-            ]}
+            rules={[{ required: true, message: "Họ và tên không được để trống" }]}
           >
             <Input placeholder="Nhập họ và tên bệnh nhân" />
           </Form.Item>
@@ -177,9 +187,7 @@ export default function PatientsPage() {
           <Form.Item
             name="phone"
             label="Số điện thoại"
-            rules={[
-              { required: true, message: "Số điện thoại không được để trống" },
-            ]}
+            rules={[{ required: true, message: "Số điện thoại không được để trống" }]}
           >
             <Input placeholder="Nhập số điện thoại" />
           </Form.Item>
