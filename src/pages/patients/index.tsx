@@ -1,22 +1,38 @@
 import { useState, useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select, Alert, Spin } from "antd";
+import { Modal, Form, Input, DatePicker, Select, Alert, Spin, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import CrudTable from "../../shares/components/CrudTable";
 import { useListPatientsQuery } from "../../modules/patients/hooks/queries/use-get-patients.query";
 import { Patient } from "../../modules/patients/types/patient";
+import React from "react";
+import { useDeletePatientMutation } from "../../modules/patients/hooks/mutations/use-delete-patient.mutation";
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyEnum } from "../../shares/enums/queryKey";
 
 const { Option } = Select;
 
 export default function PatientsPage() {
+  const [form] = Form.useForm();
+  const queryClient = useQueryClient();
+  const { data, isLoading, isError } = useListPatientsQuery();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
-  const [form] = Form.useForm();
-
-  const { data, isLoading, isError } = useListPatientsQuery();
   const [patients, setPatients] = useState<Patient[]>([]);
 
-  // Cập nhật patients khi data thay đổi
+  const deletePatient = useDeletePatientMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Xóa bệnh nhân thành công");
+
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Patient] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Xóa bệnh nhân thất bại");
+    },
+  });
+
   useEffect(() => {
     if (data?.data) {
       setPatients(data.data);
@@ -72,42 +88,56 @@ export default function PatientsPage() {
     }
   };
 
+  const handleDelete = (patient: Patient) => {
+    deletePatient.mutate(patient.patient_id);
+  };
+
   // ---- Table Columns ----
   const columns: ColumnsType<Patient> = [
-    { title: "ID", dataIndex: "patient_id", key: "patient_id", width: 80 },
-    { title: "Hình ảnh", dataIndex: "avatar", key: "avatar", width: 100 },
+    { title: "ID", dataIndex: "patient_id", key: "patient_id", width: "10%" },
+    { title: "Hình ảnh", dataIndex: "avatar", key: "avatar", width: "10%" },
     {
       title: "Họ và tên",
       dataIndex: "full_name",
       key: "full_name",
-      width: 200,
+      width: "25%",
     },
     {
       title: "Ngày sinh",
       dataIndex: "dob",
       key: "dob",
-      width: 150,
+      width: "5%",
       render: (dob: string) => (dob ? dayjs(dob).format("DD/MM/YYYY") : ""),
     },
     {
       title: "Giới tính",
       dataIndex: "gender",
       key: "gender",
-      width: 100,
+      width: "5%",
       render: (gender: string) => {
+        let color = "";
+        let text = "";
+
         switch (gender) {
           case "male":
-            return "Nam";
+            color = "blue";
+            text = "Nam";
+            break;
           case "female":
-            return "Nữ";
+            color = "pink";
+            text = "Nữ";
+            break;
           default:
-            return "Khác";
+            color = "default";
+            text = "Khác";
         }
+
+        return <Tag color={color}>{text}</Tag>;
       },
     },
-    { title: "Địa chỉ", dataIndex: "address", key: "address", width: 250 },
-    { title: "SĐT", dataIndex: "phone", key: "phone", width: 150 },
-    { title: "Email", dataIndex: "email", key: "email", width: 220 },
+    { title: "Địa chỉ", dataIndex: "address", key: "address", width: "10%" },
+    { title: "SĐT", dataIndex: "phone", key: "phone", width: "5%" },
+    { title: "Email", dataIndex: "email", key: "email", width: "10%" },
   ];
 
   return (
@@ -131,7 +161,7 @@ export default function PatientsPage() {
           addButtonText="Thêm Bệnh nhân"
           onAdd={handleAdd}
           onEdit={handleEdit}
-          onDelete={(record) => console.log("Delete patient", record)}
+          onDelete={handleDelete}
         />
       </Spin>
 

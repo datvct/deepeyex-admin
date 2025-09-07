@@ -1,26 +1,48 @@
-import { useState } from "react";
-import { Modal, Form, Input, Select } from "antd";
+import { useEffect, useState } from "react";
+import { Modal, Form, Input, Select, Alert, Spin, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import CrudTable from "../../shares/components/CrudTable";
 import React from "react";
-
-const { Option } = Select;
-
-interface Doctor {
-  doctor_id: number;
-  full_name: string;
-  specialty: string;
-  hospital: string;
-  email: string;
-  phone?: string;
-  image?: string;
-}
+import { Doctor } from "../../modules/doctors/types/doctor";
+import { useListDoctorsQuery } from "../../modules/doctors/hooks/queries/use-get-doctors.query";
+import { useDeleteDoctorMutation } from "../../modules/doctors/hooks/mutations/use-delete-doctor.mutation";
+import { toast } from "react-toastify";
+import { QueryKeyEnum } from "../../shares/enums/queryKey";
+import { useQueryClient } from "@tanstack/react-query";
+import { Specialty, SpecialtyLabel } from "../../modules/doctors/enums/specialty";
+import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
 
 export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
   const [form] = Form.useForm();
+  const queryClient = useQueryClient();
+
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+
+  const { data, isLoading, isError } = useListDoctorsQuery();
+  const {
+    data: hospitalData,
+    isLoading: isLoadingHospitals,
+    isError: isErrorHospitals,
+  } = useListHospitalsQuery();
+
+  const deleteDoctor = useDeleteDoctorMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Xóa bác sĩ thành công");
+
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Xóa bác sĩ thất bại");
+    },
+  });
+
+  useEffect(() => {
+    if (data?.data) {
+      setDoctors(data.data);
+    }
+  }, [data]);
 
   const handleAdd = () => {
     setEditingDoctor(null);
@@ -30,18 +52,35 @@ export default function DoctorsPage() {
 
   const handleEdit = (doctor: Doctor) => {
     setEditingDoctor(doctor);
-    form.setFieldsValue(doctor);
+    form.setFieldsValue({
+      full_name: doctor.full_name,
+      specialty: doctor.specialty,
+      hospital_id: doctor.hospital_id,
+      email: doctor.email,
+      phone: doctor.phone,
+    });
     setIsModalOpen(true);
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
+
+      const formattedValues = {
+        ...values,
+      };
+
       if (editingDoctor) {
-        console.log("Update doctor:", { ...editingDoctor, ...values });
+        console.log("Update doctor:", {
+          ...editingDoctor,
+          ...formattedValues,
+        });
+        // TODO: call update API
       } else {
-        console.log("Create doctor:", values);
+        console.log("Create doctor:", formattedValues);
+        // TODO: call create API
       }
+
       setIsModalOpen(false);
       form.resetFields();
     } catch (err) {
@@ -49,51 +88,82 @@ export default function DoctorsPage() {
     }
   };
 
+  const handleDelete = (doctor: Doctor) => {
+    deleteDoctor.mutate(doctor.doctor_id);
+  };
+
   const columns: ColumnsType<Doctor> = [
-    { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: 80 },
-    { title: "Hình ảnh", dataIndex: "image", key: "image", width: 200 },
-    { title: "Tên", dataIndex: "full_name", key: "full_name", width: 180 },
+    { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: "8%" },
+    { title: "Hình ảnh", dataIndex: "image", key: "image", width: "10%" },
+    { title: "Tên", dataIndex: "full_name", key: "full_name", width: "10%" },
     {
       title: "Chuyên khoa",
       dataIndex: "specialty",
       key: "specialty",
-      width: 150,
+      width: "10%",
+      render: (specialty: Specialty) => {
+        let color = "";
+
+        switch (specialty) {
+          case Specialty.Ophthalmology:
+            color = "blue";
+            break;
+          case Specialty.InternalMedicine:
+            color = "green";
+            break;
+          case Specialty.Neurology:
+            color = "purple";
+            break;
+          case Specialty.Endocrinology:
+            color = "orange";
+            break;
+          case Specialty.Pediatrics:
+            color = "pink";
+            break;
+          default:
+            color = "default";
+        }
+
+        return <Tag color={color}>{SpecialtyLabel[specialty]}</Tag>;
+      },
     },
-    { title: "Bệnh viện", dataIndex: "hospital", key: "hospital", width: 200 },
-    { title: "Email", dataIndex: "email", key: "email", width: 220 },
-    // {
-    //   title: "Hành động",
-    //   key: "actions",
-    //   width: 160,
-    //   render: (_, record) => (
-    //     <Space>
-    //       <Button type="link" icon={<EditOutlined />} onClick={() => handleEdit(record)}>
-    //         Sửa
-    //       </Button>
-    //       <Button type="link" danger icon={<DeleteOutlined />}>
-    //         Xoá
-    //       </Button>
-    //     </Space>
-    //   ),
-    // },
+    {
+      title: "Bệnh viện",
+      dataIndex: "hospital_id",
+      key: "hospital_id",
+      width: "15%",
+      render: (hospital_id: string) => {
+        const hospital = hospitalData?.data?.find((h) => h.hospital_id === hospital_id);
+        return hospital ? hospital.name : "Không xác định";
+      },
+    },
+    { title: "Email", dataIndex: "email", key: "email", width: "15%" },
   ];
 
   return (
     <>
-      <CrudTable
-        title="Quản lý Bác sĩ"
-        subtitle="Danh sách Bác sĩ"
-        rowKey="doctor_id"
-        columns={columns}
-        dataSource={doctors.map((doctor) => ({
-          ...doctor,
-          id: doctor.doctor_id,
-        }))}
-        addButtonText="Thêm Bác sĩ"
-        onAdd={handleAdd}
-        onEdit={handleEdit}
-        onDelete={(record) => console.log("Delete doctor", record)}
-      />
+      {isError && (
+        <Alert
+          message="Lỗi tải dữ liệu"
+          description="Không thể lấy danh sách bác sĩ. Vui lòng thử lại sau."
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      )}
+      <Spin spinning={isLoading}>
+        <CrudTable
+          title="Quản lý Bác sĩ"
+          subtitle="Danh sách Bác sĩ"
+          rowKey="doctor_id"
+          columns={columns}
+          dataSource={doctors}
+          addButtonText="Thêm Bác sĩ"
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      </Spin>
 
       <Modal
         title={editingDoctor ? "Sửa Bác sĩ" : "Thêm Bác sĩ"}
@@ -114,23 +184,29 @@ export default function DoctorsPage() {
           <Form.Item
             name="specialty"
             label="Chuyên khoa"
-            rules={[
-              { required: true, message: "Chuyên khoa không được để trống" },
-            ]}
+            rules={[{ required: true, message: "Chuyên khoa không được để trống" }]}
           >
             <Select placeholder="Chọn chuyên khoa">
-              <Option value="Nội khoa">Nội khoa</Option>
-              <Option value="Ngoại khoa">Ngoại khoa</Option>
-              <Option value="Nhãn khoa">Nhãn khoa</Option>
+              {Object.values(Specialty).map((specialty) => (
+                <Select.Option key={specialty} value={specialty}>
+                  {SpecialtyLabel[specialty]}
+                </Select.Option>
+              ))}
             </Select>
           </Form.Item>
 
           <Form.Item
-            name="hospital"
+            name="hospital_id"
             label="Bệnh viện"
             rules={[{ required: true, message: "Vui lòng chọn bệnh viện" }]}
           >
-            <Select placeholder="Chọn bệnh viện">{/* load từ API */}</Select>
+            <Select placeholder="Chọn bệnh viện" loading={isLoadingHospitals} allowClear>
+              {hospitalData?.data?.map((hospital) => (
+                <Select.Option key={hospital.hospital_id} value={hospital.hospital_id}>
+                  {hospital.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
 
           <Form.Item

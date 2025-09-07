@@ -2,7 +2,11 @@
 import { AxiosInstance } from "axios";
 import api from "../../../shares/configs/axios";
 import { Patient } from "../types/patient";
-import { CreatePatientResponse, ListPatientsResponse } from "../types/response";
+import {
+  CreatePatientResponse,
+  DeletePatientResponse,
+  ListPatientsResponse,
+} from "../types/response";
 import { CreatePatientBody } from "../types/body";
 
 const endpoint = "/patients";
@@ -41,15 +45,15 @@ class PatientClient {
   // ---------------- Update Patient ----------------
   async update(
     patientId: string,
-    updateData: Partial<Omit<Patient, "patientId" | "createdAt" | "updatedAt">>
+    updateData: Partial<Omit<Patient, "patientId" | "createdAt" | "updatedAt">>,
   ): Promise<Patient> {
     const response = await this.client.put<Patient>(`${endpoint}/${patientId}`, updateData);
     return response.data;
   }
 
   // ---------------- Delete Patient ----------------
-  async delete(patientId: string): Promise<{ message: string }> {
-    const response = await this.client.delete<{ message: string }>(`${endpoint}/${patientId}`);
+  async delete(patientId: string): Promise<DeletePatientResponse> {
+    const response = await this.client.delete<DeletePatientResponse>(`${endpoint}/${patientId}`);
     return response.data;
   }
 }
