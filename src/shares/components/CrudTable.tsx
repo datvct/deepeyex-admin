@@ -1,10 +1,7 @@
-import { Table, Button, Space, Typography } from "antd";
-import {
-  PlusCircleFilled,
-  EditOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
-import React from "react";
+import { Table, Button, Space, Typography, Tooltip } from "antd";
+import { PlusCircleFilled, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import Filter from "./Filter";
 
 const { Title, Text } = Typography;
 
@@ -31,32 +28,33 @@ export default function CrudTable<T>({
   onEdit,
   onDelete,
 }: CrudTableProps<T>) {
+  const [filterValue, setFilterValue] = useState("");
+
   // Thêm cột action mặc định
   const enhancedColumns = [
     ...columns,
     {
       title: "Hành động",
       key: "actions",
+      width: "5%",
       render: (_: any, record: T) => (
         <Space>
           {onEdit && (
-            <Button
-              type="link"
-              icon={<EditOutlined />}
-              onClick={() => onEdit(record)}
-            >
+            <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)}>
               Sửa
             </Button>
           )}
           {onDelete && (
-            <Button
-              type="link"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => onDelete(record)}
-            >
-              Xoá
-            </Button>
+            <Tooltip title={"Xoá"}>
+              <Button
+                danger
+                icon={<DeleteOutlined />}
+                type="primary"
+                onClick={() => onDelete(record)}
+              >
+                Xoá
+              </Button>
+            </Tooltip>
           )}
         </Space>
       ),
@@ -64,8 +62,8 @@ export default function CrudTable<T>({
   ];
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <div className="mb-6 flex justify-between items-center">
+    <div className="bg-white p-4 rounded shadow">
+      <div className="mb-4 flex justify-between items-center">
         <div>
           <Title level={3}>{title}</Title>
           {subtitle && <Text type="secondary">{subtitle}</Text>}
@@ -77,6 +75,7 @@ export default function CrudTable<T>({
           </Button>
         )}
       </div>
+      <Filter placeholder="Tìm kiếm..." onFilter={setFilterValue} />
 
       <Table
         rowKey={rowKey}
@@ -84,7 +83,7 @@ export default function CrudTable<T>({
         dataSource={dataSource}
         pagination={{ pageSize: 10 }}
         bordered
-        scroll={{ x: "max-content" }}
+        // scroll={{ x: "max-content" }}
       />
     </div>
   );
