@@ -2,6 +2,7 @@ import { Table, Button, Space, Typography, Tooltip } from "antd";
 import { PlusCircleFilled, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import Filter from "./Filter";
+import { formatDateTime } from "../utils/helper";
 
 const { Title, Text } = Typography;
 
@@ -29,37 +30,52 @@ export default function CrudTable<T>({
   onDelete,
 }: CrudTableProps<T>) {
   const [filterValue, setFilterValue] = useState("");
-
   // Thêm cột action mặc định
-  const enhancedColumns = [
-    ...columns,
-    {
-      title: "Hành động",
-      key: "actions",
-      width: "5%",
-      render: (_: any, record: T) => (
-        <Space>
-          {onEdit && (
-            <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)}>
-              Sửa
+  const enhancedColumns = columns.map((column) => {
+    if (column.key === "time") {
+      return {
+        ...column,
+        render: (text: any, record: any) => (
+          <div>
+            <p className="text-sm">
+              <strong>Ngày tạo:</strong> {formatDateTime(record.created_at)}
+            </p>
+            <p className="text-sm">
+              <strong>Cập nhật:</strong> {formatDateTime(record.updated_at)}
+            </p>
+          </div>
+        ),
+      };
+    }
+    return column;
+  });
+
+  enhancedColumns.push({
+    title: "Hành động",
+    key: "actions",
+    width: "5%",
+    render: (_: any, record: T) => (
+      <Space>
+        {onEdit && (
+          <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)}>
+            Sửa
+          </Button>
+        )}
+        {onDelete && (
+          <Tooltip title={"Xoá"}>
+            <Button
+              danger
+              icon={<DeleteOutlined />}
+              type="primary"
+              onClick={() => onDelete(record)}
+            >
+              Xoá
             </Button>
-          )}
-          {onDelete && (
-            <Tooltip title={"Xoá"}>
-              <Button
-                danger
-                icon={<DeleteOutlined />}
-                type="primary"
-                onClick={() => onDelete(record)}
-              >
-                Xoá
-              </Button>
-            </Tooltip>
-          )}
-        </Space>
-      ),
-    },
-  ];
+          </Tooltip>
+        )}
+      </Space>
+    ),
+  });
 
   return (
     <div className="bg-white p-4 rounded shadow">

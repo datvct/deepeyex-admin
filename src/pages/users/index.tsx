@@ -1,38 +1,62 @@
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Select, Space } from "antd";
+import { Alert, Button, Form, Input, Modal, Select, Space, Spin, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CrudTable from "../../shares/components/CrudTable.tsx";
+import { useQueryClient } from "@tanstack/react-query";
+import { User } from "../../modules/users/types/user.ts";
+import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-users.query.ts";
+import { useDeleteUserMutation } from "../../modules/users/hooks/mutations/use-delete-user.mutation.ts";
+import { toast } from "react-toastify";
+import { QueryKeyEnum } from "../../shares/enums/queryKey.ts";
+import { Role, RoleLabel } from "../../modules/users/enums/role.ts";
 const { Option } = Select;
 
-interface User {
-  id: number;
-  username: string;
-  role: string;
-  createdAt?: string;
-}
-
 export default function UserPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const queryClient = useQueryClient();
   const [form] = Form.useForm();
 
-  // mở modal thêm user
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+
+  const { data, isLoading, isError } = useListUsersQuery();
+
+  const roleColors: Record<Role, string> = {
+    [Role.Patient]: "green",
+    [Role.Doctor]: "blue",
+    [Role.Admin]: "red",
+  };
+
+  const deleteUser = useDeleteUserMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Xóa tài khoản thành công");
+
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Xóa tài khoản thất bại");
+    },
+  });
+
+  useEffect(() => {
+    if (data?.data) {
+      setUsers(data.data);
+    }
+  }, [data]);
+
   const handleAddUser = () => {
     setEditingUser(null);
     form.resetFields();
     setIsModalOpen(true);
   };
 
-  // mở modal sửa user
   const handleEditUser = (user: User) => {
     setEditingUser(user);
     form.setFieldsValue(user);
     setIsModalOpen(true);
   };
 
-  // submit form
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
@@ -48,46 +72,55 @@ export default function UserPage() {
     }
   };
 
+  const handleDelete = (user: User) => {
+    deleteUser.mutate(user.id);
+  };
+
   // cột bảng
   const columns: ColumnsType<User> = [
-    { title: "ID", dataIndex: "id", key: "id", width: 80 },
-    { title: "Tài khoản", dataIndex: "username", key: "username", width: 200 },
-    { title: "Vai trò", dataIndex: "role", key: "role", width: 150 },
-    { title: "Ngày tạo", dataIndex: "createdAt", key: "createdAt", width: 180 },
+    { title: "ID", dataIndex: "id", key: "id", width: "10%" },
+    { title: "Tài khoản", dataIndex: "username", key: "username", width: "20%" },
+    { title: "Email", dataIndex: "email", key: "email", width: "15%" },
+    { title: "FireBase UID", dataIndex: "firebase_uid", key: "firebase_uid", width: "10%" },
     {
-      title: "Hành động",
-      key: "actions",
-      width: 160,
-      render: (_, record) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => handleEditUser(record)}
-          >
-            Sửa
-          </Button>
-          <Button type="link" danger icon={<DeleteOutlined />}>
-            Xoá
-          </Button>
-        </Space>
-      ),
+      title: "Vai trò",
+      dataIndex: "role",
+      key: "role",
+      width: "25%",
+      render: (role: Role) => <Tag color={roleColors[role]}>{RoleLabel[role]}</Tag>,
+    },
+    {
+      title: "Thời gian",
+      dataIndex: "created_at",
+      key: "time",
+      width: "20%",
     },
   ];
 
   return (
     <>
-      <CrudTable
-        title="Quản lý người dùng"
-        subtitle="Danh sách người dùng"
-        rowKey="id"
-        columns={columns}
-        dataSource={users}
-        addButtonText="Thêm người dùng"
-        onAdd={handleAddUser}
-        onEdit={handleEditUser}
-        onDelete={(record) => console.log("Delete user", record)}
-      />
+      {isError && (
+        <Alert
+          message="Lỗi tải dữ liệu"
+          description="Không thể lấy danh sách tài khoản. Vui lòng thử lại sau."
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      )}
+      <Spin spinning={isLoading}>
+        <CrudTable
+          title="Quản lý người dùng"
+          subtitle="Danh sách người dùng"
+          rowKey="id"
+          columns={columns}
+          dataSource={users}
+          addButtonText="Thêm người dùng"
+          onAdd={handleAddUser}
+          onEdit={handleEditUser}
+          onDelete={handleDelete}
+        />
+      </Spin>
 
       <Modal
         title={editingUser ? "Sửa người dùng" : "Thêm người dùng"}
@@ -100,9 +133,7 @@ export default function UserPage() {
           <Form.Item
             name="username"
             label="Tài khoản"
-            rules={[
-              { required: true, message: "Tài khoản không được để trống" },
-            ]}
+            rules={[{ required: true, message: "Tài khoản không được để trống" }]}
           >
             <Input placeholder="Nhập tài khoản người dùng" />
           </Form.Item>
@@ -143,9 +174,7 @@ export default function UserPage() {
                       if (!value || getFieldValue("password") === value) {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("Mật khẩu nhập lại không khớp!")
-                      );
+                      return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
                     },
                   }),
                 ]}

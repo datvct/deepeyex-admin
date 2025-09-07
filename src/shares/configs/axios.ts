@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8081", 
-  timeout: 5000,                   
+  baseURL: "http://localhost:8080",
+  timeout: 5000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,23 +11,23 @@ const api: AxiosInstance = axios.create({
 // ---------------- Request Interceptor ----------------
 // Thêm token nếu có
 api.interceptors.request.use(
-  config => {
+  (config) => {
     const token = localStorage.getItem("token"); // lấy token từ localStorage
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // ---------------- Response Interceptor ----------------
 // Xử lý lỗi chung hoặc logout nếu 401
 api.interceptors.response.use(
-  response => response, // nếu request thành công, trả response về
-  error => {
+  (response) => response, // nếu request thành công, trả response về
+  (error) => {
     if (error.response) {
       const status = error.response.status;
       if (status === 401) {
@@ -39,7 +39,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
