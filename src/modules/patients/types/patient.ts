@@ -9,7 +9,7 @@ type Patient = {
   address?: string;
   phone?: string;
   email?: string;
-  avatarUrl?: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 };

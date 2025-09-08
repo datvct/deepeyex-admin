@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select, Alert, Spin, Tag } from "antd";
+import { Modal, Form, Input, DatePicker, Select, Alert, Spin, Tag, Upload } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import CrudTable from "../../shares/components/CrudTable";
 import { useListPatientsQuery } from "../../modules/patients/hooks/queries/use-get-patients.query";
 import { Patient } from "../../modules/patients/types/patient";
-import React from "react";
 import { useDeletePatientMutation } from "../../modules/patients/hooks/mutations/use-delete-patient.mutation";
+import { useCreatePatientMutation } from "../../modules/patients/hooks/mutations/use-create-patient.mutation";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyEnum } from "../../shares/enums/queryKey";
+import { createPatientSchema } from "../../modules/patients/schemas/createPatient.schema";
+import z from "zod";
 
 const { Option } = Select;
 
@@ -22,14 +25,25 @@ export default function PatientsPage() {
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
 
+  // ---- Mutation: Delete
   const deletePatient = useDeletePatientMutation({
     onSuccess: (data) => {
       toast.success(data.message || "Xóa bệnh nhân thành công");
-
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Patient] });
     },
     onError: (error) => {
       toast.error(error.message || "Xóa bệnh nhân thất bại");
+    },
+  });
+
+  // ---- Mutation: Create
+  const createPatient = useCreatePatientMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Thêm bệnh nhân thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Patient] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Thêm bệnh nhân thất bại");
     },
   });
 
@@ -56,6 +70,7 @@ export default function PatientsPage() {
       address: patient.address,
       phone: patient.phone,
       email: patient.email,
+      user_id: patient.userId,
     });
     setIsModalOpen(true);
   };
@@ -70,21 +85,29 @@ export default function PatientsPage() {
         dob: values.dob ? values.dob.format("YYYY-MM-DD") : null,
       };
 
+      const parsed = createPatientSchema.parse(formattedValues);
+
       if (editingPatient) {
         console.log("Update patient:", {
           ...editingPatient,
-          ...formattedValues,
+          ...parsed,
         });
-        // TODO: call update API
+        // TODO: update mutation
       } else {
-        console.log("Create patient:", formattedValues);
-        // TODO: call create API
+        createPatient.mutate(parsed);
       }
 
       setIsModalOpen(false);
       form.resetFields();
     } catch (err) {
-      console.log("Validation failed:", err);
+      if (err instanceof z.ZodError) {
+        form.setFields(
+          err.issues.map((e) => ({
+            name: e.path.join("."), // ép thành "full_name"
+            errors: [e.message],
+          })),
+        );
+      }
     }
   };
 
@@ -95,13 +118,23 @@ export default function PatientsPage() {
   // ---- Table Columns ----
   const columns: ColumnsType<Patient> = [
     { title: "ID", dataIndex: "patient_id", key: "patient_id", width: "10%" },
-    { title: "Hình ảnh", dataIndex: "avatar", key: "avatar", width: "10%" },
     {
-      title: "Họ và tên",
-      dataIndex: "full_name",
-      key: "full_name",
-      width: "25%",
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: "10%",
+      render: (image: string) =>
+        image ? (
+          <img
+            src={image}
+            alt="image"
+            style={{ width: 50, height: 50, objectFit: "cover" }}
+          />
+        ) : (
+          "-"
+        ),
     },
+    { title: "Họ và tên", dataIndex: "full_name", key: "full_name", width: "25%" },
     {
       title: "Ngày sinh",
       dataIndex: "dob",
@@ -138,6 +171,7 @@ export default function PatientsPage() {
     { title: "Địa chỉ", dataIndex: "address", key: "address", width: "10%" },
     { title: "SĐT", dataIndex: "phone", key: "phone", width: "5%" },
     { title: "Email", dataIndex: "email", key: "email", width: "10%" },
+    { title: "User ID", dataIndex: "user_id", key: "user_id", width: "5%" },
   ];
 
   return (
@@ -170,7 +204,8 @@ export default function PatientsPage() {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
-        destroyOnClose
+        confirmLoading={createPatient.isPending}
+        destroyOnHidden
       >
         <Form form={form} layout="vertical">
           {/* Họ và tên */}
@@ -200,7 +235,6 @@ export default function PatientsPage() {
             <Select placeholder="Chọn giới tính">
               <Option value="male">Nam</Option>
               <Option value="female">Nữ</Option>
-              <Option value="other">Khác</Option>
             </Select>
           </Form.Item>
 
@@ -229,6 +263,35 @@ export default function PatientsPage() {
             rules={[{ type: "email", message: "Email không hợp lệ" }]}
           >
             <Input placeholder="Nhập email" />
+          </Form.Item>
+
+          {/* Avatar */}
+          <Form.Item
+            name="avatar"
+            label="Ảnh đại diện"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+          >
+            <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>
+            </Upload>
+          </Form.Item>
+
+          {/* User ID */}
+          <Form.Item
+            name="user_id"
+            label="Người dùng"
+            rules={[{ required: true, message: "Vui lòng chọn user" }]}
+          >
+            <Select placeholder="Chọn user">
+              {/* TODO: map danh sách user thật từ API */}
+              <Option value="1">a1b2c3d4-e5f6-7890-1234-567890abcdef</Option>
+              <Option value="2">User 2</Option>
+              <Option value="3">User 3</Option>
+            </Select>
           </Form.Item>
         </Form>
       </Modal>

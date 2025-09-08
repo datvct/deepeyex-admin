@@ -7,7 +7,6 @@ import {
   DeletePatientResponse,
   ListPatientsResponse,
 } from "../types/response";
-import { CreatePatientBody } from "../types/body";
 
 const endpoint = "/patients";
 
@@ -19,8 +18,10 @@ class PatientClient {
   }
 
   // ---------------- Create Patient ----------------
-  async create(patientBody: CreatePatientBody): Promise<CreatePatientResponse> {
-    const response = await this.client.post<CreatePatientResponse>(endpoint, patientBody);
+  async create(form: FormData): Promise<CreatePatientResponse> {
+    const response = await this.client.post<CreatePatientResponse>(endpoint, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   }
 
@@ -43,11 +44,10 @@ class PatientClient {
   }
 
   // ---------------- Update Patient ----------------
-  async update(
-    patientId: string,
-    updateData: Partial<Omit<Patient, "patientId" | "createdAt" | "updatedAt">>,
-  ): Promise<Patient> {
-    const response = await this.client.put<Patient>(`${endpoint}/${patientId}`, updateData);
+  async update(patientId: string, form: FormData): Promise<Patient> {
+    const response = await this.client.put<Patient>(`${endpoint}/${patientId}`, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   }
 

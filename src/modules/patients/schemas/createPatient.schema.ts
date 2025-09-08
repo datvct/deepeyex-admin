@@ -1,15 +1,57 @@
-import z from "zod";
+import { z } from "zod";
+import { Gender } from "../enums/gender";
 
-// Schema cho body khi create patient
+// Giới hạn tuổi: bệnh nhân không thể trên 200 tuổi hoặc dưới 0
+const validateDob = (val: string) => {
+  const date = new Date(val);
+  if (isNaN(date.getTime())) return false;
+
+  const ageDifMs = Date.now() - date.getTime();
+  const ageDate = new Date(ageDifMs); // miliseconds -> Date
+  const age = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+  return age >= 0 && age <= 200;
+};
+
+// Regex kiểm tra số điện thoại chỉ chứa số và có 9–11 chữ số
+const phoneRegex = /^[0-9]{9,11}$/;
+
+// Regex tên không chứa ký tự số hoặc ký tự đặc biệt
+const nameRegex = /^[\p{L}\s]+$/u;
+// Schema cho body khi create patient (form upload)
 export const createPatientSchema = z.object({
-  user_id: z.string().uuid("UserID phải là UUID hợp lệ"),
-  full_name: z.string().min(1, "Họ tên không được để trống"),
-  dob: z.string().refine((val) => !isNaN(Date.parse(val)), {
-    message: "Ngày sinh không hợp lệ",
+  user_id: z.uuid({ message: "UserID phải là UUID hợp lệ" }),
+
+  full_name: z
+    .string()
+    .min(1, "Họ tên không được để trống")
+    .regex(nameRegex, "Họ tên không được chứa số hoặc ký tự đặc biệt"),
+
+  dob: z
+    .string()
+    .refine((val) => !isNaN(Date.parse(val)), { message: "Ngày sinh không hợp lệ" })
+    .refine(validateDob, { message: "Tuổi phải trong khoảng 0–200" }),
+
+  gender: z.enum([Gender.Male, Gender.Female], {
+    errorMap: () => ({ message: "Giới tính phải là male, female hoặc other" }),
   }),
-  gender: z.enum(["male", "female"]),
+
   address: z.string().optional(),
-  phone: z.string().optional(),
-  email: z.string().email("Email không hợp lệ"),
-  avatar_url: z.string().url("Avatar phải là URL hợp lệ").optional(),
+
+  phone: z
+    .string()
+    .regex(phoneRegex, "Số điện thoại phải là số và có từ 9 đến 11 chữ số")
+    .optional(),
+
+  email: z.email("Email không hợp lệ"),
+
+  avatar: z
+    .any()
+    .optional()
+    .refine(
+      (file) => !file || (file instanceof File && file.size < 5 * 1024 * 1024),
+      "File avatar phải nhỏ hơn 5MB"
+    ),
 });
+
+export type CreatePatientBody = z.infer<typeof createPatientSchema>;
