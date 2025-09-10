@@ -6,6 +6,7 @@ import {
   CreatePatientResponse,
   DeletePatientResponse,
   ListPatientsResponse,
+  UpdatePatientResponse,
 } from "../types/response";
 
 const endpoint = "/patients";
@@ -44,10 +45,16 @@ class PatientClient {
   }
 
   // ---------------- Update Patient ----------------
-  async update(patientId: string, form: FormData): Promise<Patient> {
-    const response = await this.client.put<Patient>(`${endpoint}/${patientId}`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+  async update(patientId: string, updateData: FormData): Promise<UpdatePatientResponse> {
+    const response = await this.client.put<UpdatePatientResponse>(
+      `${endpoint}/${patientId}`,
+      updateData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
     return response.data;
   }
 

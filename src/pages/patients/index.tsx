@@ -13,6 +13,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { createPatientSchema } from "../../modules/patients/schemas/createPatient.schema";
 import z from "zod";
+import React from "react";
+import { useUpdatePatientMutation } from "../../modules/patients/hooks/mutations/use-update-patient.mutation";
+import { userData } from "../../shares/constants/mockApiUser";
 
 const { Option } = Select;
 
@@ -47,6 +50,17 @@ export default function PatientsPage() {
     },
   });
 
+  // ---- Mutation: Update ----
+  const updatePatient = useUpdatePatientMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Cập nhật bệnh nhân thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Patient] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Cập nhật bệnh nhân thất bại");
+    },
+  });
+
   useEffect(() => {
     if (data?.data) {
       setPatients(data.data);
@@ -64,13 +78,23 @@ export default function PatientsPage() {
   const handleEdit = (patient: Patient) => {
     setEditingPatient(patient);
     form.setFieldsValue({
-      full_name: patient.fullName,
+      full_name: patient.full_name,
       dob: patient.dob ? dayjs(patient.dob) : null,
       gender: patient.gender,
       address: patient.address,
       phone: patient.phone,
       email: patient.email,
-      user_id: patient.userId,
+      user_id: patient.user_id,
+      avatar: patient.image
+        ? [
+            {
+              uid: "-1",
+              name: "image.png",
+              status: "done",
+              url: patient.image,
+            },
+          ]
+        : [],
     });
     setIsModalOpen(true);
   };
@@ -88,11 +112,10 @@ export default function PatientsPage() {
       const parsed = createPatientSchema.parse(formattedValues);
 
       if (editingPatient) {
-        console.log("Update patient:", {
-          ...editingPatient,
+        updatePatient.mutate({
+          patient_id: editingPatient.patient_id,
           ...parsed,
         });
-        // TODO: update mutation
       } else {
         createPatient.mutate(parsed);
       }
@@ -103,7 +126,7 @@ export default function PatientsPage() {
       if (err instanceof z.ZodError) {
         form.setFields(
           err.issues.map((e) => ({
-            name: e.path.join("."), // ép thành "full_name"
+            name: e.path.join("."),
             errors: [e.message],
           })),
         );
@@ -125,11 +148,7 @@ export default function PatientsPage() {
       width: "10%",
       render: (image: string) =>
         image ? (
-          <img
-            src={image}
-            alt="image"
-            style={{ width: 50, height: 50, objectFit: "cover" }}
-          />
+          <img src={image} alt="image" style={{ width: 50, height: 50, objectFit: "cover" }} />
         ) : (
           "-"
         ),
@@ -280,17 +299,19 @@ export default function PatientsPage() {
             </Upload>
           </Form.Item>
 
-          {/* User ID */}
           <Form.Item
             name="user_id"
-            label="Người dùng"
+            label="Tài khoản"
             rules={[{ required: true, message: "Vui lòng chọn user" }]}
           >
-            <Select placeholder="Chọn user">
-              {/* TODO: map danh sách user thật từ API */}
-              <Option value="1">a1b2c3d4-e5f6-7890-1234-567890abcdef</Option>
-              <Option value="2">User 2</Option>
-              <Option value="3">User 3</Option>
+            <Select placeholder="Chọn user" allowClear>
+              {userData?.data
+                ?.filter((user) => user.role === "patient")
+                .map((user) => (
+                  <Select.Option key={user.user_id} value={user.user_id}>
+                    {user.username || user.email || user.user_id}
+                  </Select.Option>
+                ))}
             </Select>
           </Form.Item>
         </Form>

@@ -4,7 +4,7 @@ type Hospital = {
   address?: string;
   phone?: string;
   email?: string;
-  logoUrl?: string;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 };

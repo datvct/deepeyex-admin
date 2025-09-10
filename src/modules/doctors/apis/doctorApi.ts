@@ -2,7 +2,12 @@
 import { AxiosInstance } from "axios";
 import api from "../../../shares/configs/axios";
 import { CreateDoctorBody } from "../schemas/createDoctor.schema";
-import { CreateDoctorResponse, DeleteDoctorResponse, ListDoctorsResponse } from "../types/response";
+import {
+  CreateDoctorResponse,
+  DeleteDoctorResponse,
+  ListDoctorsResponse,
+  UpdateDoctorResponse,
+} from "../types/response";
 import { Doctor } from "../types/doctor";
 
 const endpoint = "/doctors";
@@ -15,8 +20,10 @@ class DoctorClient {
   }
 
   // ---------------- Create Doctor ----------------
-  async create(doctorBody: CreateDoctorBody): Promise<CreateDoctorResponse> {
-    const response = await this.client.post<CreateDoctorResponse>(endpoint, doctorBody);
+  async create(form: FormData): Promise<CreateDoctorResponse> {
+    const response = await this.client.post<CreateDoctorResponse>(endpoint, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   }
 
@@ -39,11 +46,16 @@ class DoctorClient {
   }
 
   // ---------------- Update Doctor ----------------
-  async update(
-    doctorId: string,
-    updateData: Partial<Omit<Doctor, "doctorId" | "createdAt" | "updatedAt">>,
-  ): Promise<Doctor> {
-    const response = await this.client.put<Doctor>(`${endpoint}/${doctorId}`, updateData);
+  async update(doctorId: string, updateData: FormData): Promise<UpdateDoctorResponse> {
+    const response = await this.client.put<UpdateDoctorResponse>(
+      `${endpoint}/${doctorId}`,
+      updateData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      },
+    );
     return response.data;
   }
 
