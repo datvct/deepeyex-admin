@@ -230,6 +230,7 @@ export default function DoctorsPage() {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
+        centered
         destroyOnClose
       >
         <Form form={form} layout="vertical">

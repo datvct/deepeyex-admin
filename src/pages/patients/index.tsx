@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Modal, Form, Input, DatePicker, Select, Alert, Spin, Tag, Upload } from "antd";
+import { Modal, Form, Input, DatePicker, Select, Alert, Spin, Tag, Upload, Row, Col } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -224,96 +224,98 @@ export default function PatientsPage() {
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
         confirmLoading={createPatient.isPending}
-        destroyOnHidden
+        destroyOnClose
+        centered
+        width={800}
       >
         <Form form={form} layout="vertical">
-          {/* Họ và tên */}
-          <Form.Item
-            name="full_name"
-            label="Họ và tên"
-            rules={[{ required: true, message: "Họ và tên không được để trống" }]}
-          >
-            <Input placeholder="Nhập họ và tên bệnh nhân" />
-          </Form.Item>
+          <Row gutter={24}>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="full_name"
+                label="Họ và tên"
+                rules={[{ required: true, message: "Họ và tên không được để trống" }]}
+              >
+                <Input placeholder="Nhập họ và tên bệnh nhân" />
+              </Form.Item>
 
-          {/* Ngày sinh */}
-          <Form.Item
-            name="dob"
-            label="Ngày sinh"
-            rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
-          >
-            <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
-          </Form.Item>
+              <Form.Item
+                name="dob"
+                label="Ngày sinh"
+                rules={[{ required: true, message: "Vui lòng chọn ngày sinh" }]}
+              >
+                <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+              </Form.Item>
 
-          {/* Giới tính */}
-          <Form.Item
-            name="gender"
-            label="Giới tính"
-            rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
-          >
-            <Select placeholder="Chọn giới tính">
-              <Option value="male">Nam</Option>
-              <Option value="female">Nữ</Option>
-            </Select>
-          </Form.Item>
+              <Form.Item
+                name="gender"
+                label="Giới tính"
+                rules={[{ required: true, message: "Vui lòng chọn giới tính" }]}
+              >
+                <Select placeholder="Chọn giới tính">
+                  <Option value="male">Nam</Option>
+                  <Option value="female">Nữ</Option>
+                </Select>
+              </Form.Item>
 
-          {/* Địa chỉ */}
-          <Form.Item
-            name="address"
-            label="Địa chỉ"
-            rules={[{ required: true, message: "Địa chỉ không được để trống" }]}
-          >
-            <Input placeholder="Nhập địa chỉ" />
-          </Form.Item>
+              {/* Địa chỉ */}
+              <Form.Item
+                name="address"
+                label="Địa chỉ"
+                rules={[{ required: true, message: "Địa chỉ không được để trống" }]}
+              >
+                <Input placeholder="Nhập địa chỉ" />
+              </Form.Item>
+            </Col>
 
-          {/* Số điện thoại */}
-          <Form.Item
-            name="phone"
-            label="Số điện thoại"
-            rules={[{ required: true, message: "Số điện thoại không được để trống" }]}
-          >
-            <Input placeholder="Nhập số điện thoại" />
-          </Form.Item>
+            <Col xs={24} md={12}>
+              <Form.Item
+                name="phone"
+                label="Số điện thoại"
+                rules={[{ required: true, message: "Số điện thoại không được để trống" }]}
+              >
+                <Input placeholder="Nhập số điện thoại" />
+              </Form.Item>
 
-          {/* Email */}
-          <Form.Item
-            name="email"
-            label="Email"
-            rules={[{ type: "email", message: "Email không hợp lệ" }]}
-          >
-            <Input placeholder="Nhập email" />
-          </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ type: "email", message: "Email không hợp lệ" }]}
+              >
+                <Input placeholder="Nhập email" />
+              </Form.Item>
 
-          {/* Avatar */}
-          <Form.Item
-            name="avatar"
-            label="Ảnh đại diện"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
-          >
-            <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            </Upload>
-          </Form.Item>
+              <Form.Item
+                name="avatar"
+                label="Ảnh đại diện"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+              >
+                <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                </Upload>
+              </Form.Item>
 
-          <Form.Item
-            name="user_id"
-            label="Tài khoản"
-            rules={[{ required: true, message: "Vui lòng chọn user" }]}
-          >
-            <Select placeholder="Chọn user" allowClear>
-              {userData?.data
-                ?.filter((user) => user.role === "patient")
-                .map((user) => (
-                  <Select.Option key={user.user_id} value={user.user_id}>
-                    {user.username || user.email || user.user_id}
-                  </Select.Option>
-                ))}
-            </Select>
-          </Form.Item>
+              <Form.Item
+                name="user_id"
+                label="Tài khoản"
+                rules={[{ required: true, message: "Vui lòng chọn user" }]}
+              >
+                <Select placeholder="Chọn user" allowClear>
+                  {userData?.data
+                    ?.filter((user) => user.role === "patient")
+                    .map((user) => (
+                      <Option key={user.user_id} value={user.user_id}>
+                        {user.username || user.email || user.user_id}
+                      </Option>
+                    ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </>

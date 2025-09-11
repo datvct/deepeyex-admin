@@ -18,11 +18,14 @@ export default function MainLayout() {
         style={{ zIndex: 9999 }}
       />
 
-      <main className="flex">
+      <main className="flex h-screen overflow-hidden">
         <Sidebar />
-        <section className="flex-1 py-5 pl-20">
+
+        <section className="flex-1 flex flex-col overflow-y-auto p-2 pt-0">
           <HeaderLayout />
-          <Outlet />
+          <div className="flex-1 px-2 pt-2">
+            <Outlet />
+          </div>
         </section>
       </main>
     </div>

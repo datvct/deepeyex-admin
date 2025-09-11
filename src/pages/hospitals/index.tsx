@@ -72,6 +72,7 @@ export default function HospitalsPage() {
   // ---- Sửa ----
   const handleEdit = (hospital: Hospital) => {
     setEditingHospital(hospital);
+    console.log(hospital);
     form.setFieldsValue({
       name: hospital.name,
       address: hospital.address,
@@ -185,6 +186,7 @@ export default function HospitalsPage() {
           setIsModalOpen(false);
           form.resetFields();
         }}
+        centered
         destroyOnClose
       >
         <Form form={form} layout="vertical">
@@ -222,7 +224,7 @@ export default function HospitalsPage() {
           </Form.Item>
 
           <Form.Item
-            name="avatar"
+            name="logo"
             label="Ảnh bệnh viện"
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}

@@ -78,7 +78,7 @@ export default function CrudTable<T>({
   });
 
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white">
       <div className="mb-4 flex justify-between items-center">
         <div>
           <Title level={3}>{title}</Title>
