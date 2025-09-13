@@ -72,7 +72,6 @@ export default function HospitalsPage() {
   // ---- Sửa ----
   const handleEdit = (hospital: Hospital) => {
     setEditingHospital(hospital);
-    console.log(hospital);
     form.setFieldsValue({
       name: hospital.name,
       address: hospital.address,

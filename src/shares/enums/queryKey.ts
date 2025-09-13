@@ -3,4 +3,8 @@ export enum QueryKeyEnum {
   Hospital = "hospitals",
   Doctor = "doctors",
   User = "users",
+  Drug = "drugs",
+  Order = "orders",
+  TimeSlot = "timeslots",
+  Appointment = "appointments",
 }

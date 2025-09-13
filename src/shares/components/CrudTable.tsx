@@ -1,4 +1,4 @@
-import { Table, Button, Space, Typography, Tooltip } from "antd";
+import { Table, Button, Space, Typography, Tooltip, Popconfirm } from "antd";
 import { PlusCircleFilled, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import Filter from "./Filter";
@@ -62,16 +62,17 @@ export default function CrudTable<T>({
           </Button>
         )}
         {onDelete && (
-          <Tooltip title={"Xoá"}>
-            <Button
-              danger
-              icon={<DeleteOutlined />}
-              type="primary"
-              onClick={() => onDelete(record)}
-            >
-              Xoá
+          <Popconfirm
+            title="Xác nhận xóa"
+            description="Bạn có chắc chắn muốn xóa?"
+            onConfirm={() => onDelete(record)}
+            okText="Xóa"
+            cancelText="Hủy"
+          >
+            <Button type="primary" danger size="small" icon={<DeleteOutlined />}>
+              Xóa
             </Button>
-          </Tooltip>
+          </Popconfirm>
         )}
       </Space>
     ),
