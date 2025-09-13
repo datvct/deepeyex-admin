@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Form, Input, Select, Alert, Spin, Tag } from "antd";
+import { Modal, Form, Input, Select, Alert, Spin, Tag, Upload } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import CrudTable from "../../shares/components/CrudTable";
 import React from "react";
@@ -11,6 +11,12 @@ import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { useQueryClient } from "@tanstack/react-query";
 import { Specialty, SpecialtyLabel } from "../../modules/doctors/enums/specialty";
 import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
+import { PlusOutlined } from "@ant-design/icons";
+import { useCreateDoctorMutation } from "../../modules/doctors/hooks/mutations/use-create-doctor.mutation";
+import { useUpdateDoctorMutation } from "../../modules/doctors/hooks/mutations/use-update-doctor.mutation";
+import { createDoctorSchema } from "../../modules/doctors/schemas/createDoctor.schema";
+import { userData } from "../../shares/constants/mockApiUser";
+import z from "zod";
 
 export default function DoctorsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,12 +27,14 @@ export default function DoctorsPage() {
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
 
   const { data, isLoading, isError } = useListDoctorsQuery();
+
   const {
     data: hospitalData,
     isLoading: isLoadingHospitals,
     isError: isErrorHospitals,
   } = useListHospitalsQuery();
 
+  //---- Mutation: Delete
   const deleteDoctor = useDeleteDoctorMutation({
     onSuccess: (data) => {
       toast.success(data.message || "Xóa bác sĩ thành công");
@@ -35,6 +43,28 @@ export default function DoctorsPage() {
     },
     onError: (error) => {
       toast.error(error.message || "Xóa bác sĩ thất bại");
+    },
+  });
+
+  //--- Mutation: Create
+  const createDoctor = useCreateDoctorMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Thêm bác sĩ thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Thêm bác sĩ thất bại");
+    },
+  });
+
+  // --- Mutation: Update
+  const updateDoctor = useUpdateDoctorMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Cập nhật bác sĩ thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Cập nhật bác sĩ thất bại");
     },
   });
 
@@ -58,6 +88,17 @@ export default function DoctorsPage() {
       hospital_id: doctor.hospital_id,
       email: doctor.email,
       phone: doctor.phone,
+      avatar: doctor.image
+        ? [
+            {
+              uid: "-1",
+              name: "image.png",
+              status: "done",
+              url: doctor.image,
+            },
+          ]
+        : [],
+      user_id: doctor.user_id,
     });
     setIsModalOpen(true);
   };
@@ -68,23 +109,30 @@ export default function DoctorsPage() {
 
       const formattedValues = {
         ...values,
+        avatar: values.avatar || [],
       };
 
+      const parsed = createDoctorSchema.parse(formattedValues);
       if (editingDoctor) {
-        console.log("Update doctor:", {
-          ...editingDoctor,
-          ...formattedValues,
+        updateDoctor.mutate({
+          doctor_id: editingDoctor.doctor_id,
+          ...parsed,
         });
-        // TODO: call update API
       } else {
-        console.log("Create doctor:", formattedValues);
-        // TODO: call create API
+        createDoctor.mutate(parsed);
       }
 
       setIsModalOpen(false);
       form.resetFields();
     } catch (err) {
-      console.log("Validation failed:", err);
+      if (err instanceof z.ZodError) {
+        form.setFields(
+          err.issues.map((e) => ({
+            name: e.path.join("."),
+            errors: [e.message],
+          })),
+        );
+      }
     }
   };
 
@@ -94,13 +142,24 @@ export default function DoctorsPage() {
 
   const columns: ColumnsType<Doctor> = [
     { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: "8%" },
-    { title: "Hình ảnh", dataIndex: "image", key: "image", width: "10%" },
+    {
+      title: "Hình ảnh",
+      dataIndex: "image",
+      key: "image",
+      width: "5%",
+      render: (image: string) =>
+        image ? (
+          <img src={image} alt="hospital" style={{ width: 50, height: 50, objectFit: "cover" }} />
+        ) : (
+          "-"
+        ),
+    },
     { title: "Tên", dataIndex: "full_name", key: "full_name", width: "10%" },
     {
       title: "Chuyên khoa",
       dataIndex: "specialty",
       key: "specialty",
-      width: "10%",
+      width: "8%",
       render: (specialty: Specialty) => {
         let color = "";
 
@@ -137,7 +196,8 @@ export default function DoctorsPage() {
         return hospital ? hospital.name : "Không xác định";
       },
     },
-    { title: "Email", dataIndex: "email", key: "email", width: "15%" },
+    { title: "Email", dataIndex: "email", key: "email", width: "10%" },
+    { title: "Số điện thoại", dataIndex: "phone", key: "phone", width: "10%" },
   ];
 
   return (
@@ -170,17 +230,25 @@ export default function DoctorsPage() {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
+        centered
         destroyOnClose
       >
         <Form form={form} layout="vertical">
           <Form.Item
             name="full_name"
             label="Tên bác sĩ"
-            rules={[{ required: true, message: "Tên không được để trống" }]}
+            rules={[
+              { required: true, message: "Tên không được để trống" },
+              {
+                pattern: /^[\p{L}\s.'-]+$/u,
+                message: "Họ và tên không được chứa ký tự đặc biệt",
+              },
+            ]}
           >
             <Input placeholder="Nhập tên bác sĩ" />
           </Form.Item>
 
+          {/* Chuyên khoa */}
           <Form.Item
             name="specialty"
             label="Chuyên khoa"
@@ -217,8 +285,47 @@ export default function DoctorsPage() {
             <Input placeholder="Nhập email" />
           </Form.Item>
 
-          <Form.Item name="phone" label="SĐT">
+          <Form.Item
+            name="phone"
+            label="SĐT"
+            rules={[
+              {
+                pattern: /^[0-9]{8,15}$/,
+                message: "Số điện thoại phải là số và có từ 8 đến 15 chữ số",
+              },
+            ]}
+          >
             <Input placeholder="Nhập số điện thoại" />
+          </Form.Item>
+
+          <Form.Item
+            name="user_id"
+            label="Người dùng"
+            rules={[{ required: true, message: "Vui lòng chọn user" }]}
+          >
+            <Select placeholder="Chọn user" allowClear>
+              {userData?.data
+                ?.filter((user) => user.role === "doctor")
+                .map((user) => (
+                  <Select.Option key={user.user_id} value={user.user_id}>
+                    {user.username || user.email || user.user_id}
+                  </Select.Option>
+                ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            name="avatar"
+            label="Ảnh bệnh viện"
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+          >
+            <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải Ảnh</div>
+              </div>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>

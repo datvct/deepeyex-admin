@@ -10,6 +10,9 @@ import { useDeleteUserMutation } from "../../modules/users/hooks/mutations/use-d
 import { toast } from "react-toastify";
 import { QueryKeyEnum } from "../../shares/enums/queryKey.ts";
 import { Role, RoleLabel } from "../../modules/users/enums/role.ts";
+import { useCreateUserMutation } from "../../modules/users/hooks/mutations/use-create-user.mutation.ts";
+import { useUpdateUserMutation } from "../../modules/users/hooks/mutations/use-update-user.mutation.ts";
+import z from "zod";
 const { Option } = Select;
 
 export default function UserPage() {
@@ -27,7 +30,7 @@ export default function UserPage() {
     [Role.Doctor]: "blue",
     [Role.Admin]: "red",
   };
-
+  // ---- Mutation: Delete
   const deleteUser = useDeleteUserMutation({
     onSuccess: (data) => {
       toast.success(data.message || "Xóa tài khoản thành công");
@@ -36,6 +39,27 @@ export default function UserPage() {
     },
     onError: (error) => {
       toast.error(error.message || "Xóa tài khoản thất bại");
+    },
+  });
+
+  // ---- Mutation: Create ----
+  const createUser = useCreateUserMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Thêm tài khoản thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Thêm tài khoản thất bại");
+    },
+  });
+  // ---- Mutation: Update ----
+  const updateUser = useUpdateUserMutation({
+    onSuccess: (data) => {
+      toast.success(data.message || "Cập nhật tài khoản thành công");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Cập nhật tài khoản thất bại");
     },
   });
 
@@ -53,7 +77,14 @@ export default function UserPage() {
 
   const handleEditUser = (user: User) => {
     setEditingUser(user);
-    form.setFieldsValue(user);
+    form.setFieldsValue({
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      firebase_uid: user.firebase_uid,
+      password: user.password,
+      confirmPassword: user.password,
+    });
     setIsModalOpen(true);
   };
 
@@ -61,14 +92,24 @@ export default function UserPage() {
     try {
       const values = await form.validateFields();
       if (editingUser) {
-        console.log("Update user:", { ...editingUser, ...values });
+        updateUser.mutate({
+          id: editingUser.id,
+          body: values,
+        });
       } else {
-        console.log("Create new user:", values);
+        createUser.mutate(values);
       }
       setIsModalOpen(false);
       form.resetFields();
     } catch (err) {
-      console.log("Validate Failed:", err);
+      if (err instanceof z.ZodError) {
+        form.setFields(
+          err.issues.map((e) => ({
+            name: e.path.join("."),
+            errors: [e.message],
+          })),
+        );
+      }
     }
   };
 
@@ -133,7 +174,10 @@ export default function UserPage() {
           <Form.Item
             name="username"
             label="Tài khoản"
-            rules={[{ required: true, message: "Tài khoản không được để trống" }]}
+            rules={[
+              { required: true, message: "Tài khoản không được để trống" },
+              { min: 3, message: "Tài khoản phải có ít nhất 3 ký tự" },
+            ]}
           >
             <Input placeholder="Nhập tài khoản người dùng" />
           </Form.Item>
@@ -144,45 +188,71 @@ export default function UserPage() {
             rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
           >
             <Select placeholder="Chọn vai trò">
-              <Option value="admin">Admin</Option>
-              <Option value="customer">Bệnh nhân</Option>
-              <Option value="doctor">Bác sĩ</Option>
+              {Object.values(Role).map((role) => (
+                <Option key={role} value={role}>
+                  {RoleLabel[role]}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 
-          {!editingUser && (
-            <>
-              <Form.Item
-                name="password"
-                label="Mật khẩu"
-                rules={[
-                  { required: true, message: "Mật khẩu không được để trống" },
-                  { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
-                ]}
-              >
-                <Input.Password placeholder="Nhập mật khẩu" />
-              </Form.Item>
+          <Form.Item
+            name="email"
+            label="Email"
+            rules={[
+              { required: true, message: "Email không được để trống" },
+              { type: "email", message: "Email không hợp lệ" },
+            ]}
+          >
+            <Input placeholder="Nhập email người dùng" />
+          </Form.Item>
 
-              <Form.Item
-                name="confirmPassword"
-                label="Nhập lại mật khẩu"
-                dependencies={["password"]}
-                rules={[
-                  { required: true, message: "Vui lòng nhập lại mật khẩu" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (!value || getFieldValue("password") === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password placeholder="Nhập lại mật khẩu" />
-              </Form.Item>
-            </>
-          )}
+          <Form.Item
+            name="firebase_uid"
+            label="Firebase UID"
+            rules={[
+              { required: true, message: "Firebase UID không được để trống" },
+              { min: 6, message: "Firebase UID phải có ít nhất 6 ký tự" },
+            ]}
+          >
+            <Input placeholder="Nhập Firebase UID người dùng" />
+          </Form.Item>
+
+          <Form.Item
+            name="password"
+            label="Mật khẩu"
+            rules={[
+              { required: true, message: "Mật khẩu không được để trống" },
+              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+              {
+                pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                message: "Mật khẩu phải có ít nhất 1 chữ cái và 1 số",
+              },
+            ]}
+            hasFeedback
+          >
+            <Input.Password placeholder="Nhập mật khẩu" />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Nhập lại mật khẩu"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              { required: true, message: "Vui lòng nhập lại mật khẩu" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password placeholder="Nhập lại mật khẩu" />
+          </Form.Item>
         </Form>
       </Modal>
     </>

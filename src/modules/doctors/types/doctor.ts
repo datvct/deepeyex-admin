@@ -5,7 +5,7 @@ type Doctor = {
   full_name: string;
   phone?: string;
   email?: string;
-  avatarUrl?: string;
+  image?: string;
   specialty: Specialty;
   hospital_id: number;
   user_id: number;

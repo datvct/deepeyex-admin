@@ -1,8 +1,13 @@
 // src/apis/UserApi.ts
 import { AxiosInstance } from "axios";
 import api from "../../../shares/configs/axios";
-import { CreateUserBody } from "../types/body";
-import { CreateUserResponse, DeleteUserResponse, ListUsersResponse } from "../types/response";
+import { CreateUserBody, UpdateUserBody } from "../types/body";
+import {
+  CreateUserResponse,
+  DeleteUserResponse,
+  ListUsersResponse,
+  UpdateUserResponse,
+} from "../types/response";
 import { User } from "../types/user";
 
 const endpoint = "/private/users";
@@ -33,11 +38,8 @@ class UserClient {
   }
 
   // ---------------- Update User ----------------
-  async update(
-    userId: string,
-    updateData: Partial<Omit<User, "UserId" | "createdAt" | "updatedAt">>,
-  ): Promise<User> {
-    const response = await this.client.put<User>(`${endpoint}/${userId}`, updateData);
+  async update(userId: string, updateData: UpdateUserBody): Promise<UpdateUserResponse> {
+    const response = await this.client.put<UpdateUserResponse>(`${endpoint}/${userId}`, updateData);
     return response.data;
   }
 

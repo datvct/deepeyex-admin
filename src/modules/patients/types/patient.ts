@@ -2,8 +2,8 @@ import { Gender } from "../enums/gender";
 
 type Patient = {
   patient_id: string;
-  userId: string;
-  fullName: string;
+  user_id: string;
+  full_name: string;
   dob: string;
   gender: Gender;
   address?: string;

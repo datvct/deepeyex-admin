@@ -32,8 +32,8 @@ export const createPatientSchema = z.object({
     .refine((val) => !isNaN(Date.parse(val)), { message: "Ngày sinh không hợp lệ" })
     .refine(validateDob, { message: "Tuổi phải trong khoảng 0–200" }),
 
-  gender: z.enum([Gender.Male, Gender.Female], {
-    errorMap: () => ({ message: "Giới tính phải là male, female hoặc other" }),
+  gender: z.enum(["male", "female"], {
+    message: "Giới tính phải là male hoặc female",
   }),
 
   address: z.string().optional(),
@@ -48,10 +48,16 @@ export const createPatientSchema = z.object({
   avatar: z
     .any()
     .optional()
-    .refine(
-      (file) => !file || (file instanceof File && file.size < 5 * 1024 * 1024),
-      "File avatar phải nhỏ hơn 5MB"
-    ),
+    .refine((files) => {
+      if (!files || files.length === 0) return true;
+
+      return files.every((file: any) => {
+        if (file.originFileObj) {
+          return file.originFileObj.size < 5 * 1024 * 1024;
+        }
+        return true;
+      });
+    }, "Mỗi file ảnh phải nhỏ hơn 5MB"),
 });
 
 export type CreatePatientBody = z.infer<typeof createPatientSchema>;
