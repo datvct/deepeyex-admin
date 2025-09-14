@@ -5,7 +5,6 @@ import { HistoryRouter } from "./history-router";
 import MainLayout from "../layouts/MainLayout";
 import { Paths } from "../constants/path-routers";
 import LoginPage from "../pages/auth";
-import DashboardPage from "../pages/dashboard";
 import UserPage from "../pages/users";
 import DoctorsPage from "../pages/doctors";
 import HospitalsPage from "../pages/hospitals";
@@ -14,6 +13,7 @@ import DrugsPage from "../pages/drugs";
 import OrdersPage from "../pages/orders";
 import TimeSlotsPage from "../pages/time-slots";
 import AppointmentsPage from "../pages/apppointments";
+import DashboardPage from "../pages/dashboard";
 
 export const Navigator = () => {
   return (
