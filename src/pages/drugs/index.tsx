@@ -12,8 +12,11 @@ import { useDeleteDrugMutation } from "../../modules/drugs/hooks/mutations/use-d
 import { useCreateDrugMutation } from "../../modules/drugs/hooks/mutations/use-create-drug.mutation";
 import { useUpdateDrugMutation } from "../../modules/drugs/hooks/mutations/use-update-drug.mutation";
 import { createDrugSchema } from "../../modules/drugs/schemas/createDrug.schema";
+import { useTranslation } from "react-i18next";
 
 export default function DrugsPage() {
+  const { t } = useTranslation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -25,33 +28,33 @@ export default function DrugsPage() {
   // ---- Mutation: Delete
   const deleteDrug = useDeleteDrugMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Xóa thuốc thành công");
+      toast.success(t("drug.deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Drug] });
     },
     onError: (error) => {
-      toast.error(error.message || "Xóa thuốc thất bại");
+      toast.error(t("drug.deleteError"));
     },
   });
 
   // ---- Mutation: Create
   const createDrug = useCreateDrugMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Thêm thuốc thành công");
+      toast.success(t("drug.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Drug] });
     },
     onError: (error) => {
-      toast.error(error.message || "Thêm thuốc thất bại");
+      toast.error(t("drug.createError"));
     },
   });
 
   // ---- Mutation: Update
   const updateDrug = useUpdateDrugMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật thuốc thành công");
+      toast.success(t("drug.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Drug] });
     },
     onError: (error) => {
-      toast.error(error.message || "Cập nhật thuốc thất bại");
+      toast.error(t("drug.updateError"));
     },
   });
 
@@ -134,49 +137,22 @@ export default function DrugsPage() {
 
   // ---- Cấu hình cột bảng ----
   const drugColumns = [
+    { title: t("drug.columns.id"), dataIndex: "drug_id", key: "drug_id", width: "10%" },
     {
-      title: "ID",
-      dataIndex: "drug_id",
-      key: "drug_id",
-      width: "10%",
-    },
-    {
-      title: "Hình ảnh",
+      title: t("drug.columns.image"),
       dataIndex: "image",
       key: "image",
       width: "10%",
       render: (image: string) =>
         image ? (
-          <img
-            src={image}
-            alt="drug"
-            style={{ width: 50, height: 50, objectFit: "cover", borderRadius: 8 }}
-          />
+          <img src={image} alt="drug" style={{ width: 50, height: 50, borderRadius: 8 }} />
         ) : (
           "-"
         ),
     },
+    { title: t("drug.columns.name"), dataIndex: "name", key: "name", width: "15%" },
     {
-      title: "Tên",
-      dataIndex: "name",
-      key: "name",
-      width: "15%",
-      render: (text: string) => (
-        <div
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {text}
-        </div>
-      ),
-    },
-    {
-      title: "Mô tả",
+      title: t("drug.columns.description"),
       dataIndex: "description",
       key: "description",
       width: "15%",
@@ -200,44 +176,40 @@ export default function DrugsPage() {
         ),
     },
     {
-      title: "Giá",
+      title: t("drug.columns.price"),
       dataIndex: "price",
       key: "price",
       width: "10%",
       render: (price: number) => (price !== undefined ? `${price.toLocaleString("vi-VN")} đ` : "-"),
     },
     {
-      title: "% giảm",
+      title: t("drug.columns.discount"),
       dataIndex: "discount_percent",
       key: "discount_percent",
       width: "8%",
       render: (discount: number) => (discount !== undefined ? `${discount}%` : "-"),
     },
     {
-      title: "SL tồn kho",
+      title: t("drug.columns.stock"),
       dataIndex: "stock_quantity",
       key: "stock_quantity",
       width: "8%",
     },
     {
-      title: "SL đã bán",
+      title: t("drug.columns.sold"),
       dataIndex: "sold_quantity",
       key: "sold_quantity",
       width: "8%",
     },
-    {
-      title: "Thời gian",
-      dataIndex: "created_at",
-      key: "time",
-      width: "15%",
-    },
+    { title: t("drug.columns.time"), dataIndex: "created_at", key: "time", width: "15%" },
   ];
+
   return (
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách thuốc. Vui lòng thử lại sau."
+          message={t("drug.error.loadTitle")}
+          description={t("drug.error.loadDescription")}
           type="error"
           showIcon
           className="mb-4"
@@ -245,12 +217,12 @@ export default function DrugsPage() {
       )}
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Quản lý thuốc"
-          subtitle="Danh sách thuốc"
+          title={t("drug.title")}
+          subtitle={t("drug.subtitle")}
           rowKey="drug_id"
           columns={drugColumns}
           dataSource={drugs}
-          addButtonText="Thêm thuốc"
+          addButtonText={t("drug.add")}
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -258,7 +230,7 @@ export default function DrugsPage() {
       </Spin>
 
       <Modal
-        title={editingDrug ? "Sửa thuốc" : "Thêm thuốc"}
+        title={editingDrug ? t("drug.edit") : t("drug.add")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -271,60 +243,58 @@ export default function DrugsPage() {
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="Tên thuốc"
-            rules={[{ required: true, message: "Vui lòng nhập tên thuốc" }]}
+            label={t("drug.form.name")}
+            rules={[{ required: true, message: t("drug.form.validation.name") }]}
           >
-            <Input placeholder="Nhập tên thuốc" />
+            <Input placeholder={t("drug.form.placeholder.name")} />
           </Form.Item>
 
-          <Form.Item name="description" label="Mô tả">
-            <Input.TextArea rows={3} placeholder="Nhập mô tả thuốc" />
+          <Form.Item name="description" label={t("drug.form.description")}>
+            <Input.TextArea rows={3} placeholder={t("drug.form.placeholder.description")} />
           </Form.Item>
 
           <Form.Item
             name="price"
-            label="Giá"
-            rules={[{ required: true, message: "Vui lòng nhập giá thuốc" }]}
+            label={t("drug.form.price")}
+            rules={[{ required: true, message: t("drug.form.validation.price") }]}
           >
             <InputNumber
               style={{ width: "100%" }}
               min={0}
-              placeholder="Nhập giá thuốc"
-              formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+              placeholder={t("drug.form.placeholder.price")}
             />
           </Form.Item>
 
           <Form.Item
             name="discount_percent"
-            label="% Giảm giá"
-            rules={[{ required: true, message: "Vui lòng nhập phần trăm giảm giá" }]}
+            label={t("drug.form.discount")}
+            rules={[{ required: true, message: t("drug.form.validation.discount") }]}
           >
             <InputNumber
               style={{ width: "100%" }}
               min={0}
               max={100}
-              placeholder="Nhập phần trăm giảm giá"
+              placeholder={t("drug.form.placeholder.discount")}
             />
           </Form.Item>
 
           <Form.Item
             name="stock_quantity"
-            label="Số lượng tồn kho"
-            rules={[{ required: true, message: "Vui lòng nhập số lượng tồn kho" }]}
+            label={t("drug.form.stock")}
+            rules={[{ required: true, message: t("drug.form.validation.stock") }]}
           >
-            <InputNumber style={{ width: "100%" }} min={0} placeholder="Nhập số lượng tồn kho" />
+            <InputNumber
+              style={{ width: "100%" }}
+              min={0}
+              placeholder={t("drug.form.placeholder.stock")}
+            />
           </Form.Item>
 
-          <Form.Item
-            name="image"
-            label="Ảnh thuốc"
-            valuePropName="fileList"
-            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-          >
+          <Form.Item name="image" label={t("drug.form.image")}>
             <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Tải Ảnh</div>
+                <div style={{ marginTop: 8 }}>{t("drug.upload")}</div>
               </div>
             </Upload>
           </Form.Item>

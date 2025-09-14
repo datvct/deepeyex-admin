@@ -2,6 +2,7 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Alert, Button, Form, Input, Modal, Select, Space, Spin, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CrudTable from "../../shares/components/CrudTable.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 import { User } from "../../modules/users/types/user.ts";
@@ -9,13 +10,15 @@ import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-use
 import { useDeleteUserMutation } from "../../modules/users/hooks/mutations/use-delete-user.mutation.ts";
 import { toast } from "react-toastify";
 import { QueryKeyEnum } from "../../shares/enums/queryKey.ts";
-import { Role, RoleLabel } from "../../modules/users/enums/role.ts";
+import { Role } from "../../modules/users/enums/role.ts";
 import { useCreateUserMutation } from "../../modules/users/hooks/mutations/use-create-user.mutation.ts";
 import { useUpdateUserMutation } from "../../modules/users/hooks/mutations/use-update-user.mutation.ts";
 import z from "zod";
+
 const { Option } = Select;
 
 export default function UserPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [form] = Form.useForm();
 
@@ -30,36 +33,37 @@ export default function UserPage() {
     [Role.Doctor]: "blue",
     [Role.Admin]: "red",
   };
+
   // ---- Mutation: Delete
   const deleteUser = useDeleteUserMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Xóa tài khoản thành công");
-
+      toast.success(t("user.messages.delete_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
     },
     onError: (error) => {
-      toast.error(error.message || "Xóa tài khoản thất bại");
+      toast.error(t("user.messages.delete_error"));
     },
   });
 
   // ---- Mutation: Create ----
   const createUser = useCreateUserMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Thêm tài khoản thành công");
+      toast.success(t("user.messages.create_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
     },
     onError: (error) => {
-      toast.error(error.message || "Thêm tài khoản thất bại");
+      toast.error(t("user.messages.create_error"));
     },
   });
+
   // ---- Mutation: Update ----
   const updateUser = useUpdateUserMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật tài khoản thành công");
+      toast.success(t("user.messages.update_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.User] });
     },
     onError: (error) => {
-      toast.error(error.message || "Cập nhật tài khoản thất bại");
+      toast.error(t("user.messages.update_error"));
     },
   });
 
@@ -92,10 +96,7 @@ export default function UserPage() {
     try {
       const values = await form.validateFields();
       if (editingUser) {
-        updateUser.mutate({
-          id: editingUser.id,
-          body: values,
-        });
+        updateUser.mutate({ id: editingUser.id, body: values });
       } else {
         createUser.mutate(values);
       }
@@ -117,21 +118,28 @@ export default function UserPage() {
     deleteUser.mutate(user.id);
   };
 
-  // cột bảng
+  // ---- Columns ----
   const columns: ColumnsType<User> = [
-    { title: "ID", dataIndex: "id", key: "id", width: "10%" },
-    { title: "Tài khoản", dataIndex: "username", key: "username", width: "20%" },
-    { title: "Email", dataIndex: "email", key: "email", width: "15%" },
-    { title: "FireBase UID", dataIndex: "firebase_uid", key: "firebase_uid", width: "10%" },
+    { title: t("user.columns.id"), dataIndex: "id", key: "id", width: "10%" },
+    { title: t("user.columns.username"), dataIndex: "username", key: "username", width: "20%" },
+    { title: t("user.columns.email"), dataIndex: "email", key: "email", width: "15%" },
     {
-      title: "Vai trò",
+      title: t("user.columns.firebase_uid"),
+      dataIndex: "firebase_uid",
+      key: "firebase_uid",
+      width: "10%",
+    },
+    {
+      title: t("user.columns.role"),
       dataIndex: "role",
       key: "role",
       width: "25%",
-      render: (role: Role) => <Tag color={roleColors[role]}>{RoleLabel[role]}</Tag>,
+      render: (role: Role) => (
+        <Tag color={roleColors[role]}>{t(`user.roles.${role.toLowerCase()}`)}</Tag>
+      ),
     },
     {
-      title: "Thời gian",
+      title: t("user.columns.time"),
       dataIndex: "created_at",
       key: "time",
       width: "20%",
@@ -142,21 +150,22 @@ export default function UserPage() {
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách tài khoản. Vui lòng thử lại sau."
+          message="Error"
+          description={t("user.messages.load_error")}
           type="error"
           showIcon
           className="mb-4"
         />
       )}
+
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Quản lý người dùng"
-          subtitle="Danh sách người dùng"
+          title={t("user.title")}
+          subtitle={t("user.subtitle")}
           rowKey="id"
           columns={columns}
           dataSource={users}
-          addButtonText="Thêm người dùng"
+          addButtonText={t("user.addButtonText")}
           onAdd={handleAddUser}
           onEdit={handleEditUser}
           onDelete={handleDelete}
@@ -164,7 +173,7 @@ export default function UserPage() {
       </Spin>
 
       <Modal
-        title={editingUser ? "Sửa người dùng" : "Thêm người dùng"}
+        title={editingUser ? t("user.modal.editTitle") : t("user.modal.addTitle")}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
@@ -173,24 +182,24 @@ export default function UserPage() {
         <Form form={form} layout="vertical">
           <Form.Item
             name="username"
-            label="Tài khoản"
+            label={t("user.form.username")}
             rules={[
-              { required: true, message: "Tài khoản không được để trống" },
-              { min: 3, message: "Tài khoản phải có ít nhất 3 ký tự" },
+              { required: true, message: t("user.form.username_required") },
+              { min: 3, message: t("user.form.username_min") },
             ]}
           >
-            <Input placeholder="Nhập tài khoản người dùng" />
+            <Input placeholder={t("user.form.username_placeholder")} />
           </Form.Item>
 
           <Form.Item
             name="role"
-            label="Vai trò"
-            rules={[{ required: true, message: "Vui lòng chọn vai trò" }]}
+            label={t("user.form.role")}
+            rules={[{ required: true, message: t("user.form.role_required") }]}
           >
-            <Select placeholder="Chọn vai trò">
+            <Select placeholder={t("user.form.role_placeholder")}>
               {Object.values(Role).map((role) => (
                 <Option key={role} value={role}>
-                  {RoleLabel[role]}
+                  {t(`user.roles.${role.toLowerCase()}`)}
                 </Option>
               ))}
             </Select>
@@ -198,60 +207,60 @@ export default function UserPage() {
 
           <Form.Item
             name="email"
-            label="Email"
+            label={t("user.form.email")}
             rules={[
-              { required: true, message: "Email không được để trống" },
-              { type: "email", message: "Email không hợp lệ" },
+              { required: true, message: t("user.form.email_required") },
+              { type: "email", message: t("user.form.email_invalid") },
             ]}
           >
-            <Input placeholder="Nhập email người dùng" />
+            <Input placeholder={t("user.form.email_placeholder")} />
           </Form.Item>
 
           <Form.Item
             name="firebase_uid"
-            label="Firebase UID"
+            label={t("user.form.firebase_uid")}
             rules={[
-              { required: true, message: "Firebase UID không được để trống" },
-              { min: 6, message: "Firebase UID phải có ít nhất 6 ký tự" },
+              { required: true, message: t("user.form.firebase_uid_required") },
+              { min: 6, message: t("user.form.firebase_uid_min") },
             ]}
           >
-            <Input placeholder="Nhập Firebase UID người dùng" />
+            <Input placeholder={t("user.form.firebase_uid_placeholder")} />
           </Form.Item>
 
           <Form.Item
             name="password"
-            label="Mật khẩu"
+            label={t("user.form.password")}
             rules={[
-              { required: true, message: "Mật khẩu không được để trống" },
-              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự" },
+              { required: true, message: t("user.form.password_required") },
+              { min: 6, message: t("user.form.password_min") },
               {
                 pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
-                message: "Mật khẩu phải có ít nhất 1 chữ cái và 1 số",
+                message: t("user.form.password_pattern"),
               },
             ]}
             hasFeedback
           >
-            <Input.Password placeholder="Nhập mật khẩu" />
+            <Input.Password placeholder={t("user.form.password_placeholder")} />
           </Form.Item>
 
           <Form.Item
             name="confirmPassword"
-            label="Nhập lại mật khẩu"
+            label={t("user.form.confirmPassword")}
             dependencies={["password"]}
             hasFeedback
             rules={[
-              { required: true, message: "Vui lòng nhập lại mật khẩu" },
+              { required: true, message: t("user.form.confirmPassword_required") },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error("Mật khẩu nhập lại không khớp!"));
+                  return Promise.reject(new Error(t("user.form.confirmPassword_mismatch")));
                 },
               }),
             ]}
           >
-            <Input.Password placeholder="Nhập lại mật khẩu" />
+            <Input.Password placeholder={t("user.form.confirmPassword_placeholder")} />
           </Form.Item>
         </Form>
       </Modal>

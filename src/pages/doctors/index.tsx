@@ -17,8 +17,11 @@ import { useUpdateDoctorMutation } from "../../modules/doctors/hooks/mutations/u
 import { createDoctorSchema } from "../../modules/doctors/schemas/createDoctor.schema";
 import { userData } from "../../shares/constants/mockApiUser";
 import z from "zod";
+import { useTranslation } from "react-i18next";
 
 export default function DoctorsPage() {
+  const { t } = useTranslation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -37,35 +40,29 @@ export default function DoctorsPage() {
   //---- Mutation: Delete
   const deleteDoctor = useDeleteDoctorMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Xóa bác sĩ thành công");
+      toast.success(t("doctor.messages.deleteSuccess"));
 
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Xóa bác sĩ thất bại");
-    },
+    onError: () => toast.error(t("doctor.messages.deleteError")),
   });
 
   //--- Mutation: Create
   const createDoctor = useCreateDoctorMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Thêm bác sĩ thành công");
+      toast.success(t("doctor.messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Thêm bác sĩ thất bại");
-    },
+    onError: () => toast.error(t("doctor.messages.createError")),
   });
 
   // --- Mutation: Update
   const updateDoctor = useUpdateDoctorMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật bác sĩ thành công");
+      toast.success(t("doctor.messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Doctor] });
     },
-    onError: (error) => {
-      toast.error(error.message || "Cập nhật bác sĩ thất bại");
-    },
+    onError: () => toast.error(t("doctor.messages.updateError")),
   });
 
   useEffect(() => {
@@ -143,69 +140,45 @@ export default function DoctorsPage() {
   const columns: ColumnsType<Doctor> = [
     { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: "8%" },
     {
-      title: "Hình ảnh",
+      title: t("doctor.form.avatar"),
       dataIndex: "image",
       key: "image",
       width: "5%",
       render: (image: string) =>
         image ? (
-          <img src={image} alt="hospital" style={{ width: 50, height: 50, objectFit: "cover" }} />
+          <img src={image} alt="doctor" style={{ width: 50, height: 50, objectFit: "cover" }} />
         ) : (
           "-"
         ),
     },
-    { title: "Tên", dataIndex: "full_name", key: "full_name", width: "10%" },
+    { title: t("doctor.form.name"), dataIndex: "full_name", key: "full_name", width: "10%" },
     {
-      title: "Chuyên khoa",
+      title: t("doctor.form.specialty"),
       dataIndex: "specialty",
       key: "specialty",
       width: "8%",
-      render: (specialty: Specialty) => {
-        let color = "";
-
-        switch (specialty) {
-          case Specialty.Ophthalmology:
-            color = "blue";
-            break;
-          case Specialty.InternalMedicine:
-            color = "green";
-            break;
-          case Specialty.Neurology:
-            color = "purple";
-            break;
-          case Specialty.Endocrinology:
-            color = "orange";
-            break;
-          case Specialty.Pediatrics:
-            color = "pink";
-            break;
-          default:
-            color = "default";
-        }
-
-        return <Tag color={color}>{SpecialtyLabel[specialty]}</Tag>;
-      },
+      render: (specialty: Specialty) => <Tag>{SpecialtyLabel[specialty]}</Tag>,
     },
     {
-      title: "Bệnh viện",
+      title: t("doctor.form.hospital"),
       dataIndex: "hospital_id",
       key: "hospital_id",
       width: "15%",
       render: (hospital_id: string) => {
         const hospital = hospitalData?.data?.find((h) => h.hospital_id === hospital_id);
-        return hospital ? hospital.name : "Không xác định";
+        return hospital ? hospital.name : t("doctor.messages.loadErrorTitle");
       },
     },
-    { title: "Email", dataIndex: "email", key: "email", width: "10%" },
-    { title: "Số điện thoại", dataIndex: "phone", key: "phone", width: "10%" },
+    { title: t("doctor.form.email"), dataIndex: "email", key: "email", width: "10%" },
+    { title: t("doctor.form.phone"), dataIndex: "phone", key: "phone", width: "10%" },
   ];
 
   return (
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách bác sĩ. Vui lòng thử lại sau."
+          message={t("doctor.messages.loadErrorTitle")}
+          description={t("doctor.messages.loadErrorDescription")}
           type="error"
           showIcon
           className="mb-4"
@@ -213,12 +186,12 @@ export default function DoctorsPage() {
       )}
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Quản lý Bác sĩ"
-          subtitle="Danh sách Bác sĩ"
+          title={t("doctor.title")}
+          subtitle={t("doctor.subtitle")}
           rowKey="doctor_id"
           columns={columns}
           dataSource={doctors}
-          addButtonText="Thêm Bác sĩ"
+          addButtonText={t("doctor.addButton")}
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -226,7 +199,7 @@ export default function DoctorsPage() {
       </Spin>
 
       <Modal
-        title={editingDoctor ? "Sửa Bác sĩ" : "Thêm Bác sĩ"}
+        title={editingDoctor ? t("doctor.editTitle") : t("doctor.addButton")}
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={handleSubmit}
@@ -236,25 +209,22 @@ export default function DoctorsPage() {
         <Form form={form} layout="vertical">
           <Form.Item
             name="full_name"
-            label="Tên bác sĩ"
+            label={t("doctor.form.name")}
             rules={[
-              { required: true, message: "Tên không được để trống" },
-              {
-                pattern: /^[\p{L}\s.'-]+$/u,
-                message: "Họ và tên không được chứa ký tự đặc biệt",
-              },
+              { required: true, message: t("doctor.validation.nameRequired") },
+              { pattern: /^[\p{L}\s.'-]+$/u, message: t("doctor.validation.nameInvalid") },
             ]}
           >
-            <Input placeholder="Nhập tên bác sĩ" />
+            <Input placeholder={t("doctor.form.placeholder.name")} />
           </Form.Item>
 
           {/* Chuyên khoa */}
           <Form.Item
             name="specialty"
-            label="Chuyên khoa"
-            rules={[{ required: true, message: "Chuyên khoa không được để trống" }]}
+            label={t("doctor.form.specialty")}
+            rules={[{ required: true, message: t("doctor.validation.specialtyRequired") }]}
           >
-            <Select placeholder="Chọn chuyên khoa">
+            <Select placeholder={t("doctor.form.placeholder.specialty")}>
               {Object.values(Specialty).map((specialty) => (
                 <Select.Option key={specialty} value={specialty}>
                   {SpecialtyLabel[specialty]}
@@ -265,10 +235,14 @@ export default function DoctorsPage() {
 
           <Form.Item
             name="hospital_id"
-            label="Bệnh viện"
-            rules={[{ required: true, message: "Vui lòng chọn bệnh viện" }]}
+            label={t("doctor.form.hospital")}
+            rules={[{ required: true, message: t("doctor.validation.hospitalRequired") }]}
           >
-            <Select placeholder="Chọn bệnh viện" loading={isLoadingHospitals} allowClear>
+            <Select
+              placeholder={t("doctor.form.placeholder.hospital")}
+              loading={isLoadingHospitals}
+              allowClear
+            >
               {hospitalData?.data?.map((hospital) => (
                 <Select.Option key={hospital.hospital_id} value={hospital.hospital_id}>
                   {hospital.name}
@@ -277,33 +251,31 @@ export default function DoctorsPage() {
             </Select>
           </Form.Item>
 
+          {/* Email */}
           <Form.Item
             name="email"
-            label="Email"
-            rules={[{ type: "email", message: "Email không hợp lệ" }]}
+            label={t("doctor.form.email")}
+            rules={[{ type: "email", message: t("doctor.validation.emailInvalid") }]}
           >
-            <Input placeholder="Nhập email" />
+            <Input placeholder={t("doctor.form.placeholder.email")} />
           </Form.Item>
 
+          {/* Số điện thoại */}
           <Form.Item
             name="phone"
-            label="SĐT"
-            rules={[
-              {
-                pattern: /^[0-9]{8,15}$/,
-                message: "Số điện thoại phải là số và có từ 8 đến 15 chữ số",
-              },
-            ]}
+            label={t("doctor.form.phone")}
+            rules={[{ pattern: /^[0-9]{8,15}$/, message: t("doctor.validation.phoneInvalid") }]}
           >
-            <Input placeholder="Nhập số điện thoại" />
+            <Input placeholder={t("doctor.form.placeholder.phone")} />
           </Form.Item>
 
+          {/* User */}
           <Form.Item
             name="user_id"
-            label="Người dùng"
-            rules={[{ required: true, message: "Vui lòng chọn user" }]}
+            label={t("doctor.form.user")}
+            rules={[{ required: true, message: t("doctor.validation.userRequired") }]}
           >
-            <Select placeholder="Chọn user" allowClear>
+            <Select placeholder={t("doctor.form.placeholder.user")} allowClear>
               {userData?.data
                 ?.filter((user) => user.role === "doctor")
                 .map((user) => (
@@ -314,16 +286,17 @@ export default function DoctorsPage() {
             </Select>
           </Form.Item>
 
+          {/* Avatar */}
           <Form.Item
             name="avatar"
-            label="Ảnh bệnh viện"
+            label={t("doctor.form.avatar")}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
           >
             <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Tải Ảnh</div>
+                <div style={{ marginTop: 8 }}>{t("doctor.form.placeholder.avatar")}</div>
               </div>
             </Upload>
           </Form.Item>

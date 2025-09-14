@@ -1,6 +1,7 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 interface FilterProps {
   placeholder?: string;
@@ -10,31 +11,24 @@ interface FilterProps {
 }
 
 export default function Filter({
-  placeholder = "Tìm kiếm...",
+  placeholder,
   onFilter,
   debounceMs = 300,
   width = 500,
 }: FilterProps) {
+  const { t } = useTranslation(); // i18n hook
   const [value, setValue] = useState("");
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Gọi khi gõ (debounce)
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const v = e.target.value;
-    setValue(v);
-
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => {
-      onFilter(v);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      onFilter(value.trim());
     }, debounceMs);
-  };
+
+    return () => clearTimeout(handler);
+  }, [value, debounceMs, onFilter]);
 
   const handleSearch = (v?: string) => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-      timer.current = null;
-    }
-    onFilter(typeof v === "string" ? v : value);
+    onFilter((v ?? value).trim());
   };
 
   return (
@@ -42,13 +36,13 @@ export default function Filter({
       <div style={{ width }}>
         <Input.Search
           value={value}
-          onChange={handleChange}
+          onChange={(e) => setValue(e.target.value)}
           onSearch={handleSearch}
           allowClear
-          placeholder={placeholder}
+          placeholder={placeholder || t("search.placeholder")}
           enterButton={
             <Button type="primary" icon={<SearchOutlined />}>
-              Tìm
+              {t("search.button")}
             </Button>
           }
           className="rounded-lg border border-gray-200 focus:border-blue-500 focus:shadow-md transition-all duration-300"

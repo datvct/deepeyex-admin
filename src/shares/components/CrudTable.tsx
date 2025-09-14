@@ -1,6 +1,7 @@
-import { Table, Button, Space, Typography, Tooltip, Popconfirm } from "antd";
+import { Table, Button, Space, Typography, Popconfirm } from "antd";
 import { PlusCircleFilled, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Filter from "./Filter";
 import { formatDateTime } from "../utils/helper";
 
@@ -24,13 +25,14 @@ export default function CrudTable<T>({
   dataSource,
   columns,
   rowKey,
-  addButtonText = "Thêm mới",
+  addButtonText,
   onAdd,
   onEdit,
   onDelete,
 }: CrudTableProps<T>) {
+  const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState("");
-  // Thêm cột action mặc định
+
   const enhancedColumns = columns.map((column) => {
     if (column.key === "time") {
       return {
@@ -38,10 +40,10 @@ export default function CrudTable<T>({
         render: (text: any, record: any) => (
           <div>
             <p className="text-sm">
-              <strong>Ngày tạo:</strong> {formatDateTime(record.created_at)}
+              <strong>{t("table.createdAt")}:</strong> {formatDateTime(record.created_at)}
             </p>
             <p className="text-sm">
-              <strong>Cập nhật:</strong> {formatDateTime(record.updated_at)}
+              <strong>{t("table.updatedAt")}:</strong> {formatDateTime(record.updated_at)}
             </p>
           </div>
         ),
@@ -50,27 +52,28 @@ export default function CrudTable<T>({
     return column;
   });
 
+  // Cột Hành động
   enhancedColumns.push({
-    title: "Hành động",
+    title: t("table.actions"),
     key: "actions",
     width: "5%",
     render: (_: any, record: T) => (
       <Space>
         {onEdit && (
           <Button type="link" icon={<EditOutlined />} onClick={() => onEdit(record)}>
-            Sửa
+            {t("table.edit")}
           </Button>
         )}
         {onDelete && (
           <Popconfirm
-            title="Xác nhận xóa"
-            description="Bạn có chắc chắn muốn xóa?"
+            title={t("table.deleteConfirmTitle")}
+            description={t("table.deleteConfirmDescription")}
             onConfirm={() => onDelete(record)}
-            okText="Xóa"
-            cancelText="Hủy"
+            okText={t("table.deleteOk")}
+            cancelText={t("table.deleteCancel")}
           >
             <Button type="primary" danger size="small" icon={<DeleteOutlined />}>
-              Xóa
+              {t("table.delete")}
             </Button>
           </Popconfirm>
         )}
@@ -85,14 +88,16 @@ export default function CrudTable<T>({
           <Title level={3}>{title}</Title>
           {subtitle && <Text type="secondary">{subtitle}</Text>}
         </div>
+
         {onAdd && (
           <Button type="primary" onClick={onAdd}>
             <PlusCircleFilled style={{ marginRight: 8 }} />
-            {addButtonText}
+            {addButtonText || t("table.addButton")}
           </Button>
         )}
       </div>
-      <Filter placeholder="Tìm kiếm..." onFilter={setFilterValue} />
+
+      <Filter placeholder={t("table.searchPlaceholder")} onFilter={setFilterValue} />
 
       <Table
         rowKey={rowKey}
@@ -100,7 +105,6 @@ export default function CrudTable<T>({
         dataSource={dataSource}
         pagination={{ pageSize: 10 }}
         bordered
-        // scroll={{ x: "max-content" }}
       />
     </div>
   );

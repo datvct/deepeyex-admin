@@ -8,8 +8,11 @@ import { Order } from "../../modules/orders/types/order";
 import { useListOrdersQuery } from "../../modules/orders/hooks/queries/use-get-orders.query";
 import { useUpdateOrderStatusMutation } from "../../modules/orders/hooks/mutations/use-update-order-status.mutation";
 import { OrderStatus, OrderStatusLabel } from "../../modules/orders/enums/order-status";
+import { useTranslation } from "react-i18next";
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -21,11 +24,11 @@ export default function OrdersPage() {
   // ---- Mutation: Update status ----
   const updateStatusMutation = useUpdateOrderStatusMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật trạng thái thành công");
+      toast.success(t("order.messages.update_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Order] });
     },
     onError: (error) => {
-      toast.error(error.message || "Cập nhật trạng thái thất bại");
+      toast.error(t("order.messages.update_error"));
     },
   });
 
@@ -76,35 +79,36 @@ export default function OrdersPage() {
   // ---- Cấu hình cột bảng ----
   const orderColumns = [
     {
-      title: "STT",
+      title: t("order.columns.index"),
       dataIndex: "index",
       key: "index",
       width: 60,
       render: (_: any, __: any, index: number) => index + 1,
     },
     {
-      title: "Thông tin khách hàng",
+      title: t("order.columns.patient"),
       dataIndex: "patient",
       key: "patient",
       render: (patient: Order["patient"], record: Order) => (
         <div>
           <p>
-            <strong>Tên:</strong> {patient.full_name}
+            <strong>{t("patient.columns.full_name")}:</strong> {patient.full_name}
           </p>
           <p>
-            <strong>SĐT:</strong> {patient.phone}
+            <strong>{t("patient.columns.phone")}:</strong> {patient.phone}
           </p>
           <p>
-            <strong>Ngày đặt:</strong> {new Date(record.created_at).toLocaleString()}
+            <strong>{t("patient.columns.dob")}:</strong>{" "}
+            {new Date(record.created_at).toLocaleString()}
           </p>
           <p>
-            <strong>Địa chỉ:</strong> {patient.address}
+            <strong>{t("patient.columns.address")}:</strong> {patient.address}
           </p>
         </div>
       ),
     },
     {
-      title: "Thông tin thuốc",
+      title: t("order.columns.order_items"),
       dataIndex: "order_items",
       key: "order_items",
       width: "40%",
@@ -115,9 +119,15 @@ export default function OrdersPage() {
         >
           <thead>
             <tr className="bg-[#0000000D]">
-              <th className="p-2 border border-[#dee2e6] w-[100px] text-left">Tên thuốc</th>
-              <th className="p-2 border border-[#dee2e6] w-[40px] text-center">Giá</th>
-              <th className="p-2 border border-[#dee2e6] w-[40px] text-center">Số lượng</th>
+              <th className="p-2 border border-[#dee2e6] w-[100px] text-left">
+                {t("drug.columns.name")}
+              </th>
+              <th className="p-2 border border-[#dee2e6] w-[40px] text-center">
+                {t("drug.columns.price")}
+              </th>
+              <th className="p-2 border border-[#dee2e6] w-[40px] text-center">
+                {t("drug.columns.stock_quantity")}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -138,7 +148,7 @@ export default function OrdersPage() {
             ) : (
               <tr>
                 <td className="p-2 border border-[#dee2e6] text-center" colSpan={3}>
-                  Không có dịch vụ nào
+                  {t("order.messages.load_error")}
                 </td>
               </tr>
             )}
@@ -147,11 +157,11 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: "Trạng thái",
+      title: t("order.columns.status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => (
-        <Tag color={statusColors[status] || "default"}>{OrderStatusLabel[status]}</Tag>
+        <Tag color={statusColors[status] || "default"}>{t(`order.status.${status}`)}</Tag>
       ),
     },
   ];
@@ -160,8 +170,8 @@ export default function OrdersPage() {
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách đơn đặt thuốc. Vui lòng thử lại sau."
+          message={t("order.messages.load_error")}
+          description={t("order.messages.load_error")}
           type="error"
           showIcon
           className="mb-4"
@@ -170,8 +180,8 @@ export default function OrdersPage() {
 
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Đơn đặt thuốc"
-          subtitle="Danh sách đơn đặt thuốc"
+          title={t("order.title")}
+          subtitle={t("order.subtitle")}
           rowKey="order_id"
           columns={orderColumns}
           dataSource={orders}
@@ -181,7 +191,7 @@ export default function OrdersPage() {
       </Spin>
 
       <Modal
-        title="Cập nhật trạng thái đơn hàng"
+        title={t("order.editModalTitle")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -193,21 +203,21 @@ export default function OrdersPage() {
         destroyOnClose
       >
         <Form form={form} layout="vertical">
-          <Form.Item label="Mã đơn hàng" name="order_id">
+          <Form.Item label={t("order.form.order_id")} name="order_id">
             <Input disabled />
           </Form.Item>
-          <Form.Item label="Tên khách hàng" name="full_name">
+          <Form.Item label={t("order.form.full_name")} name="full_name">
             <Input disabled />
           </Form.Item>
           <Form.Item
-            label="Trạng thái"
+            label={t("order.form.status")}
             name="status"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            rules={[{ required: true, message: t("order.form.placeholder.status") }]}
           >
-            <Select placeholder="Chọn trạng thái">
+            <Select placeholder={t("order.form.placeholder.status")}>
               {Object.entries(OrderStatusLabel).map(([key, label]) => (
                 <Select.Option key={key} value={key}>
-                  {label}
+                  {t(`order.status.${key}`)}
                 </Select.Option>
               ))}
             </Select>

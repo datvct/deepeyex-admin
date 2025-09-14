@@ -1,5 +1,6 @@
 import { Alert, Form, Input, Modal, Spin, Tag, Tooltip, Select } from "antd";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import CrudTable from "../../shares/components/CrudTable";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,13 +8,11 @@ import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { Appointment } from "../../modules/appointments/types/appointment";
 import { useListAppointmentsQuery } from "../../modules/appointments/hooks/queries/use-get-appointments.query";
 import { useUpdateAppointmentStatusMutation } from "../../modules/appointments/hooks/mutations/use-update-appointment-status.mutation";
-import {
-  AppointmentStatus,
-  AppointmentStatusLabel,
-} from "../../modules/appointments/enums/appointment-status";
+import { AppointmentStatus } from "../../modules/appointments/enums/appointment-status";
 import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
 
 export default function AppointmentsPage() {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -38,11 +37,11 @@ export default function AppointmentsPage() {
   // ---- Mutation: Update status ----
   const updateStatusMutation = useUpdateAppointmentStatusMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật trạng thái thành công");
+      toast.success(data.message || t("appointment.messages.update_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
     },
     onError: (error) => {
-      toast.error(error.message || "Cập nhật trạng thái thất bại");
+      toast.error(error.message || t("appointment.messages.update_error"));
     },
   });
 
@@ -99,14 +98,14 @@ export default function AppointmentsPage() {
   // ---- Cấu hình cột bảng ----
   const appointmentColumns = [
     {
-      title: "STT",
+      title: t("appointment.columns.index"),
       dataIndex: "index",
       key: "index",
       width: 60,
       render: (_: any, __: any, index: number) => index + 1,
     },
     {
-      title: "Bệnh nhân",
+      title: t("appointment.columns.patient"),
       dataIndex: "patient",
       key: "patient",
       render: (patient: Appointment["patient"]) => (
@@ -126,7 +125,7 @@ export default function AppointmentsPage() {
       ),
     },
     {
-      title: "Lịch hẹn",
+      title: t("appointment.columns.timeSlot"),
       dataIndex: "timeSlot",
       key: "timeSlot",
       render: (slot: Appointment["timeSlot"], record: Appointment) => {
@@ -136,13 +135,13 @@ export default function AppointmentsPage() {
         return (
           <div>
             <p>
-              <strong>Bác sĩ:</strong> {doctor?.full_name || "-"}
+              <strong>{t("appointment.doctor")}:</strong> {doctor?.full_name || "-"}
             </p>
             <p>
-              <strong>Bệnh viện:</strong> {hospitalName ?? "-"}
+              <strong>{t("appointment.hospital")}:</strong> {hospitalName ?? "-"}
             </p>
             <p>
-              <strong>Thời gian:</strong>{" "}
+              <strong>{t("appointment.time")}:</strong>{" "}
               {new Date(slot.start_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -154,24 +153,24 @@ export default function AppointmentsPage() {
               })}
             </p>
             <p>
-              <strong>Số lượng:</strong> {slot.capacity}
+              <strong>{t("appointment.quantity")}:</strong> {slot.capacity}
             </p>
           </div>
         );
       },
     },
     {
-      title: "Trạng thái",
+      title: t("appointment.columns.status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => (
         <Tag color={statusColors[status] || "default"}>
-          {AppointmentStatusLabel[status] || status}
+          {t(`appointment.status.${status.toLowerCase()}`)}
         </Tag>
       ),
     },
     {
-      title: "Ghi chú",
+      title: t("appointment.columns.notes"),
       dataIndex: "notes",
       key: "notes",
       render: (notes: string) => <p className="text-sm">{notes || "-"}</p>,
@@ -182,8 +181,8 @@ export default function AppointmentsPage() {
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách lịch hẹn. Vui lòng thử lại sau."
+          message="Error"
+          description={t("appointment.messages.load_error")}
           type="error"
           showIcon
           className="mb-4"
@@ -192,8 +191,8 @@ export default function AppointmentsPage() {
 
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Lịch hẹn khám"
-          subtitle="Danh sách lịch hẹn khám bệnh"
+          title={t("appointment.title")}
+          subtitle={t("appointment.subtitle")}
           rowKey="appointment_id"
           columns={appointmentColumns}
           dataSource={appointments}
@@ -203,7 +202,7 @@ export default function AppointmentsPage() {
       </Spin>
 
       <Modal
-        title="Cập nhật trạng thái lịch hẹn"
+        title={t("appointment.modal.title")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -215,21 +214,21 @@ export default function AppointmentsPage() {
         destroyOnClose
       >
         <Form form={form} layout="vertical">
-          <Form.Item label="Mã lịch hẹn" name="appointment_id">
+          <Form.Item label={t("appointment.form.appointment_id")} name="appointment_id">
             <Input disabled />
           </Form.Item>
-          <Form.Item label="Tên bệnh nhân" name="full_name">
+          <Form.Item label={t("appointment.form.full_name")} name="full_name">
             <Input disabled />
           </Form.Item>
           <Form.Item
-            label="Trạng thái"
+            label={t("appointment.form.status")}
             name="status"
-            rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+            rules={[{ required: true, message: t("appointment.form.status_placeholder") }]}
           >
-            <Select placeholder="Chọn trạng thái">
-              {Object.entries(AppointmentStatusLabel).map(([key, label]) => (
+            <Select placeholder={t("appointment.form.status_placeholder")}>
+              {Object.entries(AppointmentStatus).map(([key, value]) => (
                 <Select.Option key={key} value={key}>
-                  {label}
+                  {t(`appointment.status.${key.toLowerCase()}`)}
                 </Select.Option>
               ))}
             </Select>

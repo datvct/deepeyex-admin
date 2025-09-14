@@ -1,0 +1,428 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Overview of activities and key metrics",
+    "export": "Export",
+    "createReport": "Create Report",
+    "metrics": {
+      "visitors": "Visitors (7 days)",
+      "revenue": "Revenue (month)",
+      "orders": "Orders",
+      "completionRate": "Completion Rate",
+      "comparedToLastWeek": "compared to last week",
+      "comparedToLastMonth": "compared to last month",
+      "stable": "Stable"
+    },
+    "charts": {
+      "traffic": {
+        "title": "Traffic",
+        "subtitle": "Visitors chart by day",
+        "thisWeek": "This week",
+        "avgSession": "Avg. Session",
+        "bounceRate": "Bounce Rate"
+      },
+      "orderStatus": {
+        "title": "Order Status",
+        "subtitle": "Overview by status",
+        "month": "Month",
+        "completed": "Completed",
+        "processing": "Processing",
+        "canceled": "Canceled"
+      },
+      "revenueByService": {
+        "title": "Revenue by Service",
+        "subtitle": "Top services by revenue",
+        "hint": "Hint: click each column to view details."
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "subtitle": "Important events",
+        "viewMore": "View more activity history in admin panel."
+      }
+    },
+    "activities": {
+      "orderCompleted": "Order #{{id}} completed",
+      "doctorAdded": "Doctor {{name}} has been added to the system",
+      "backupCompleted": "System backup completed"
+    },
+    "time": {
+      "twoHoursAgo": "2 hours ago",
+      "yesterday": "Yesterday",
+      "threeDaysAgo": "3 days ago"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "users": "User Management",
+    "hospitals": "Hospital Management",
+    "doctors": "Doctor Management",
+    "patients": "Patient Management",
+    "drugs": "Drug Management",
+    "orders": "Orders",
+    "timeslots": "Timeslot Management",
+    "appointments": "Appointments",
+    "settings": "Settings",
+    "changeLanguage": "Change Language",
+    "logout": "Logout"
+  },
+  "header": {
+    "profile": "Profile",
+    "changePassword": "Change Password",
+    "logout": "Logout",
+    "refresh": "Refresh Page"
+  },
+  "table": {
+    "addButton": "Add New",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "actions": "Actions",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete Confirmation",
+    "deleteConfirmDescription": "Are you sure you want to delete?",
+    "deleteOk": "Delete",
+    "deleteCancel": "Cancel",
+    "searchPlaceholder": "Search..."
+  },
+  "search": {
+    "placeholder": "Search...",
+    "button": "Search"
+  },
+   "hospital": {
+    "title": "Hospital Management",
+    "subtitle": "Hospital List",
+    "addButton": "Add Hospital",
+    "editTitle": "Edit Hospital",
+    "addTitle": "Add Hospital",
+    "form": {
+      "name": "Hospital Name",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "image": "Hospital Image",
+      "placeholder": {
+        "name": "Enter hospital name",
+        "address": "Enter hospital address",
+        "phone": "Enter phone number",
+        "email": "Enter email"
+      }
+    },
+    "messages": {
+      "deleteSuccess": "Hospital deleted successfully",
+      "deleteError": "Failed to delete hospital",
+      "createSuccess": "Hospital added successfully",
+      "createError": "Failed to add hospital",
+      "updateSuccess": "Hospital updated successfully",
+      "updateError": "Failed to update hospital",
+      "loadErrorTitle": "Loading error",
+      "loadErrorDescription": "Unable to load hospitals. Please try again later."
+    }
+  },
+  "doctor": {
+    "title": "Doctor Management",
+    "subtitle": "Doctor List",
+    "addButton": "Add Doctor",
+    "editTitle": "Edit Doctor",
+    "form": {
+      "name": "Doctor Name",
+      "specialty": "Specialty",
+      "hospital": "Hospital",
+      "email": "Email",
+      "phone": "Phone",
+      "user": "User",
+      "avatar": "Doctor Image",
+      "placeholder": {
+        "name": "Enter doctor name",
+        "specialty": "Select specialty",
+        "hospital": "Select hospital",
+        "email": "Enter email",
+        "phone": "Enter phone number",
+        "user": "Select user",
+        "avatar": "Upload Image"
+      }
+    },
+    "messages": {
+      "deleteSuccess": "Doctor deleted successfully",
+      "deleteError": "Failed to delete doctor",
+      "createSuccess": "Doctor added successfully",
+      "createError": "Failed to add doctor",
+      "updateSuccess": "Doctor updated successfully",
+      "updateError": "Failed to update doctor",
+      "loadErrorTitle": "Data load error",
+      "loadErrorDescription": "Cannot fetch doctors list. Please try again later."
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "nameInvalid": "Name must not contain special characters",
+      "specialtyRequired": "Specialty is required",
+      "hospitalRequired": "Please select a hospital",
+      "userRequired": "Please select a user",
+      "phoneInvalid": "Phone number must contain 8 to 15 digits"
+    }
+  },
+   "patient": {
+    "title": "Patient Management",
+    "subtitle": "Patient List",
+    "addButton": "Add Patient",
+    "editModalTitle": "Edit Patient",
+    "addModalTitle": "Add Patient",
+    "columns": {
+      "id": "ID",
+      "image": "Image",
+      "full_name": "Full Name",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "user_id": "User ID"
+    },
+    "form": {
+      "full_name": "Full Name",
+      "dob": "Date of Birth",
+      "gender": "Gender",
+      "address": "Address",
+      "phone": "Phone",
+      "email": "Email",
+      "avatar": "Avatar",
+      "user": "User",
+      "placeholder": {
+        "full_name": "Enter patient's full name",
+        "dob": "Select date of birth",
+        "gender": "Select gender",
+        "address": "Enter address",
+        "phone": "Enter phone number",
+        "email": "Enter email",
+        "user": "Select user"
+      }
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
+    },
+    "messages": {
+      "create_success": "Patient added successfully",
+      "create_error": "Failed to add patient",
+      "update_success": "Patient updated successfully",
+      "update_error": "Failed to update patient",
+      "delete_success": "Patient deleted successfully",
+      "delete_error": "Failed to delete patient",
+      "load_error": "Cannot fetch patient list. Please try again later."
+    }
+  },
+  "drug": {
+    "title": "Drug Management",
+    "subtitle": "Drug List",
+    "add": "Add Drug",
+    "edit": "Edit Drug",
+    "deleteSuccess": "Drug deleted successfully",
+    "deleteError": "Failed to delete drug",
+    "createSuccess": "Drug created successfully",
+    "createError": "Failed to create drug",
+    "updateSuccess": "Drug updated successfully",
+    "updateError": "Failed to update drug",
+    "form": {
+      "name": "Drug Name",
+      "description": "Description",
+      "price": "Price",
+      "discount": "Discount %",
+      "stock": "Stock Quantity",
+      "image": "Drug Image",
+      "placeholder": {
+        "name": "Enter drug name",
+        "description": "Enter drug description",
+        "price": "Enter drug price",
+        "discount": "Enter discount percentage",
+        "stock": "Enter stock quantity"
+      },
+      "validation": {
+        "name": "Please enter the drug name",
+        "price": "Please enter the drug price",
+        "discount": "Please enter the discount percentage",
+        "stock": "Please enter the stock quantity"
+      }
+    },
+    "columns": {
+      "id": "ID",
+      "image": "Image",
+      "name": "Name",
+      "description": "Description",
+      "price": "Price",
+      "discount": "Discount %",
+      "stock": "Stock",
+      "sold": "Sold",
+      "time": "Time",
+       "stock_quantity": "Quantity"
+
+    },
+    "error": {
+      "loadTitle": "Data Load Error",
+      "loadDescription": "Unable to fetch the drug list. Please try again later."
+    },
+    "upload": "Upload Image"
+  },
+  "order": {
+    "title": "Orders",
+    "subtitle": "Order List",
+    "editModalTitle": "Update Order Status",
+    "columns": {
+      "index": "No.",
+      "patient": "Customer Info",
+      "order_items": "Drug Info",
+      "status": "Status"
+    },
+    "form": {
+      "order_id": "Order ID",
+      "full_name": "Customer Name",
+      "status": "Status",
+      "placeholder": {
+        "status": "Select status"
+      }
+    },
+    "status": {
+      "PENDING": "Pending",
+      "PAID": "Paid",
+      "CANCELED": "Canceled",
+      "DELIVERED": "Delivered"
+    },
+    "messages": {
+      "update_success": "Order status updated successfully",
+      "update_error": "Failed to update order status",
+      "load_error": "Cannot fetch order list. Please try again later."
+    }
+  },
+  "timeSlots": {
+    "title": "Manage Schedules",
+    "subtitle": "Schedule List",
+    "addButton": "Add Schedule",
+    "editModalTitle": "Update Schedule",
+    "createModalTitle": "Create Schedule",
+    "columns": {
+      "index": "No.",
+      "doctor": "Doctor",
+      "time": "Time",
+      "capacity": "Capacity"
+    },
+    "form": {
+      "doctor": "Doctor",
+      "start_time": "Start Time",
+      "end_time": "End Time",
+      "capacity": "Capacity",
+      "placeholder": {
+        "doctor": "Select a doctor"
+      }
+    },
+    "messages": {
+      "load_error": "Unable to fetch schedule list. Please try again later.",
+      "create_success": "Schedule created successfully",
+      "create_error": "Failed to create schedule",
+      "update_success": "Schedule updated successfully",
+      "update_error": "Failed to update schedule",
+      "delete_success": "Schedule deleted successfully",
+      "delete_error": "Failed to delete schedule"
+    }
+  },
+  "appointment": {
+    "title": "Appointments",
+    "subtitle": "List of appointments",
+    "columns": {
+      "index": "No",
+      "patient": "Patient",
+      "timeSlot": "Time Slot",
+      "status": "Status",
+      "notes": "Notes"
+    },
+    "form": {
+      "appointment_id": "Appointment ID",
+      "full_name": "Patient Name",
+      "status": "Status",
+      "status_placeholder": "Select status"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "canceled": "Canceled",
+      "completed": "Completed"
+    },
+    "messages": {
+      "load_error": "Unable to fetch appointments. Please try again later.",
+      "update_success": "Status updated successfully",
+      "update_error": "Failed to update status"
+    },
+    "modal": {
+      "title": "Update Appointment Status"
+    },
+    "doctor": "Doctor",
+    "hospital": "Hospital",
+    "time": "Time",
+    "quantity": "Quantity"
+  },
+  "user": {
+    "title": "User Management",
+    "subtitle": "User list",
+    "addButtonText": "Add User",
+    "modal": {
+      "addTitle": "Add User",
+      "editTitle": "Edit User"
+    },
+    "columns": {
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "firebase_uid": "Firebase UID",
+      "role": "Role",
+      "time": "Created At"
+    },
+    "roles": {
+      "admin": "Admin",
+      "doctor": "Doctor",
+      "patient": "Patient"
+    },
+    "messages": {
+      "load_error": "Unable to fetch user list. Please try again later.",
+      "delete_success": "User deleted successfully",
+      "delete_error": "Failed to delete user",
+      "create_success": "User created successfully",
+      "create_error": "Failed to create user",
+      "update_success": "User updated successfully",
+      "update_error": "Failed to update user"
+    },
+    "form": {
+      "username": "Username",
+      "username_placeholder": "Enter username",
+      "username_required": "Username is required",
+      "username_min": "Username must be at least 3 characters",
+
+      "email": "Email",
+      "email_placeholder": "Enter email",
+      "email_required": "Email is required",
+      "email_invalid": "Invalid email address",
+
+      "firebase_uid": "Firebase UID",
+      "firebase_uid_placeholder": "Enter Firebase UID",
+      "firebase_uid_required": "Firebase UID is required",
+      "firebase_uid_min": "Firebase UID must be at least 6 characters",
+
+      "role": "Role",
+      "role_placeholder": "Select role",
+      "role_required": "Please select a role",
+
+      "password": "Password",
+      "password_placeholder": "Enter password",
+      "password_required": "Password is required",
+      "password_min": "Password must be at least 6 characters",
+      "password_pattern": "Password must contain at least 1 letter and 1 number",
+
+      "confirmPassword": "Confirm Password",
+      "confirmPassword_placeholder": "Re-enter password",
+      "confirmPassword_required": "Please confirm your password",
+      "confirmPassword_mismatch": "Passwords do not match!"
+    }
+  }
+
+
+
+
+
+}

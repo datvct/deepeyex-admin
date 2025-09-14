@@ -14,8 +14,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
-// Mock data (replace with your real API data)
 const visitorsData = [
   { date: "2025-09-01", visitors: 320 },
   { date: "2025-09-02", visitors: 450 },
@@ -35,55 +35,63 @@ const revenueData = [
 ];
 
 const statusData = [
-  { name: "Hoàn thành", value: 400 },
-  { name: "Đang xử lý", value: 300 },
-  { name: "Hủy", value: 100 },
+  { name: "completed", value: 400 },
+  { name: "processing", value: 300 },
+  { name: "canceled", value: 100 },
 ];
 
 const COLORS = ["#4F46E5", "#06B6D4", "#F97316"];
 
 export default function DashboardAnalytics() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen">
       <div>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-800">Bảng điều khiển</h1>
-            <p className="text-sm text-slate-500">Tổng quan hoạt động và số liệu chính</p>
+            <h1 className="text-2xl font-semibold text-slate-800">{t("dashboard.title")}</h1>
+            <p className="text-sm text-slate-500">{t("dashboard.subtitle")}</p>
           </div>
           <div className="flex items-center gap-3">
             <button className="px-3 py-2 bg-white border rounded-md shadow-sm text-sm hover:shadow">
-              Export
+              {t("dashboard.export")}
             </button>
             <button className="px-3 py-2 bg-blue-600 text-white rounded-md shadow-sm text-sm hover:opacity-95">
-              Tạo báo cáo
+              {t("dashboard.createReport")}
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="p-4 bg-white rounded-lg shadow-sm border">
-            <div className="text-sm text-slate-500">Người truy cập (7 ngày)</div>
+            <div className="text-sm text-slate-500">{t("dashboard.metrics.visitors")}</div>
             <div className="mt-2 text-2xl font-bold text-slate-800">4,120</div>
-            <div className="text-xs text-green-600 mt-1">+12.4% so với tuần trước</div>
+            <div className="text-xs text-green-600 mt-1">
+              +12.4% {t("dashboard.metrics.comparedToLastWeek")}
+            </div>
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-sm border">
-            <div className="text-sm text-slate-500">Doanh thu (tháng)</div>
+            <div className="text-sm text-slate-500">{t("dashboard.metrics.revenue")}</div>
             <div className="mt-2 text-2xl font-bold text-slate-800">₫186,400,000</div>
-            <div className="text-xs text-red-500 mt-1">-3.2% so với tháng trước</div>
+            <div className="text-xs text-red-500 mt-1">
+              -3.2% {t("dashboard.metrics.comparedToLastMonth")}
+            </div>
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-sm border">
-            <div className="text-sm text-slate-500">Đơn hàng</div>
+            <div className="text-sm text-slate-500">{t("dashboard.metrics.orders")}</div>
             <div className="mt-2 text-2xl font-bold text-slate-800">1,240</div>
-            <div className="text-xs text-green-600 mt-1">+8.1% so với tuần trước</div>
+            <div className="text-xs text-green-600 mt-1">
+              +8.1% {t("dashboard.metrics.comparedToLastWeek")}
+            </div>
           </div>
 
           <div className="p-4 bg-white rounded-lg shadow-sm border">
-            <div className="text-sm text-slate-500">Tỷ lệ hoàn thành</div>
+            <div className="text-sm text-slate-500">{t("dashboard.metrics.completionRate")}</div>
             <div className="mt-2 text-2xl font-bold text-slate-800">78%</div>
-            <div className="text-xs text-green-600 mt-1">Ổn định</div>
+            <div className="text-xs text-green-600 mt-1">{t("dashboard.metrics.stable")}</div>
           </div>
         </div>
 
@@ -91,10 +99,12 @@ export default function DashboardAnalytics() {
           <div className="lg:col-span-2 bg-white rounded-lg shadow-sm border p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-sm font-medium text-slate-700">Lưu lượng truy cập</h3>
-                <p className="text-xs text-slate-500">Biểu đồ lượt truy cập theo ngày</p>
+                <h3 className="text-sm font-medium text-slate-700">
+                  {t("dashboard.charts.traffic.title")}
+                </h3>
+                <p className="text-xs text-slate-500">{t("dashboard.charts.traffic.subtitle")}</p>
               </div>
-              <div className="text-xs text-slate-500">Tuần này</div>
+              <div className="text-xs text-slate-500">{t("dashboard.charts.traffic.thisWeek")}</div>
             </div>
 
             <div style={{ width: "100%", height: 260 }}>
@@ -125,11 +135,15 @@ export default function DashboardAnalytics() {
 
             <div className="mt-4 grid grid-cols-2 gap-4">
               <div className="p-3 bg-gray-50 rounded-md">
-                <div className="text-xs text-slate-500">Avg. Session</div>
+                <div className="text-xs text-slate-500">
+                  {t("dashboard.charts.traffic.avgSession")}
+                </div>
                 <div className="text-lg font-semibold">00:03:25</div>
               </div>
               <div className="p-3 bg-gray-50 rounded-md">
-                <div className="text-xs text-slate-500">Bounce Rate</div>
+                <div className="text-xs text-slate-500">
+                  {t("dashboard.charts.traffic.bounceRate")}
+                </div>
                 <div className="text-lg font-semibold">28%</div>
               </div>
             </div>
@@ -138,10 +152,16 @@ export default function DashboardAnalytics() {
           <div className="bg-white rounded-lg shadow-sm border p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-sm font-medium text-slate-700">Trạng thái đơn</h3>
-                <p className="text-xs text-slate-500">Tổng quan theo trạng thái</p>
+                <h3 className="text-sm font-medium text-slate-700">
+                  {t("dashboard.charts.orderStatus.title")}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {t("dashboard.charts.orderStatus.subtitle")}
+                </p>
               </div>
-              <div className="text-xs text-slate-500">Tháng</div>
+              <div className="text-xs text-slate-500">
+                {t("dashboard.charts.orderStatus.month")}
+              </div>
             </div>
 
             <div style={{ width: "100%", height: 220 }}>
@@ -177,7 +197,7 @@ export default function DashboardAnalytics() {
                         borderRadius: 3,
                       }}
                     />
-                    <div>{s.name}</div>
+                    <div>{t(`dashboard.charts.orderStatus.${s.name}`)}</div>
                   </div>
                   <div className="text-slate-600">{s.value}</div>
                 </div>
@@ -190,10 +210,16 @@ export default function DashboardAnalytics() {
           <div className="bg-white rounded-lg shadow-sm border p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h3 className="text-sm font-medium text-slate-700">Doanh thu theo dịch vụ</h3>
-                <p className="text-xs text-slate-500">Top dịch vụ theo doanh thu</p>
+                <h3 className="text-sm font-medium text-slate-700">
+                  {t("dashboard.charts.revenueByService.title")}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {t("dashboard.charts.revenueByService.subtitle")}
+                </p>
               </div>
-              <div className="text-xs text-slate-500">Tháng</div>
+              <div className="text-xs text-slate-500">
+                {t("dashboard.charts.orderStatus.month")}
+              </div>
             </div>
 
             <div style={{ width: "100%", height: 220 }}>
@@ -210,44 +236,52 @@ export default function DashboardAnalytics() {
             </div>
 
             <div className="mt-3 text-sm text-slate-500">
-              Gợi ý: click từng cột để xem chi tiết.
+              {t("dashboard.charts.revenueByService.hint")}
             </div>
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border p-4">
             <div className="mb-3">
-              <h3 className="text-sm font-medium text-slate-700">Hoạt động gần đây</h3>
-              <p className="text-xs text-slate-500">Các sự kiện quan trọng</p>
+              <h3 className="text-sm font-medium text-slate-700">
+                {t("dashboard.charts.recentActivity.title")}
+              </h3>
+              <p className="text-xs text-slate-500">
+                {t("dashboard.charts.recentActivity.subtitle")}
+              </p>
             </div>
 
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2" />
                 <div>
-                  <div className="font-medium">Đơn hàng #2345 đã hoàn thành</div>
-                  <div className="text-slate-500 text-xs">2 giờ trước</div>
+                  <div className="font-medium">
+                    {t("dashboard.activities.orderCompleted", { id: 2345 })}
+                  </div>
+                  <div className="text-slate-500 text-xs">{t("dashboard.time.twoHoursAgo")}</div>
                 </div>
               </li>
 
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2" />
                 <div>
-                  <div className="font-medium">Bác sĩ A đã được thêm vào hệ thống</div>
-                  <div className="text-slate-500 text-xs">Hôm qua</div>
+                  <div className="font-medium">
+                    {t("dashboard.activities.doctorAdded", { name: "A" })}
+                  </div>
+                  <div className="text-slate-500 text-xs">{t("dashboard.time.yesterday")}</div>
                 </div>
               </li>
 
               <li className="flex items-start gap-3">
                 <div className="w-2 h-2 bg-red-400 rounded-full mt-2" />
                 <div>
-                  <div className="font-medium">Hệ thống backup hoàn tất</div>
-                  <div className="text-slate-500 text-xs">3 ngày trước</div>
+                  <div className="font-medium">{t("dashboard.activities.backupCompleted")}</div>
+                  <div className="text-slate-500 text-xs">{t("dashboard.time.threeDaysAgo")}</div>
                 </div>
               </li>
             </ul>
 
             <div className="mt-4 text-xs text-slate-500">
-              Xem thêm lịch sử hoạt động trong trang quản trị.
+              {t("dashboard.charts.recentActivity.viewMore")}
             </div>
           </div>
         </div>

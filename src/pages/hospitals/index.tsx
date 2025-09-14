@@ -12,8 +12,11 @@ import { createHospitalSchema } from "../../modules/hospitals/schemas/createHosp
 import z from "zod";
 import { PlusOutlined } from "@ant-design/icons";
 import { useUpdateHospitalMutation } from "../../modules/hospitals/hooks/mutations/use-update-hospital.mutation";
+import { useTranslation } from "react-i18next";
 
 export default function HospitalsPage() {
+  const { t } = useTranslation();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -25,33 +28,33 @@ export default function HospitalsPage() {
   // ---- Mutation: Delete
   const deleteHospital = useDeleteHospitalMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Xóa bệnh viện thành công");
+      toast.success(t("hospital.messages.deleteSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Hospital] });
     },
     onError: (error) => {
-      toast.error(error.message || "Xóa bệnh viện thất bại");
+      toast.error(t("hospital.messages.deleteError"));
     },
   });
 
   // ---- Mutation: Create
   const createHospital = useCreateHospitalMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Thêm bệnh viện thành công");
+      toast.success(t("hospital.messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Hospital] });
     },
     onError: (error) => {
-      toast.error(error.message || "Thêm bệnh viện thất bại");
+      toast.error(t("hospital.messages.createError"));
     },
   });
 
   // ---- Mutation: Update
   const updateHospital = useUpdateHospitalMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật bệnh viện thành công");
+      toast.success(t("hospital.messages.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Hospital] });
     },
     onError: (error) => {
-      toast.error(error.message || "Cập nhật bệnh viện thất bại");
+      toast.error(t("hospital.messages.updateError"));
     },
   });
 
@@ -135,7 +138,7 @@ export default function HospitalsPage() {
   const hospitalColumns = [
     { title: "ID", dataIndex: "hospital_id", key: "hospital_id", width: "10%" },
     {
-      title: "Hình ảnh",
+      title: t("hospital.form.image"),
       dataIndex: "image",
       key: "image",
       width: "10%",
@@ -146,18 +149,18 @@ export default function HospitalsPage() {
           "-"
         ),
     },
-    { title: "Tên", dataIndex: "name", key: "name", width: "25%" },
-    { title: "Địa chỉ", dataIndex: "address", key: "address", width: "20%" },
-    { title: "SĐT", dataIndex: "phone", key: "phone", width: "10%" },
-    { title: "Email", dataIndex: "email", key: "email", width: "15%" },
+    { title: t("hospital.form.name"), dataIndex: "name", key: "name", width: "25%" },
+    { title: t("hospital.form.address"), dataIndex: "address", key: "address", width: "20%" },
+    { title: t("hospital.form.phone"), dataIndex: "phone", key: "phone", width: "10%" },
+    { title: t("hospital.form.email"), dataIndex: "email", key: "email", width: "15%" },
   ];
 
   return (
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách bệnh viện. Vui lòng thử lại sau."
+          message={t("hospital.messages.loadErrorTitle")}
+          description={t("hospital.messages.loadErrorDescription")}
           type="error"
           showIcon
           className="mb-4"
@@ -165,12 +168,12 @@ export default function HospitalsPage() {
       )}
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Quản lý Bệnh viện"
-          subtitle="Danh sách bệnh viện"
+          title={t("hospital.title")}
+          subtitle={t("hospital.subtitle")}
           rowKey="hospital_id"
           columns={hospitalColumns}
           dataSource={hospitals}
-          addButtonText="Thêm bệnh viện"
+          addButtonText={t("hospital.addButton")}
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -178,7 +181,7 @@ export default function HospitalsPage() {
       </Spin>
 
       <Modal
-        title={editingHospital ? "Sửa Bệnh viện" : "Thêm Bệnh viện"}
+        title={editingHospital ? t("hospital.editTitle") : t("hospital.addTitle")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -191,47 +194,47 @@ export default function HospitalsPage() {
         <Form form={form} layout="vertical">
           <Form.Item
             name="name"
-            label="Tên bệnh viện"
-            rules={[{ required: true, message: "Vui lòng nhập tên bệnh viện" }]}
+            label={t("hospital.form.name")}
+            rules={[{ required: true, message: t("hospital.form.placeholder.name") }]}
           >
-            <Input placeholder="Nhập tên bệnh viện" />
+            <Input placeholder={t("hospital.form.placeholder.name")} />
           </Form.Item>
 
-          <Form.Item name="address" label="Địa chỉ">
-            <Input placeholder="Nhập địa chỉ bệnh viện" />
+          <Form.Item name="address" label={t("hospital.form.address")}>
+            <Input placeholder={t("hospital.form.placeholder.address")} />
           </Form.Item>
 
           <Form.Item
             name="phone"
-            label="Số điện thoại"
+            label={t("hospital.form.phone")}
             rules={[
               {
                 pattern: /^[0-9]{8,15}$/,
-                message: "Số điện thoại không hợp lệ (8-15 chữ số)",
+                message: t("hospital.form.placeholder.phone"),
               },
             ]}
           >
-            <Input placeholder="Nhập số điện thoại" />
+            <Input placeholder={t("hospital.form.placeholder.phone")} />
           </Form.Item>
 
           <Form.Item
             name="email"
-            label="Email"
-            rules={[{ type: "email", message: "Email không hợp lệ" }]}
+            label={t("hospital.form.email")}
+            rules={[{ type: "email", message: t("hospital.form.placeholder.email") }]}
           >
-            <Input placeholder="Nhập email" />
+            <Input placeholder={t("hospital.form.placeholder.email")} />
           </Form.Item>
 
           <Form.Item
             name="logo"
-            label="Ảnh bệnh viện"
+            label={t("hospital.form.image")}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
           >
             <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
               <div>
                 <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Tải Ảnh</div>
+                <div style={{ marginTop: 8 }}>{t("hospital.form.image")}</div>
               </div>
             </Upload>
           </Form.Item>

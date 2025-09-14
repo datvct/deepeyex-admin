@@ -13,8 +13,8 @@ import {
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { LogOut, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, LogOut } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import logo from "../../assets/logo.jpg";
 
@@ -28,54 +28,8 @@ interface CustomMenuItem {
   children?: CustomMenuItem[];
 }
 
-const menuItems: CustomMenuItem[] = [
-  { key: "dashboard", label: "Trang chủ", icon: <FaHome className="w-5 h-5" />, url: "/" },
-  {
-    key: "users",
-    label: "Quản lý người dùng",
-    icon: <FaUser className="w-5 h-5" />,
-    url: "/users",
-  },
-  {
-    key: "hospitals",
-    label: "Quản lý bệnh viện",
-    icon: <FaHospital className="w-5 h-5" />,
-    url: "/hospitals",
-  },
-  {
-    key: "doctors",
-    label: "Quản lý bác sĩ",
-    icon: <FaUserDoctor className="w-5 h-5" />,
-    url: "/doctors",
-  },
-  {
-    key: "patients",
-    label: "Quản lý bệnh nhân",
-    icon: <FaHospitalUser className="w-5 h-5" />,
-    url: "/patients",
-  },
-  { key: "drugs", label: "Quản lý thuốc", icon: <FaPills className="w-5 h-5" />, url: "/drugs" },
-  {
-    key: "orders",
-    label: "Đơn đặt thuốc",
-    icon: <FaFilePrescription className="w-5 h-5" />,
-    url: "/orders",
-  },
-  {
-    key: "timeslots",
-    label: "Quản lý lịch khám",
-    icon: <FaCalendarAlt className="w-5 h-5" />,
-    url: "/timeslots",
-  },
-  {
-    key: "appointments",
-    label: "Lịch hẹn khám",
-    icon: <FaCalendarCheck className="w-5 h-5" />,
-    url: "/appointments",
-  },
-];
-
 const Sidebar: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedKey, setSelectedKey] = useState<string[]>([]);
@@ -83,6 +37,63 @@ const Sidebar: React.FC = () => {
   const [isLangModalVisible, setIsLangModalVisible] = useState(false);
 
   const currentPath = location.pathname;
+
+  const menuItems: CustomMenuItem[] = [
+    {
+      key: "dashboard",
+      label: t("sidebar.dashboard"),
+      icon: <FaHome className="w-5 h-5" />,
+      url: "/",
+    },
+    {
+      key: "users",
+      label: t("sidebar.users"),
+      icon: <FaUser className="w-5 h-5" />,
+      url: "/users",
+    },
+    {
+      key: "hospitals",
+      label: t("sidebar.hospitals"),
+      icon: <FaHospital className="w-5 h-5" />,
+      url: "/hospitals",
+    },
+    {
+      key: "doctors",
+      label: t("sidebar.doctors"),
+      icon: <FaUserDoctor className="w-5 h-5" />,
+      url: "/doctors",
+    },
+    {
+      key: "patients",
+      label: t("sidebar.patients"),
+      icon: <FaHospitalUser className="w-5 h-5" />,
+      url: "/patients",
+    },
+    {
+      key: "drugs",
+      label: t("sidebar.drugs"),
+      icon: <FaPills className="w-5 h-5" />,
+      url: "/drugs",
+    },
+    {
+      key: "orders",
+      label: t("sidebar.orders"),
+      icon: <FaFilePrescription className="w-5 h-5" />,
+      url: "/orders",
+    },
+    {
+      key: "timeslots",
+      label: t("sidebar.timeslots"),
+      icon: <FaCalendarAlt className="w-5 h-5" />,
+      url: "/timeslots",
+    },
+    {
+      key: "appointments",
+      label: t("sidebar.appointments"),
+      icon: <FaCalendarCheck className="w-5 h-5" />,
+      url: "/appointments",
+    },
+  ];
 
   useEffect(() => {
     const pathSegments = currentPath.split("/").filter(Boolean);
@@ -104,7 +115,7 @@ const Sidebar: React.FC = () => {
       const target = menuItems.find((item) => item.key === key);
       if (target?.url) navigate(target.url);
     },
-    [navigate],
+    [navigate, menuItems],
   );
 
   const transformedMenuItems = useMemo(() => {
@@ -116,20 +127,24 @@ const Sidebar: React.FC = () => {
         children: item.children ? transform(item.children) : undefined,
       })) as MenuProps["items"];
     return transform(menuItems);
-  }, []);
+  }, [menuItems]);
 
-  // Dropdown menu items
+  const changeLanguage = (lang: "vi" | "en") => {
+    i18n.changeLanguage(lang);
+    setIsLangModalVisible(false);
+  };
+
   const settingsItems: MenuProps["items"] = [
     {
       key: "change-language",
       icon: <Globe size={18} />,
-      label: <span>Thay đổi ngôn ngữ</span>,
+      label: <span>{t("sidebar.changeLanguage")}</span>,
       onClick: () => setIsLangModalVisible(true),
     },
     {
       key: "logout",
       icon: <LogOut size={18} className="text-red-500" />,
-      label: <span className="text-red-500">Đăng xuất</span>,
+      label: <span className="text-red-500">{t("sidebar.logout")}</span>,
       onClick: () => console.log("Đăng xuất"),
     },
   ];
@@ -142,6 +157,7 @@ const Sidebar: React.FC = () => {
         collapsed={isCollapsed}
         collapsedWidth={80}
       >
+        {/* Nút toggle */}
         <div
           className="absolute -right-1 top-9 text-white p-1 bg-blue-400 rounded-full z-20 cursor-pointer hover:scale-125 transition-all duration-200"
           onClick={toggleCollapse}
@@ -153,6 +169,7 @@ const Sidebar: React.FC = () => {
           )}
         </div>
 
+        {/* Logo */}
         <div className="border-[0.5px] border-gray-200 bg-white rounded-lg drop-shadow-md shadow-gray-200 flex-1 flex flex-col h-full">
           <div className="drop-shadow-sm shadow-gray-200 sticky top-0 z-10 bg-white">
             <div className="flex flex-row items-center justify-center py-3 px-4 w-full relative">
@@ -176,7 +193,6 @@ const Sidebar: React.FC = () => {
             <hr className="border-t border-[#8c8c8c48]" />
           </div>
 
-          {/* Main Menu */}
           <Menu
             theme="light"
             defaultSelectedKeys={["dashboard"]}
@@ -188,20 +204,13 @@ const Sidebar: React.FC = () => {
             className="border-e-0 !p-2 flex-1"
           />
 
-          {/* Settings Dropdown */}
           <div className="p-2 flex justify-center mb-3">
             <Dropdown menu={{ items: settingsItems }} placement="topCenter" arrow>
               <div className="flex flex-col items-center cursor-pointer hover:bg-gray-100 p-2 rounded-md transition-all">
                 <IoIosSettings className="w-5 h-5 text-gray-600" />
                 {!isCollapsed && (
-                  <span
-                    className="text-sm font-medium mt-1"
-                    onClick={(e) => {
-                      e.stopPropagation(); // prevent dropdown
-                      navigate("/setting");
-                    }}
-                  >
-                    Cài đặt
+                  <span className="text-sm font-medium mt-1" onClick={(e) => e.stopPropagation()}>
+                    {t("sidebar.settings")}
                   </span>
                 )}
               </div>
@@ -210,9 +219,8 @@ const Sidebar: React.FC = () => {
         </div>
       </Sider>
 
-      {/* Language Modal */}
       <Modal
-        title="Chọn ngôn ngữ"
+        title={t("sidebar.changeLanguage")}
         open={isLangModalVisible}
         footer={null}
         onCancel={() => setIsLangModalVisible(false)}
@@ -221,20 +229,14 @@ const Sidebar: React.FC = () => {
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg"
             alt="Vietnamese"
-            className="w-16 h-16 cursor-pointer"
-            onClick={() => {
-              console.log("Chọn tiếng Việt");
-              setIsLangModalVisible(false);
-            }}
+            className="w-16 h-16 cursor-pointer hover:scale-110 transition-all duration-200"
+            onClick={() => changeLanguage("vi")}
           />
           <img
             src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg"
             alt="English"
-            className="w-16 h-16 cursor-pointer"
-            onClick={() => {
-              console.log("Chọn tiếng Anh");
-              setIsLangModalVisible(false);
-            }}
+            className="w-16 h-16 cursor-pointer hover:scale-110 transition-all duration-200"
+            onClick={() => changeLanguage("en")}
           />
         </div>
       </Modal>

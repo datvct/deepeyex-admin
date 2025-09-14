@@ -1,16 +1,4 @@
-import {
-  Alert,
-  Form,
-  Input,
-  Modal,
-  Spin,
-  Tag,
-  Tooltip,
-  Select,
-  DatePicker,
-  InputNumber,
-  Button,
-} from "antd";
+import { Alert, Form, InputNumber, Modal, Spin, Tooltip, Select, DatePicker } from "antd";
 import React, { useEffect, useState } from "react";
 import CrudTable from "../../shares/components/CrudTable";
 import { toast } from "react-toastify";
@@ -25,8 +13,10 @@ import moment from "moment";
 import { useListDoctorsQuery } from "../../modules/doctors/hooks/queries/use-get-doctors.query";
 import { createTimeSlotSchema } from "../../modules/time-slots/schemas/createTimeSlot.schema";
 import z from "zod";
+import { useTranslation } from "react-i18next";
 
 export default function TimeSlotsPage() {
+  const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
@@ -44,26 +34,26 @@ export default function TimeSlotsPage() {
   // ---- Mutations ----
   const createMutation = useCreateTimeSlotMutation({
     onSuccess: () => {
-      toast.success("Tạo lịch trình thành công");
+      toast.success(t("timeSlots.messages.create_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.TimeSlot] });
     },
-    onError: (err: any) => toast.error(err.message || "Tạo lịch trình thất bại"),
+    onError: (err: any) => toast.error(err.message || t("timeSlots.messages.create_error")),
   });
 
   const updateMutation = useUpdateTimeSlotMutation({
     onSuccess: () => {
-      toast.success("Cập nhật lịch trình thành công");
+      toast.success(t("timeSlots.messages.update_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.TimeSlot] });
     },
-    onError: (err: any) => toast.error(err.message || "Cập nhật lịch trình thất bại"),
+    onError: (err: any) => toast.error(err.message || t("timeSlots.messages.update_error")),
   });
 
   const deleteMutation = useDeleteTimeSlotMutation({
     onSuccess: () => {
-      toast.success("Xóa lịch trình thành công");
+      toast.success(t("timeSlots.messages.delete_success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.TimeSlot] });
     },
-    onError: (err: any) => toast.error(err.message || "Xóa lịch trình thất bại"),
+    onError: (err: any) => toast.error(err.message || t("timeSlots.messages.delete_error")),
   });
 
   useEffect(() => {
@@ -76,7 +66,6 @@ export default function TimeSlotsPage() {
     setIsModalOpen(true);
   };
 
-  // ---- Modal handlers ----
   const handleEdit = (timeSlot: TimeSlot) => {
     setEditingTimeSlot(timeSlot);
     form.setFieldsValue({
@@ -88,6 +77,7 @@ export default function TimeSlotsPage() {
 
     setIsModalOpen(true);
   };
+
   const handleDelete = (slot: TimeSlot) => {
     deleteMutation.mutate(slot.slot_id);
   };
@@ -125,15 +115,15 @@ export default function TimeSlotsPage() {
   // ---- Table columns ----
   const columns = [
     {
-      title: "STT",
+      title: t("timeSlots.columns.index"),
       dataIndex: "index",
       key: "index",
       width: 60,
       render: (_: any, __: any, index: number) => index + 1,
     },
-    { title: "Bác sĩ", dataIndex: ["doctor", "full_name"], key: "doctor" },
+    { title: t("timeSlots.columns.doctor"), dataIndex: ["doctor", "full_name"], key: "doctor" },
     {
-      title: "Thời gian",
+      title: t("timeSlots.columns.time"),
       key: "time",
       render: (record: TimeSlot) => (
         <span>
@@ -142,28 +132,28 @@ export default function TimeSlotsPage() {
         </span>
       ),
     },
-    { title: "Số lượng", dataIndex: "capacity", key: "capacity", width: 100 },
+    { title: t("timeSlots.columns.capacity"), dataIndex: "capacity", key: "capacity", width: 100 },
   ];
 
   return (
     <>
       {isError && (
         <Alert
-          message="Lỗi tải dữ liệu"
-          description="Không thể lấy danh sách lịch trình. Vui lòng thử lại sau."
+          message={t("timeSlots.messages.load_error")}
           type="error"
           showIcon
           className="mb-4"
         />
       )}
+
       <Spin spinning={isLoading}>
         <CrudTable
-          title="Quản lý lịch trình"
-          subtitle="Danh sách lịch trình"
+          title={t("timeSlots.title")}
+          subtitle={t("timeSlots.subtitle")}
           rowKey="hospital_id"
           columns={columns}
           dataSource={slots}
-          addButtonText="Thêm lịch trình"
+          addButtonText={t("timeSlots.addButton")}
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
@@ -171,7 +161,7 @@ export default function TimeSlotsPage() {
       </Spin>
 
       <Modal
-        title={editingTimeSlot ? "Cập nhật lịch trình" : "Tạo lịch trình"}
+        title={editingTimeSlot ? t("timeSlots.editModalTitle") : t("timeSlots.createModalTitle")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -184,10 +174,14 @@ export default function TimeSlotsPage() {
         <Form form={form} layout="vertical">
           <Form.Item
             name="doctor_id"
-            label="Bác sĩ"
-            rules={[{ required: true, message: "Vui lòng chọn bác sĩ" }]}
+            label={t("timeSlots.form.doctor")}
+            rules={[{ required: true, message: t("timeSlots.form.placeholder.doctor") }]}
           >
-            <Select placeholder="Chọn bác sĩ" loading={isLoadingDoctors} allowClear>
+            <Select
+              placeholder={t("timeSlots.form.placeholder.doctor")}
+              loading={isLoadingDoctors}
+              allowClear
+            >
               {doctorData?.data?.map((doctor) => (
                 <Select.Option key={doctor.doctor_id} value={doctor.doctor_id}>
                   {doctor.full_name}
@@ -197,23 +191,25 @@ export default function TimeSlotsPage() {
           </Form.Item>
 
           <Form.Item
-            label="Thời gian bắt đầu"
+            label={t("timeSlots.form.start_time")}
             name="start_time"
-            rules={[{ required: true, message: "Chọn thời gian bắt đầu" }]}
+            rules={[{ required: true, message: t("timeSlots.form.start_time") }]}
           >
             <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
           </Form.Item>
+
           <Form.Item
-            label="Thời gian kết thúc"
+            label={t("timeSlots.form.end_time")}
             name="end_time"
-            rules={[{ required: true, message: "Chọn thời gian kết thúc" }]}
+            rules={[{ required: true, message: t("timeSlots.form.end_time") }]}
           >
             <DatePicker showTime format="YYYY-MM-DD HH:mm" style={{ width: "100%" }} />
           </Form.Item>
+
           <Form.Item
-            label="Số lượng"
+            label={t("timeSlots.form.capacity")}
             name="capacity"
-            rules={[{ required: true, message: "Nhập số lượng" }]}
+            rules={[{ required: true, message: t("timeSlots.form.capacity") }]}
           >
             <InputNumber min={1} style={{ width: "100%" }} />
           </Form.Item>
