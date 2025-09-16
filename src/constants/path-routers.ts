@@ -54,6 +54,38 @@ export const HOSPITALS: PathItem = {
   },
 };
 
+export const DRUGS: PathItem = {
+  DETAIL: {
+    PATH: "/drugs",
+    LABEL: "Bệnh viện",
+    BREADCRUMB: [{ title: "Bệnh viện", href: "/drugs" }],
+  },
+};
+
+export const TIMESLOTS: PathItem = {
+  DETAIL: {
+    PATH: "/timeslots",
+    LABEL: "Bệnh viện",
+    BREADCRUMB: [{ title: "Bệnh viện", href: "/timeslots" }],
+  },
+};
+
+export const ORDERS: PathItem = {
+  DETAIL: {
+    PATH: "/orders",
+    LABEL: "Đơn đặt thuốc",
+    BREADCRUMB: [{ title: "Đơn đặt thuốc", href: "/orders" }],
+  },
+};
+
+export const APPOINTMENTS: PathItem = {
+  DETAIL: {
+    PATH: "/appointments",
+    LABEL: "Bệnh viện",
+    BREADCRUMB: [{ title: "Bệnh viện", href: "/appointments" }],
+  },
+};
+
 export const PROFILE: PathItem = {
   DETAIL: {
     PATH: "/profile",

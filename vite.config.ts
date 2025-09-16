@@ -5,4 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: "/",
+  build: {
+    rollupOptions: {
+      external: ["i18next-browser-languagedetector"],
+    },
+  },
 });

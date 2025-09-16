@@ -1,12 +1,14 @@
 import React from "react";
-import { Layout, Dropdown, AutoComplete, Tooltip, type MenuProps } from "antd";
+import { Layout, Dropdown, Tooltip, type MenuProps } from "antd";
 import { LogOut, UserCog, UserPen, LockKeyhole, RefreshCw } from "lucide-react";
-import Breadcrumbs from "../shares/components/Breadcrumbs";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import Breadcrumbs from "../shares/components/Breadcrumbs";
 
 const { Header } = Layout;
 
 const HeaderLayout = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Menu dropdown cho tài khoản
@@ -14,13 +16,13 @@ const HeaderLayout = () => {
     {
       key: "profile",
       icon: <UserPen size={18} />,
-      label: <span>Thông tin tài khoản</span>,
+      label: <span>{t("header.profile")}</span>,
       onClick: () => navigate("/profile"),
     },
     {
       key: "change-password",
       icon: <LockKeyhole size={18} />,
-      label: <span>Đổi mật khẩu</span>,
+      label: <span>{t("header.changePassword")}</span>,
       onClick: () => navigate("/change-password"),
     },
     {
@@ -29,7 +31,7 @@ const HeaderLayout = () => {
     {
       key: "logout",
       icon: <LogOut size={18} className="text-red-500" />,
-      label: <span className="text-red-500">Đăng xuất</span>,
+      label: <span className="text-red-500">{t("header.logout")}</span>,
       onClick: () => {
         console.log("Đăng xuất");
       },
@@ -43,7 +45,7 @@ const HeaderLayout = () => {
 
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-4">
-            <Tooltip title="Làm mới trang" placement="bottom">
+            <Tooltip title={t("header.refresh")} placement="bottom">
               <div
                 onClick={() => window.location.reload()}
                 className="cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-all"

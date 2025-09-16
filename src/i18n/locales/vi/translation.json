@@ -1,0 +1,427 @@
+{
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "subtitle": "Tổng quan hoạt động và số liệu chính",
+    "export": "Xuất dữ liệu",
+    "createReport": "Tạo báo cáo",
+    "metrics": {
+      "visitors": "Người truy cập (7 ngày)",
+      "revenue": "Doanh thu (tháng)",
+      "orders": "Đơn hàng",
+      "completionRate": "Tỷ lệ hoàn thành",
+      "comparedToLastWeek": "so với tuần trước",
+      "comparedToLastMonth": "so với tháng trước",
+      "stable": "Ổn định"
+    },
+    "charts": {
+      "traffic": {
+        "title": "Lưu lượng truy cập",
+        "subtitle": "Biểu đồ lượt truy cập theo ngày",
+        "thisWeek": "Tuần này",
+        "avgSession": "Thời gian trung bình",
+        "bounceRate": "Tỷ lệ thoát"
+      },
+      "orderStatus": {
+        "title": "Trạng thái đơn",
+        "subtitle": "Tổng quan theo trạng thái",
+        "month": "Tháng",
+        "completed": "Hoàn thành",
+        "processing": "Đang xử lý",
+        "canceled": "Hủy"
+      },
+      "revenueByService": {
+        "title": "Doanh thu theo dịch vụ",
+        "subtitle": "Top dịch vụ theo doanh thu",
+        "hint": "Gợi ý: click từng cột để xem chi tiết."
+      },
+      "recentActivity": {
+        "title": "Hoạt động gần đây",
+        "subtitle": "Các sự kiện quan trọng",
+        "viewMore": "Xem thêm lịch sử hoạt động trong trang quản trị."
+      }
+    },
+    "activities": {
+      "orderCompleted": "Đơn hàng #{{id}} đã hoàn thành",
+      "doctorAdded": "Bác sĩ {{name}} đã được thêm vào hệ thống",
+      "backupCompleted": "Hệ thống backup hoàn tất"
+    },
+    "time": {
+      "twoHoursAgo": "2 giờ trước",
+      "yesterday": "Hôm qua",
+      "threeDaysAgo": "3 ngày trước"
+    }
+  },
+  "sidebar": {
+    "dashboard": "Trang chủ",
+    "users": "Quản lý người dùng",
+    "hospitals": "Quản lý bệnh viện",
+    "doctors": "Quản lý bác sĩ",
+    "patients": "Quản lý bệnh nhân",
+    "drugs": "Quản lý thuốc",
+    "orders": "Đơn đặt thuốc",
+    "timeslots": "Quản lý lịch khám",
+    "appointments": "Lịch hẹn khám",
+    "settings": "Cài đặt",
+    "changeLanguage": "Thay đổi ngôn ngữ",
+    "logout": "Đăng xuất"
+  },
+  "header": {
+    "profile": "Thông tin tài khoản",
+    "changePassword": "Đổi mật khẩu",
+    "logout": "Đăng xuất",
+    "refresh": "Làm mới trang"
+  },
+  "table": {
+    "addButton": "Thêm mới",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Cập nhật",
+    "actions": "Hành động",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "deleteConfirmTitle": "Xác nhận xóa",
+    "deleteConfirmDescription": "Bạn có chắc chắn muốn xóa?",
+    "deleteOk": "Xóa",
+    "deleteCancel": "Hủy",
+    "searchPlaceholder": "Tìm kiếm..."
+  },
+   "search": {
+    "placeholder": "Tìm kiếm...",
+    "button": "Tìm"
+  },
+  "hospital": {
+    "title": "Quản lý Bệnh viện",
+    "subtitle": "Danh sách bệnh viện",
+    "addButton": "Thêm bệnh viện",
+    "editTitle": "Sửa Bệnh viện",
+    "addTitle": "Thêm Bệnh viện",
+    "form": {
+      "name": "Tên bệnh viện",
+      "address": "Địa chỉ",
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "image": "Ảnh bệnh viện",
+      "placeholder": {
+        "name": "Nhập tên bệnh viện",
+        "address": "Nhập địa chỉ bệnh viện",
+        "phone": "Nhập số điện thoại",
+        "email": "Nhập email"
+      }
+    },
+    "messages": {
+      "deleteSuccess": "Xóa bệnh viện thành công",
+      "deleteError": "Xóa bệnh viện thất bại",
+      "createSuccess": "Thêm bệnh viện thành công",
+      "createError": "Thêm bệnh viện thất bại",
+      "updateSuccess": "Cập nhật bệnh viện thành công",
+      "updateError": "Cập nhật bệnh viện thất bại",
+      "loadErrorTitle": "Lỗi tải dữ liệu",
+      "loadErrorDescription": "Không thể lấy danh sách bệnh viện. Vui lòng thử lại sau."
+    }
+  },
+  "doctor": {
+    "title": "Quản lý Bác sĩ",
+    "subtitle": "Danh sách Bác sĩ",
+    "addButton": "Thêm Bác sĩ",
+    "editTitle": "Sửa Bác sĩ",
+    "form": {
+      "name": "Tên bác sĩ",
+      "specialty": "Chuyên khoa",
+      "hospital": "Bệnh viện",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "user": "Người dùng",
+      "avatar": "Ảnh bác sĩ",
+      "placeholder": {
+        "name": "Nhập tên bác sĩ",
+        "specialty": "Chọn chuyên khoa",
+        "hospital": "Chọn bệnh viện",
+        "email": "Nhập email",
+        "phone": "Nhập số điện thoại",
+        "user": "Chọn user",
+        "avatar": "Tải ảnh"
+      }
+    },
+    "messages": {
+      "deleteSuccess": "Xóa bác sĩ thành công",
+      "deleteError": "Xóa bác sĩ thất bại",
+      "createSuccess": "Thêm bác sĩ thành công",
+      "createError": "Thêm bác sĩ thất bại",
+      "updateSuccess": "Cập nhật bác sĩ thành công",
+      "updateError": "Cập nhật bác sĩ thất bại",
+      "loadErrorTitle": "Lỗi tải dữ liệu",
+      "loadErrorDescription": "Không thể lấy danh sách bác sĩ. Vui lòng thử lại sau."
+    },
+    "validation": {
+      "nameRequired": "Tên không được để trống",
+      "nameInvalid": "Họ và tên không được chứa ký tự đặc biệt",
+      "specialtyRequired": "Chuyên khoa không được để trống",
+      "hospitalRequired": "Vui lòng chọn bệnh viện",
+      "userRequired": "Vui lòng chọn user",
+      "phoneInvalid": "Số điện thoại phải là số và có từ 8 đến 15 chữ số"
+    }
+  },
+  "patient": {
+    "title": "Quản lý Bệnh nhân",
+    "subtitle": "Danh sách Bệnh nhân",
+    "addButton": "Thêm Bệnh nhân",
+    "editModalTitle": "Sửa Bệnh nhân",
+    "addModalTitle": "Thêm Bệnh nhân",
+    "columns": {
+      "id": "ID",
+      "image": "Hình ảnh",
+      "full_name": "Họ và tên",
+      "dob": "Ngày sinh",
+      "gender": "Giới tính",
+      "address": "Địa chỉ",
+      "phone": "SĐT",
+      "email": "Email",
+      "user_id": "User ID"
+    },
+    "form": {
+      "full_name": "Họ và tên",
+      "dob": "Ngày sinh",
+      "gender": "Giới tính",
+      "address": "Địa chỉ",
+      "phone": "Số điện thoại",
+      "email": "Email",
+      "avatar": "Ảnh đại diện",
+      "user": "Tài khoản",
+      "placeholder": {
+        "full_name": "Nhập họ và tên bệnh nhân",
+        "dob": "Vui lòng chọn ngày sinh",
+        "gender": "Chọn giới tính",
+        "address": "Nhập địa chỉ",
+        "phone": "Nhập số điện thoại",
+        "email": "Nhập email",
+        "user": "Chọn user"
+      }
+    },
+    "gender": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác"
+    },
+    "messages": {
+      "create_success": "Thêm bệnh nhân thành công",
+      "create_error": "Thêm bệnh nhân thất bại",
+      "update_success": "Cập nhật bệnh nhân thành công",
+      "update_error": "Cập nhật bệnh nhân thất bại",
+      "delete_success": "Xóa bệnh nhân thành công",
+      "delete_error": "Xóa bệnh nhân thất bại",
+      "load_error": "Không thể lấy danh sách bệnh nhân. Vui lòng thử lại sau."
+    }
+  },
+  "drug": {
+    "title": "Quản lý thuốc",
+    "subtitle": "Danh sách thuốc",
+    "add": "Thêm thuốc",
+    "edit": "Sửa thuốc",
+    "deleteSuccess": "Xóa thuốc thành công",
+    "deleteError": "Xóa thuốc thất bại",
+    "createSuccess": "Thêm thuốc thành công",
+    "createError": "Thêm thuốc thất bại",
+    "updateSuccess": "Cập nhật thuốc thành công",
+    "updateError": "Cập nhật thuốc thất bại",
+    "form": {
+      "name": "Tên thuốc",
+      "description": "Mô tả",
+      "price": "Giá",
+      "discount": "% Giảm giá",
+      "stock": "Số lượng tồn kho",
+      "image": "Ảnh thuốc",
+      "placeholder": {
+        "name": "Nhập tên thuốc",
+        "description": "Nhập mô tả thuốc",
+        "price": "Nhập giá thuốc",
+        "discount": "Nhập phần trăm giảm giá",
+        "stock": "Nhập số lượng tồn kho"
+      },
+      "validation": {
+        "name": "Vui lòng nhập tên thuốc",
+        "price": "Vui lòng nhập giá thuốc",
+        "discount": "Vui lòng nhập phần trăm giảm giá",
+        "stock": "Vui lòng nhập số lượng tồn kho"
+      }
+    },
+    "columns": {
+      "id": "ID",
+      "image": "Hình ảnh",
+      "name": "Tên",
+      "description": "Mô tả",
+      "price": "Giá",
+      "discount": "% giảm",
+      "stock": "SL tồn kho",
+      "sold": "SL đã bán",
+      "time": "Thời gian",
+      "stock_quantity": "Số lượng"
+    },
+    "error": {
+      "loadTitle": "Lỗi tải dữ liệu",
+      "loadDescription": "Không thể lấy danh sách thuốc. Vui lòng thử lại sau."
+    },
+    "upload": "Tải Ảnh"
+  },
+  "order": {
+    "title": "Đơn đặt thuốc",
+    "subtitle": "Danh sách đơn đặt thuốc",
+    "editModalTitle": "Cập nhật trạng thái đơn hàng",
+    "columns": {
+      "index": "STT",
+      "patient": "Thông tin khách hàng",
+      "order_items": "Thông tin thuốc",
+      "status": "Trạng thái"
+    },
+    "form": {
+      "order_id": "Mã đơn hàng",
+      "full_name": "Tên khách hàng",
+      "status": "Trạng thái",
+      "placeholder": {
+        "status": "Chọn trạng thái"
+      }
+    },
+    "status": {
+      "PENDING": "Chờ xử lý",
+      "PAID": "Đã thanh toán",
+      "CANCELED": "Đã hủy",
+      "DELIVERED": "Đã giao"
+    },
+    "messages": {
+      "update_success": "Cập nhật trạng thái thành công",
+      "update_error": "Cập nhật trạng thái thất bại",
+      "load_error": "Không thể lấy danh sách đơn đặt thuốc. Vui lòng thử lại sau."
+    }
+  },
+  "timeSlots": {
+    "title": "Quản lý lịch trình",
+    "subtitle": "Danh sách lịch trình",
+    "addButton": "Thêm lịch trình",
+    "editModalTitle": "Cập nhật lịch trình",
+    "createModalTitle": "Tạo lịch trình",
+    "columns": {
+      "index": "STT",
+      "doctor": "Bác sĩ",
+      "time": "Thời gian",
+      "capacity": "Số lượng"
+    },
+    "form": {
+      "doctor": "Bác sĩ",
+      "start_time": "Thời gian bắt đầu",
+      "end_time": "Thời gian kết thúc",
+      "capacity": "Số lượng",
+      "placeholder": {
+        "doctor": "Chọn bác sĩ"
+      }
+    },
+    "messages": {
+      "load_error": "Không thể lấy danh sách lịch trình. Vui lòng thử lại sau.",
+      "create_success": "Tạo lịch trình thành công",
+      "create_error": "Tạo lịch trình thất bại",
+      "update_success": "Cập nhật lịch trình thành công",
+      "update_error": "Cập nhật lịch trình thất bại",
+      "delete_success": "Xóa lịch trình thành công",
+      "delete_error": "Xóa lịch trình thất bại"
+    }
+  },
+  "appointment": {
+    "title": "Lịch hẹn khám",
+    "subtitle": "Danh sách lịch hẹn khám bệnh",
+    "columns": {
+      "index": "STT",
+      "patient": "Bệnh nhân",
+      "timeSlot": "Lịch hẹn",
+      "status": "Trạng thái",
+      "notes": "Ghi chú"
+    },
+    "form": {
+      "appointment_id": "Mã lịch hẹn",
+      "full_name": "Tên bệnh nhân",
+      "status": "Trạng thái",
+      "status_placeholder": "Chọn trạng thái"
+    },
+    "status": {
+      "pending": "Chờ xác nhận",
+      "confirmed": "Đã xác nhận",
+      "canceled": "Đã hủy",
+      "completed": "Hoàn thành"
+    },
+    "messages": {
+      "load_error": "Không thể lấy danh sách lịch hẹn. Vui lòng thử lại sau.",
+      "update_success": "Cập nhật trạng thái thành công",
+      "update_error": "Cập nhật trạng thái thất bại"
+    },
+    "modal": {
+      "title": "Cập nhật trạng thái lịch hẹn"
+    },
+    "doctor": "Bác sĩ",
+    "hospital": "Bệnh viện",
+    "time": "Thời gian",
+    "quantity": "Số lượng"
+  },
+  "user": {
+    "title": "Quản lý người dùng",
+    "subtitle": "Danh sách người dùng",
+    "addButtonText": "Thêm người dùng",
+    "modal": {
+      "addTitle": "Thêm người dùng",
+      "editTitle": "Sửa người dùng"
+    },
+    "columns": {
+      "id": "ID",
+      "username": "Tài khoản",
+      "email": "Email",
+      "firebase_uid": "Firebase UID",
+      "role": "Vai trò",
+      "time": "Thời gian"
+    },
+    "roles": {
+      "admin": "Quản trị viên",
+      "doctor": "Bác sĩ",
+      "patient": "Bệnh nhân"
+    },
+    "messages": {
+      "load_error": "Không thể lấy danh sách tài khoản. Vui lòng thử lại sau.",
+      "delete_success": "Xóa tài khoản thành công",
+      "delete_error": "Xóa tài khoản thất bại",
+      "create_success": "Thêm tài khoản thành công",
+      "create_error": "Thêm tài khoản thất bại",
+      "update_success": "Cập nhật tài khoản thành công",
+      "update_error": "Cập nhật tài khoản thất bại"
+    },
+    "form": {
+      "username": "Tài khoản",
+      "username_placeholder": "Nhập tài khoản người dùng",
+      "username_required": "Tài khoản không được để trống",
+      "username_min": "Tài khoản phải có ít nhất 3 ký tự",
+
+      "email": "Email",
+      "email_placeholder": "Nhập email người dùng",
+      "email_required": "Email không được để trống",
+      "email_invalid": "Email không hợp lệ",
+
+      "firebase_uid": "Firebase UID",
+      "firebase_uid_placeholder": "Nhập Firebase UID người dùng",
+      "firebase_uid_required": "Firebase UID không được để trống",
+      "firebase_uid_min": "Firebase UID phải có ít nhất 6 ký tự",
+
+      "role": "Vai trò",
+      "role_placeholder": "Chọn vai trò",
+      "role_required": "Vui lòng chọn vai trò",
+
+      "password": "Mật khẩu",
+      "password_placeholder": "Nhập mật khẩu",
+      "password_required": "Mật khẩu không được để trống",
+      "password_min": "Mật khẩu phải có ít nhất 6 ký tự",
+      "password_pattern": "Mật khẩu phải có ít nhất 1 chữ cái và 1 số",
+
+      "confirmPassword": "Nhập lại mật khẩu",
+      "confirmPassword_placeholder": "Nhập lại mật khẩu",
+      "confirmPassword_required": "Vui lòng nhập lại mật khẩu",
+      "confirmPassword_mismatch": "Mật khẩu nhập lại không khớp!"
+    }
+  }
+
+
+
+
+
+}
