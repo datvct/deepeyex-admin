@@ -1,7 +1,7 @@
 // src/apis/UserApi.ts
 import { AxiosInstance } from "axios";
 import api from "../../../shares/configs/axios";
-import { CreateUserBody, UpdateUserBody } from "../types/body";
+import { CreateUserBody, UpdatePasswordByEmailBody, UpdateUserBody } from "../types/body";
 import {
   CreateUserResponse,
   DeleteUserResponse,
@@ -9,6 +9,7 @@ import {
   UpdateUserResponse,
 } from "../types/response";
 import { User } from "../types/user";
+import { SuccessResponse } from "../../auth/apis/authApi";
 
 const endpoint = "/private/users";
 
@@ -46,6 +47,11 @@ class UserClient {
   // ---------------- Delete User ----------------
   async delete(userId: string): Promise<DeleteUserResponse> {
     const response = await this.client.delete<DeleteUserResponse>(`${endpoint}/${userId}`);
+    return response.data;
+  }
+
+  async resetPasswordByEmail(payload: UpdatePasswordByEmailBody): Promise<SuccessResponse> {
+    const response = await this.client.post<SuccessResponse>("/public/reset-password", payload);
     return response.data;
   }
 }
