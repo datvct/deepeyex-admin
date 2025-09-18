@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
 import api from "../../../shares/configs/axios";
 import { SuccessResponse } from "./authApi";
-import { UpdatePasswordByEmailBody } from "../types/body";
+import { UpdatePasswordByEmailBody } from "../../users/types/body";
 
 class UserClient {
   private readonly client: AxiosInstance;

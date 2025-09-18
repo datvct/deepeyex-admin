@@ -10,7 +10,7 @@ import {
 } from "../types/response";
 import { Doctor } from "../types/doctor";
 
-const endpoint = "/doctors";
+const endpoint = "/hospital/doctors";
 
 class DoctorClient {
   private readonly client: AxiosInstance;

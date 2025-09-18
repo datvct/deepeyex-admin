@@ -1,4 +1,4 @@
-import { Alert, Form, Input, Modal, Spin, Upload } from "antd";
+import { Alert, Col, Form, Input, Modal, Row, Select, Spin, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import CrudTable from "../../shares/components/CrudTable";
 import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
@@ -13,6 +13,8 @@ import z from "zod";
 import { PlusOutlined } from "@ant-design/icons";
 import { useUpdateHospitalMutation } from "../../modules/hospitals/hooks/mutations/use-update-hospital.mutation";
 import { useTranslation } from "react-i18next";
+import { City, Ward } from "../../shares/types/types";
+const { Option } = Select;
 
 export default function HospitalsPage() {
   const { t } = useTranslation();
@@ -24,6 +26,17 @@ export default function HospitalsPage() {
   const { data, isLoading, isError } = useListHospitalsQuery();
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
+  const [cities, setCities] = useState<City[]>([]);
+  const [wards, setWards] = useState<Ward[]>([]);
+
+  useEffect(() => {
+    fetch("http://provinces.open-api.vn/api/v2/?depth=2")
+      .then((res) => res.json())
+      .then((data) => {
+        setCities(data);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
 
   // ---- Mutation: Delete
   const deleteHospital = useDeleteHospitalMutation({
@@ -75,11 +88,15 @@ export default function HospitalsPage() {
   // ---- Sửa ----
   const handleEdit = (hospital: Hospital) => {
     setEditingHospital(hospital);
+    console.log("Editing hospital:", hospital);
     form.setFieldsValue({
       name: hospital.name,
       address: hospital.address,
       phone: hospital.phone,
       email: hospital.email,
+      url_map: hospital.url_map,
+      ward: hospital.ward,
+      city: hospital.city,
       logo: hospital.image
         ? [
             {
@@ -112,6 +129,7 @@ export default function HospitalsPage() {
           ...parsed,
         });
       } else {
+        console.log("Creating hospital with data:", parsed);
         createHospital.mutate(parsed);
       }
 
@@ -132,6 +150,16 @@ export default function HospitalsPage() {
   // ----- Xóa bệnh viện -----
   const handleDelete = (hospital: Hospital) => {
     deleteHospital.mutate(hospital.hospital_id);
+  };
+
+  const handleCityChange = (cityName: string) => {
+    const selectedCity = cities.find((city) => city.name === cityName);
+
+    if (selectedCity) {
+      setWards(selectedCity.wards);
+    } else {
+      setWards([]);
+    }
   };
 
   // ---- Cấu hình cột bảng ----
@@ -190,54 +218,134 @@ export default function HospitalsPage() {
         }}
         centered
         destroyOnClose
+        width={800} // Tăng chiều rộng modal để bố cục 2 cột đẹp hơn
       >
         <Form form={form} layout="vertical">
-          <Form.Item
-            name="name"
-            label={t("hospital.form.name")}
-            rules={[{ required: true, message: t("hospital.form.placeholder.name") }]}
-          >
-            <Input placeholder={t("hospital.form.placeholder.name")} />
-          </Form.Item>
+          <Row gutter={24}>
+            {/* Cột trái */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="name"
+                label={t("hospital.form.name")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.name"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.name")} />
+              </Form.Item>
 
-          <Form.Item name="address" label={t("hospital.form.address")}>
-            <Input placeholder={t("hospital.form.placeholder.address")} />
-          </Form.Item>
+              <Form.Item
+                name="phone"
+                label={t("hospital.form.phone")}
+                rules={[
+                  {
+                    pattern: /^[0-9]{8,15}$/,
+                    message: t("hospital.form.placeholder.phone"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.phone")} />
+              </Form.Item>
 
-          <Form.Item
-            name="phone"
-            label={t("hospital.form.phone")}
-            rules={[
-              {
-                pattern: /^[0-9]{8,15}$/,
-                message: t("hospital.form.placeholder.phone"),
-              },
-            ]}
-          >
-            <Input placeholder={t("hospital.form.placeholder.phone")} />
-          </Form.Item>
+              <Form.Item
+                name="email"
+                label={t("hospital.form.email")}
+                rules={[
+                  {
+                    type: "email",
+                    message: t("hospital.form.placeholder.email"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.email")} />
+              </Form.Item>
 
-          <Form.Item
-            name="email"
-            label={t("hospital.form.email")}
-            rules={[{ type: "email", message: t("hospital.form.placeholder.email") }]}
-          >
-            <Input placeholder={t("hospital.form.placeholder.email")} />
-          </Form.Item>
+              <Form.Item
+                name="url_map"
+                label={t("hospital.form.url_map")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.url_map"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.url_map")} />
+              </Form.Item>
+            </Col>
 
-          <Form.Item
-            name="logo"
-            label={t("hospital.form.image")}
-            valuePropName="fileList"
-            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
-          >
-            <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>{t("hospital.form.image")}</div>
-              </div>
-            </Upload>
-          </Form.Item>
+            {/* Cột phải */}
+            <Col xs={24} sm={12}>
+              <Form.Item
+                name="city"
+                label={t("hospital.form.city")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.city"),
+                  },
+                ]}
+              >
+                <Select
+                  placeholder={t("hospital.form.placeholder.city")}
+                  onChange={handleCityChange}
+                  showSearch
+                  optionFilterProp="children"
+                >
+                  {cities.map((city) => (
+                    <Option key={city.code} value={city.name}>
+                      {city.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="ward"
+                label={t("hospital.form.ward")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.ward"),
+                  },
+                ]}
+              >
+                <Select
+                  placeholder={t("hospital.form.placeholder.ward")}
+                  disabled={wards.length === 0}
+                  showSearch
+                  optionFilterProp="children"
+                >
+                  {wards.map((ward) => (
+                    <Option key={ward.code} value={ward.name}>
+                      {ward.name}
+                    </Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="address" label={t("hospital.form.address")}>
+                <Input placeholder={t("hospital.form.placeholder.address")} />
+              </Form.Item>
+
+              <Form.Item
+                name="logo"
+                label={t("hospital.form.image")}
+                valuePropName="fileList"
+                getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+              >
+                <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>{t("hospital.form.image")}</div>
+                  </div>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     </>
