@@ -4,12 +4,16 @@ import { LogOut, UserCog, UserPen, LockKeyhole, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../shares/components/Breadcrumbs";
+import { persistor, useAppDispatch } from "../shares/stores";
+import { clearTokens } from "../shares/stores/authSlice";
+import { toast } from "react-toastify";
 
 const { Header } = Layout;
 
 const HeaderLayout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // Menu dropdown cho tài khoản
   const accountItems: MenuProps["items"] = [
@@ -33,7 +37,9 @@ const HeaderLayout = () => {
       icon: <LogOut size={18} className="text-red-500" />,
       label: <span className="text-red-500">{t("header.logout")}</span>,
       onClick: () => {
-        console.log("Đăng xuất");
+        dispatch(clearTokens());
+        persistor.purge();
+        navigate("/login");
       },
     },
   ];

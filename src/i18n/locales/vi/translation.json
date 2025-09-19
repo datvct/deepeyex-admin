@@ -100,11 +100,17 @@
       "phone": "Số điện thoại",
       "email": "Email",
       "image": "Ảnh bệnh viện",
+      "url_map": "URL bản đồ",
+      "city": "Thành phố",
+      "ward": "Phường/Xã",
       "placeholder": {
         "name": "Nhập tên bệnh viện",
         "address": "Nhập địa chỉ bệnh viện",
         "phone": "Nhập số điện thoại",
-        "email": "Nhập email"
+        "email": "Nhập email",
+        "url_map": "Nhập URL bản đồ",
+        "city": "Thành phố",
+        "ward": "Phường/Xã"
       }
     },
     "messages": {

@@ -17,6 +17,8 @@ import { ChevronLeft, ChevronRight, Globe, LogOut } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import logo from "../../assets/logo.jpg";
+import { persistor, useAppDispatch } from "../stores";
+import { clearTokens } from "../stores/authSlice";
 
 const { Sider } = Layout;
 
@@ -35,7 +37,7 @@ const Sidebar: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState<string[]>([]);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLangModalVisible, setIsLangModalVisible] = useState(false);
-
+  const dispatch = useAppDispatch();
   const currentPath = location.pathname;
 
   const menuItems: CustomMenuItem[] = [
@@ -145,7 +147,11 @@ const Sidebar: React.FC = () => {
       key: "logout",
       icon: <LogOut size={18} className="text-red-500" />,
       label: <span className="text-red-500">{t("sidebar.logout")}</span>,
-      onClick: () => console.log("Đăng xuất"),
+      onClick: () => {
+        dispatch(clearTokens());
+        persistor.purge();
+        navigate("/login");
+      },
     },
   ];
 

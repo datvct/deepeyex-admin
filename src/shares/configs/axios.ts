@@ -1,7 +1,10 @@
 import axios, { AxiosInstance } from "axios";
+import { store } from "../stores";
+import { clearTokens, setTokens } from "../stores/authSlice";
+import { refreshToken } from "./refreshToken";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: "http://localhost:8000",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
@@ -12,7 +15,7 @@ const api: AxiosInstance = axios.create({
 // Thêm token nếu có
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // lấy token từ localStorage
+    const token = store.getState().auth.accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,18 +29,32 @@ api.interceptors.request.use(
 // ---------------- Response Interceptor ----------------
 // Xử lý lỗi chung hoặc logout nếu 401
 api.interceptors.response.use(
-  (response) => response, // nếu request thành công, trả response về
-  (error) => {
-    if (error.response) {
-      const status = error.response.status;
-      if (status === 401) {
-        // Token hết hạn hoặc không hợp lệ → redirect login
-        console.warn("Unauthorized! Redirecting to login...");
-        window.location.href = "/login";
-      } else if (status >= 500) {
-        console.error("Server error:", error.response.data);
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const res = await refreshToken();
+        if (res.data?.access_token) {
+          store.dispatch(
+            setTokens({
+              accessToken: res.data.access_token,
+              refreshToken: "",
+              userId: res.data.user_id ?? "",
+              role: res.data.role ?? "",
+            }),
+          );
+          originalRequest.headers.Authorization = `Bearer ${res.data.access_token}`;
+          return api(originalRequest);
+        }
+      } catch (refreshErr) {
+        store.dispatch(clearTokens());
+        window.location.href = `/login`;
       }
     }
+
     return Promise.reject(error);
   },
 );

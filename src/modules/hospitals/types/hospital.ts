@@ -7,6 +7,9 @@ type Hospital = {
   image?: string;
   createdAt: string;
   updatedAt: string;
+  url_map?: string;
+  ward?: string;
+  city?: string;
 };
 
 export { Hospital };

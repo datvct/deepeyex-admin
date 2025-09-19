@@ -9,7 +9,7 @@ import {
   UpdateDrugResponse,
 } from "../types/response";
 
-const endpoint = "/drugs";
+const endpoint = "/hospital/drugs";
 
 class DrugClient {
   private readonly client: AxiosInstance;

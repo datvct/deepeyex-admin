@@ -9,7 +9,7 @@ import {
 } from "../types/response";
 import { CreateTimeSlotBody, UpdateTimeSlotBody } from "../types/body";
 
-const endpoint = "/timeslots";
+const endpoint = "/hospital/timeslots";
 
 class TimeSlotClient {
   private readonly client: AxiosInstance;

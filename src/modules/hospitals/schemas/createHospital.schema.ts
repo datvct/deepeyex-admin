@@ -18,7 +18,9 @@ export const createHospitalSchema = z.object({
     .optional(),
 
   email: z.string().email("Email không hợp lệ").optional(),
-
+  url_map: z.string().url("URL bản đồ không hợp lệ").optional(),
+  ward: z.string().optional(),
+  city: z.string().optional(),
   logo: z
     .any()
     .optional()
