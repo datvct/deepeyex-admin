@@ -62,6 +62,14 @@ export const DRUGS: PathItem = {
   },
 };
 
+export const VIDEOCHAT: PathItem = {
+  DETAIL: {
+    PATH: "/video-chat",
+    LABEL: "Bệnh viện",
+    BREADCRUMB: [{ title: "Cuộc hội thoại", href: "/video-chat" }],
+  },
+};
+
 export const TIMESLOTS: PathItem = {
   DETAIL: {
     PATH: "/timeslots",

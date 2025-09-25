@@ -63,7 +63,8 @@
     "appointments": "Appointments",
     "settings": "Settings",
     "changeLanguage": "Change Language",
-    "logout": "Logout"
+    "logout": "Logout",
+    "videoChat": "Video Chat"
   },
   "header": {
     "profile": "Profile",

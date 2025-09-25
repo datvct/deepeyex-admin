@@ -15,6 +15,10 @@ import TimeSlotsPage from "../pages/time-slots";
 import AppointmentsPage from "../pages/apppointments";
 import DashboardPage from "../pages/dashboard";
 import AuthLayout from "../pages/auth/authLayout";
+import VideoChatPage from "../pages/video-chats";
+import ProtectedRoute from "./ProtectedRoute";
+import { ROLES } from "../shares/constants/roles";
+import Forbidden403 from "../shares/components/Forbidden403";
 
 export const Navigator = () => {
   return (
@@ -27,17 +31,89 @@ export const Navigator = () => {
         /> */}
         <Route element={<AuthLayout />}>
           <Route element={<MainLayout />}>
-            <Route path={Paths.DASHBOARD.DETAIL.PATH} element={<DashboardPage />} />
-            <Route path={Paths.USERS.DETAIL.PATH} element={<UserPage />} />
-            <Route path={Paths.DOCTORS.DETAIL.PATH} element={<DoctorsPage />} />
-            <Route path={Paths.HOSPITALS.DETAIL.PATH} element={<HospitalsPage />} />
-            <Route path={Paths.PATIENTS.DETAIL.PATH} element={<PatientsPage />} />
-            <Route path={Paths.DRUGS.DETAIL.PATH} element={<DrugsPage />} />
-            <Route path={Paths.ORDERS.DETAIL.PATH} element={<OrdersPage />} />
-            <Route path={Paths.TIMESLOTS.DETAIL.PATH} element={<TimeSlotsPage />} />
-            <Route path={Paths.APPOINTMENTS.DETAIL.PATH} element={<AppointmentsPage />} />
+            <Route
+              path={Paths.DASHBOARD.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.USERS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN]}>
+                  <UserPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.DOCTORS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN]}>
+                  <DoctorsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.HOSPITALS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN]}>
+                  <HospitalsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.PATIENTS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN]}>
+                  <PatientsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.DRUGS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <DrugsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.ORDERS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <OrdersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.TIMESLOTS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <TimeSlotsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.APPOINTMENTS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <AppointmentsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.VIDEOCHAT.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                  <VideoChatPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Route>
+        <Route path="/403" element={<Forbidden403 />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </HistoryRouter>

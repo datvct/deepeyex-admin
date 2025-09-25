@@ -13,11 +13,12 @@ import {
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
-import { ChevronLeft, ChevronRight, Globe, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, LogOut, VideotapeIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 import logo from "../../assets/logo.jpg";
-import { persistor, useAppDispatch } from "../stores";
+import { persistor, RootState, useAppDispatch } from "../stores";
 import { clearTokens } from "../stores/authSlice";
 
 const { Sider } = Layout;
@@ -40,7 +41,8 @@ const Sidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const currentPath = location.pathname;
 
-  const menuItems: CustomMenuItem[] = [
+  const { role } = useSelector((state: RootState) => state.auth);
+  const fullMenuItems: CustomMenuItem[] = [
     {
       key: "dashboard",
       label: t("sidebar.dashboard"),
@@ -95,7 +97,26 @@ const Sidebar: React.FC = () => {
       icon: <FaCalendarCheck className="w-5 h-5" />,
       url: "/appointments",
     },
+    {
+      key: "video-chat",
+      label: t("sidebar.videoChat"),
+      icon: <VideotapeIcon className="w-5 h-5" />,
+      url: "/video-chat",
+    },
   ];
+
+  const menuItems = useMemo(() => {
+    console.log("Role in Sidebar:", role);
+    if (role === "admin") return fullMenuItems;
+
+    if (role === "doctor") {
+      return fullMenuItems.filter((item) =>
+        ["appointments", "timeslots", "video-chat", "dashboard"].includes(item.key),
+      );
+    }
+
+    return [];
+  }, [role, t]);
 
   useEffect(() => {
     const pathSegments = currentPath.split("/").filter(Boolean);
