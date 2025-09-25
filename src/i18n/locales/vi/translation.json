@@ -63,7 +63,8 @@
     "appointments": "Lịch hẹn khám",
     "settings": "Cài đặt",
     "changeLanguage": "Thay đổi ngôn ngữ",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "videoChat": "Trò chuyện video"
   },
   "header": {
     "profile": "Thông tin tài khoản",

@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../shares/components/Breadcrumbs";
 import { persistor, useAppDispatch } from "../shares/stores";
 import { clearTokens } from "../shares/stores/authSlice";
-import { toast } from "react-toastify";
 
 const { Header } = Layout;
 
