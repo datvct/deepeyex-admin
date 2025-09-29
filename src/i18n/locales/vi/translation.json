@@ -64,7 +64,8 @@
     "settings": "Cài đặt",
     "changeLanguage": "Thay đổi ngôn ngữ",
     "logout": "Đăng xuất",
-    "videoChat": "Trò chuyện video"
+    "videoChat": "Trò chuyện video",
+    "schedule": "Lịch khám"
   },
   "header": {
     "profile": "Thông tin tài khoản",
@@ -104,6 +105,8 @@
       "url_map": "URL bản đồ",
       "city": "Thành phố",
       "ward": "Phường/Xã",
+      "latitude": "Vĩ độ",
+      "longitude": "Kinh độ",
       "placeholder": {
         "name": "Nhập tên bệnh viện",
         "address": "Nhập địa chỉ bệnh viện",
@@ -111,7 +114,10 @@
         "email": "Nhập email",
         "url_map": "Nhập URL bản đồ",
         "city": "Thành phố",
-        "ward": "Phường/Xã"
+        "ward": "Phường/Xã",
+        "latitude": "Vĩ độ",
+        "longitude": "Kinh độ",
+        "image": "Tải ảnh"
       }
     },
     "messages": {

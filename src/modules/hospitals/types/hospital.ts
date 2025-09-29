@@ -10,6 +10,8 @@ type Hospital = {
   url_map?: string;
   ward?: string;
   city?: string;
+  latitude: number;
+  longitude: number;
 };
 
 export { Hospital };

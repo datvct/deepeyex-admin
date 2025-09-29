@@ -64,7 +64,8 @@
     "settings": "Settings",
     "changeLanguage": "Change Language",
     "logout": "Logout",
-    "videoChat": "Video Chat"
+    "videoChat": "Video Chat",
+    "schedule": "Schedules"
   },
   "header": {
     "profile": "Profile",
@@ -101,11 +102,16 @@
       "phone": "Phone",
       "email": "Email",
       "image": "Hospital Image",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
       "placeholder": {
         "name": "Enter hospital name",
         "address": "Enter hospital address",
         "phone": "Enter phone number",
-        "email": "Enter email"
+        "email": "Enter email",
+        "image": "Upload Image",
+        "latitude": "Enter latitude",
+        "longitude": "Enter longitude"
       }
     },
     "messages": {

@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import history from ".";
 import { HistoryRouter } from "./history-router";
@@ -19,6 +18,8 @@ import VideoChatPage from "../pages/video-chats";
 import ProtectedRoute from "./ProtectedRoute";
 import { ROLES } from "../shares/constants/roles";
 import Forbidden403 from "../shares/components/Forbidden403";
+import WeeklySchedule from "../pages/schedule";
+import WeeklyScheduleWithModal from "../pages/schedule/index copy";
 
 export const Navigator = () => {
   return (
@@ -108,6 +109,14 @@ export const Navigator = () => {
               element={
                 <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
                   <VideoChatPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.SCHEDULE.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <WeeklyScheduleWithModal />
                 </ProtectedRoute>
               }
             />

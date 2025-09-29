@@ -51,3 +51,46 @@ body {
     @apply bg-orange-primary hover:!bg-white hover:!text-orange-primary transition-all duration-300 ease-out delay-0 hover:cursor-pointer !outline !border-none !outline-orange-primary inline-flex items-center justify-center;
   }
 }
+
+.schedule-table .row-morning .ant-table-cell {
+  height: 200px !important;    
+  vertical-align: middle;
+}
+
+.schedule-table .row-afternoon .ant-table-cell {
+  height: 200px !important;
+}
+
+.schedule-table .row-evening .ant-table-cell {
+  height: 150px !important;
+}
+
+.schedule-table .ant-table-thead > tr > th {
+  color: #1da1f2;               /* màu chữ */
+  text-align: center;         /* căn giữa chữ */
+  font-weight: bold;
+}
+
+.schedule-table .ant-table-tbody > tr > td {
+  border: 0.5px solid #eaeaea;  /* màu viền */
+  text-align: center;         /* căn giữa chữ */
+  padding: 8px;               /* khoảng cách bên trong ô */
+}
+
+.schedule-table .ant-table-tbody > tr > td:first-child {
+ background-color: #ffffce;
+}
+.schedule-table .ant-table-tbody > tr:hover > td {
+  background-color: unset !important;
+}
+
+.schedule-table .ant-table-tbody > tr:hover >  td:first-child  {
+ background-color: #ffffce !important;
+}
+.schedule-table .ant-table-tbody .ant-table-cell .ant-table-cell-row-hover {
+  background-color: unset !important;
+}
+
+.schedule-table .ant-table-tbody .ant-table-cell:first-child .ant-table-cell-row-hover {
+ background-color: #ffffce !important;
+}

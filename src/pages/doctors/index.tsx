@@ -15,9 +15,9 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useCreateDoctorMutation } from "../../modules/doctors/hooks/mutations/use-create-doctor.mutation";
 import { useUpdateDoctorMutation } from "../../modules/doctors/hooks/mutations/use-update-doctor.mutation";
 import { createDoctorSchema } from "../../modules/doctors/schemas/createDoctor.schema";
-import { userData } from "../../shares/constants/mockApiUser";
 import z from "zod";
 import { useTranslation } from "react-i18next";
+import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-users.query";
 
 export default function DoctorsPage() {
   const { t } = useTranslation();
@@ -30,6 +30,8 @@ export default function DoctorsPage() {
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
 
   const { data, isLoading, isError } = useListDoctorsQuery();
+
+  const { data: dataUser, isLoading: isLoadingUser, isError: isErrorUser } = useListUsersQuery();
 
   const {
     data: hospitalData,
@@ -276,11 +278,11 @@ export default function DoctorsPage() {
             rules={[{ required: true, message: t("doctor.validation.userRequired") }]}
           >
             <Select placeholder={t("doctor.form.placeholder.user")} allowClear>
-              {userData?.data
+              {dataUser?.data
                 ?.filter((user) => user.role === "doctor")
                 .map((user) => (
-                  <Select.Option key={user.user_id} value={user.user_id}>
-                    {user.username || user.email || user.user_id}
+                  <Select.Option key={user.id} value={user.id}>
+                    {user.username || user.email || user.id}
                   </Select.Option>
                 ))}
             </Select>

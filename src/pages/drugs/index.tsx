@@ -108,6 +108,7 @@ export default function DrugsPage() {
       const parsed = createDrugSchema.parse(formattedValues);
 
       if (editingDrug) {
+        console.log("Editing drug:", editingDrug);
         updateDrug.mutate({
           drug_id: editingDrug.drug_id,
           ...parsed,
@@ -290,7 +291,12 @@ export default function DrugsPage() {
             />
           </Form.Item>
 
-          <Form.Item name="image" label={t("drug.form.image")}>
+          <Form.Item
+            name="image"
+            label={t("drug.form.image")}
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+          >
             <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
               <div>
                 <PlusOutlined />

@@ -103,6 +103,12 @@ const Sidebar: React.FC = () => {
       icon: <VideotapeIcon className="w-5 h-5" />,
       url: "/video-chat",
     },
+    {
+      key: "schedule",
+      label: t("sidebar.schedule"),
+      icon: <FaCalendarCheck className="w-5 h-5" />,
+      url: "/schedule",
+    },
   ];
 
   const menuItems = useMemo(() => {

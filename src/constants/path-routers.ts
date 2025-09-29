@@ -94,6 +94,14 @@ export const APPOINTMENTS: PathItem = {
   },
 };
 
+export const SCHEDULE: PathItem = {
+  DETAIL: {
+    PATH: "/schedule",
+    LABEL: "Lịch khám",
+    BREADCRUMB: [{ title: "Lịch khám", href: "/schedule" }],
+  },
+};
+
 export const PROFILE: PathItem = {
   DETAIL: {
     PATH: "/profile",
