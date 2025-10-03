@@ -18,8 +18,9 @@ import VideoChatPage from "../pages/video-chats";
 import ProtectedRoute from "./ProtectedRoute";
 import { ROLES } from "../shares/constants/roles";
 import Forbidden403 from "../shares/components/Forbidden403";
-import WeeklySchedule from "../pages/schedule";
-import WeeklyScheduleWithModal from "../pages/schedule/index copy";
+import WeeklyScheduleWithModal from "../pages/schedule";
+import React from "react";
+import HospitalScheduleManager from "../pages/generate-time-slots";
 
 export const Navigator = () => {
   return (
@@ -35,7 +36,7 @@ export const Navigator = () => {
             <Route
               path={Paths.DASHBOARD.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL]}>
                   <DashboardPage />
                 </ProtectedRoute>
               }
@@ -117,6 +118,14 @@ export const Navigator = () => {
               element={
                 <ProtectedRoute roles={[ROLES.DOCTOR]}>
                   <WeeklyScheduleWithModal />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.GENERATE_TIME_SLOT.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.HOSPITAL]}>
+                  <HospitalScheduleManager />
                 </ProtectedRoute>
               }
             />

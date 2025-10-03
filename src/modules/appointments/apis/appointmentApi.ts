@@ -63,6 +63,14 @@ class AppointmentClient {
     );
     return response.data;
   }
+
+  // ---------------- Get Appointment by doctorId ----------------
+  async getByDoctorId(doctorId: string): Promise<ListAppointmentsResponse> {
+    const response = await this.client.get<ListAppointmentsResponse>(
+      `${endpoint}/doctor/${doctorId}`,
+    );
+    return response.data;
+  }
 }
 
 const AppointmentApi = new AppointmentClient();

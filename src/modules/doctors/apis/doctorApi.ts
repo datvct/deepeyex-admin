@@ -5,6 +5,7 @@ import { CreateDoctorBody } from "../schemas/createDoctor.schema";
 import {
   CreateDoctorResponse,
   DeleteDoctorResponse,
+  GetDoctorResponse,
   ListDoctorsResponse,
   UpdateDoctorResponse,
 } from "../types/response";
@@ -34,14 +35,22 @@ class DoctorClient {
   }
 
   // ---------------- Get Doctor By UserID ----------------
-  async getByUserId(userId: string): Promise<Doctor> {
-    const response = await this.client.get<Doctor>(`${endpoint}/user/${userId}`);
+  async getByUserId(userId: string): Promise<GetDoctorResponse> {
+    const response = await this.client.get<GetDoctorResponse>(`${endpoint}/user/${userId}`);
     return response.data;
   }
 
   // ---------------- Get Doctor By DoctorID ----------------
   async getById(doctorId: string): Promise<Doctor> {
     const response = await this.client.get<Doctor>(`${endpoint}/${doctorId}`);
+    return response.data;
+  }
+
+  // ---------------- Get Doctors By HospitalID ----------------
+  async getByHospitalId(hospitalId: string): Promise<ListDoctorsResponse> {
+    const response = await this.client.get<ListDoctorsResponse>(
+      `${endpoint}/hospital/${hospitalId}`,
+    );
     return response.data;
   }
 

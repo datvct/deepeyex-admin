@@ -94,3 +94,63 @@ body {
 .schedule-table .ant-table-tbody .ant-table-cell:first-child .ant-table-cell-row-hover {
  background-color: #ffffce !important;
 }
+
+/* Print styles - chỉ in bảng lịch */
+@media print {
+  /* Ẩn tất cả các phần không cần thiết */
+  body * {
+    visibility: hidden;
+  }
+  
+  /* Chỉ hiển thị bảng lịch */
+  .schedule-table,
+  .schedule-table * {
+    visibility: visible;
+  }
+  
+  /* Đặt vị trí bảng lịch */
+  .schedule-table {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+  }
+  
+  /* Ẩn các nút bấm trong bảng */
+  .schedule-table button {
+    display: none !important;
+  }
+  
+  /* Tối ưu hóa cho in */
+  .schedule-table .ant-table {
+    font-size: 12px;
+  }
+  
+  .schedule-table .ant-table-thead > tr > th {
+    background-color: #f0f0f0 !important;
+    color: #000 !important;
+    font-weight: bold;
+    padding: 8px 4px;
+  }
+  
+  .schedule-table .ant-table-tbody > tr > td {
+    padding: 4px;
+    border: 1px solid #000 !important;
+  }
+  
+  /* Đảm bảo màu sắc hiển thị đúng khi in */
+  .schedule-table .ant-table-tbody > tr > td:first-child {
+    background-color: #ffffce !important;
+  }
+  
+  /* Ẩn footer ghi chú khi in */
+  .schedule-table .ant-table-footer {
+    display: none !important;
+  }
+  
+  /* Tối ưu kích thước cho in A4 nằm ngang */
+  @page {
+    margin: 1cm;
+    size: A4 landscape;
+  }
+}

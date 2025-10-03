@@ -3,21 +3,42 @@ import { Button, Col, Form, Input, Layout, Row } from "antd";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../modules/auth/hooks/mutations/use-login.mutation";
-import logo from "../../assets/logo.jpg";
-
+import { DoctorApi } from "../../modules/doctors/apis/doctorApi";
+import { useDispatch } from "react-redux";
+import { ROLES } from "../../shares/constants/roles";
 const { Content } = Layout;
+import { setDoctor } from "../../shares/stores/authSlice";
+import { Doctor } from "../../modules/doctors/types/doctor";
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
   const loginMutation = useLoginMutation({
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setLoading(true);
       const tokens = data?.data;
 
       if (!tokens?.access_token) {
         toast.error("Login thất bại: Không nhận được token.");
         return;
+      }
+      if (tokens?.role === ROLES.HOSPITAL) {
+        if (tokens?.role === ROLES.DOCTOR) {
+          const doctor = await DoctorApi.getById(data.data?.user_id || "");
+          const payload = {
+            doctor: doctor,
+          };
+          dispatch(setDoctor(payload?.doctor ?? ({} as Doctor)));
+        }
+      }
+      if (tokens?.role === ROLES.DOCTOR) {
+        const doctor = await DoctorApi.getByUserId(data.data?.user_id || "");
+        const payload = {
+          doctor: doctor.data,
+        };
+        dispatch(setDoctor(payload?.doctor ?? ({} as Doctor)));
       }
 
       toast.success("Đăng nhập thành công!");
@@ -67,7 +88,11 @@ export default function LoginPage() {
               background: "#fafafa",
             }}
           >
-            <img src={logo} alt="Login Illustration" style={{ maxWidth: "80%", height: "auto" }} />
+            <img
+              src={"/logo.jpg"}
+              alt="Login Illustration"
+              style={{ maxWidth: "80%", height: "auto" }}
+            />
           </Col>
 
           <Col xs={24} md={12} style={{ padding: "40px" }}>

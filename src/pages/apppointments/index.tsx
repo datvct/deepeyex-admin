@@ -126,10 +126,10 @@ export default function AppointmentsPage() {
     },
     {
       title: t("appointment.columns.timeSlot"),
-      dataIndex: "timeSlot",
-      key: "timeSlot",
-      render: (slot: Appointment["timeSlot"], record: Appointment) => {
-        const doctor = slot.doctor;
+      dataIndex: "time_slots",
+      key: "time_slots",
+      render: (slot: Appointment["time_slots"], record: Appointment) => {
+        const doctor = slot[0].doctor;
         const hospitalName = hospitalMap[record.hospital_id] || "-";
 
         return (
@@ -142,18 +142,18 @@ export default function AppointmentsPage() {
             </p>
             <p>
               <strong>{t("appointment.time")}:</strong>{" "}
-              {new Date(slot.start_time).toLocaleTimeString([], {
+              {new Date(slot[0].start_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
               })}{" "}
               -{" "}
-              {new Date(slot.end_time).toLocaleTimeString([], {
+              {new Date(slot[0].end_time).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
             </p>
             <p>
-              <strong>{t("appointment.quantity")}:</strong> {slot.capacity}
+              <strong>{t("appointment.quantity")}:</strong> {slot[0].capacity}
             </p>
           </div>
         );

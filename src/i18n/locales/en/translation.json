@@ -65,7 +65,8 @@
     "changeLanguage": "Change Language",
     "logout": "Logout",
     "videoChat": "Video Chat",
-    "schedule": "Schedules"
+    "schedule": "Schedules",
+    "generateTimeSlot": "Generate Time Slot"
   },
   "header": {
     "profile": "Profile",
@@ -384,7 +385,8 @@
     "roles": {
       "admin": "Admin",
       "doctor": "Doctor",
-      "patient": "Patient"
+      "patient": "Patient",
+      "hospital": "Hospital"
     },
     "messages": {
       "load_error": "Unable to fetch user list. Please try again later.",

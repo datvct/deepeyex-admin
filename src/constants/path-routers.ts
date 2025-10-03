@@ -102,6 +102,14 @@ export const SCHEDULE: PathItem = {
   },
 };
 
+export const GENERATE_TIME_SLOT: PathItem = {
+  DETAIL: {
+    PATH: "/generate-time-slot",
+    LABEL: "Tạo lịch khám theo bệnh viện",
+    BREADCRUMB: [{ title: "Tạo lịch khám theo bệnh viện", href: "/generate-time-slot" }],
+  },
+};
+
 export const PROFILE: PathItem = {
   DETAIL: {
     PATH: "/profile",

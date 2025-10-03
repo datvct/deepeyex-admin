@@ -65,7 +65,8 @@
     "changeLanguage": "Thay đổi ngôn ngữ",
     "logout": "Đăng xuất",
     "videoChat": "Trò chuyện video",
-    "schedule": "Lịch khám"
+    "schedule": "Lịch khám",
+    "generateTimeSlot": "Tạo lịch khám"
   },
   "header": {
     "profile": "Thông tin tài khoản",
@@ -389,7 +390,8 @@
     "roles": {
       "admin": "Quản trị viên",
       "doctor": "Bác sĩ",
-      "patient": "Bệnh nhân"
+      "patient": "Bệnh nhân",
+      "hospital": "Bệnh viện"
     },
     "messages": {
       "load_error": "Không thể lấy danh sách tài khoản. Vui lòng thử lại sau.",

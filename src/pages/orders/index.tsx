@@ -161,7 +161,9 @@ export default function OrdersPage() {
       dataIndex: "status",
       key: "status",
       render: (status: string) => (
-        <Tag color={statusColors[status] || "default"}>{t(`order.status.${status}`)}</Tag>
+        <Tag color={statusColors[status as OrderStatus] || "default"}>
+          {t(`order.status.${status}`)}
+        </Tag>
       ),
     },
   ];
