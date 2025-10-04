@@ -13,3 +13,16 @@ export const formatDateTime = (date: string | number | Date): string => {
 
   return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
 };
+
+export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+export const getGenderLabel = (gender: string) => {
+  switch (gender.toLowerCase()) {
+    case "male":
+      return "Nam";
+    case "female":
+      return "Nữ";
+    default:
+      return "Khác";
+  }
+};

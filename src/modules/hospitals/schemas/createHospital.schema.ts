@@ -21,6 +21,9 @@ export const createHospitalSchema = z.object({
   url_map: z.string().url("URL bản đồ không hợp lệ").optional(),
   ward: z.string().optional(),
   city: z.string().optional(),
+  latitude: z.coerce.number().min(-90, "Vĩ độ phải ≥ -90").max(90, "Vĩ độ phải ≤ 90"),
+
+  longitude: z.coerce.number().min(-180, "Kinh độ phải ≥ -180").max(180, "Kinh độ phải ≤ 180"),
   logo: z
     .any()
     .optional()

@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Doctor } from "../../modules/doctors/types/doctor";
 
 type AuthState = {
   accessToken: string | null;
   refreshToken: string | null;
   userId: string | null;
   role: string | null;
+  doctor: Doctor | null;
 };
 
 const initialState: AuthState = {
@@ -12,6 +14,7 @@ const initialState: AuthState = {
   refreshToken: null,
   userId: null,
   role: null,
+  doctor: null,
 };
 
 const authSlice = createSlice({
@@ -32,17 +35,18 @@ const authSlice = createSlice({
       state.userId = action.payload.userId;
       state.role = action.payload.role;
     },
-    // setPatient: (state, action: PayloadAction<PatientInfo>) => {
-    //   state.patient = action.payload;
-    // },
+    setDoctor: (state, action: PayloadAction<Doctor>) => {
+      state.doctor = action.payload;
+    },
     clearTokens: (state) => {
       state.accessToken = null;
       state.refreshToken = null;
       state.userId = null;
       state.role = null;
+      state.doctor = null;
     },
   },
 });
 
-export const { setTokens, clearTokens } = authSlice.actions;
+export const { setTokens, clearTokens, setDoctor } = authSlice.actions;
 export default authSlice.reducer;

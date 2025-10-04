@@ -62,6 +62,14 @@ export const DRUGS: PathItem = {
   },
 };
 
+export const VIDEOCHAT: PathItem = {
+  DETAIL: {
+    PATH: "/video-chat",
+    LABEL: "Bệnh viện",
+    BREADCRUMB: [{ title: "Cuộc hội thoại", href: "/video-chat" }],
+  },
+};
+
 export const TIMESLOTS: PathItem = {
   DETAIL: {
     PATH: "/timeslots",
@@ -83,6 +91,22 @@ export const APPOINTMENTS: PathItem = {
     PATH: "/appointments",
     LABEL: "Bệnh viện",
     BREADCRUMB: [{ title: "Bệnh viện", href: "/appointments" }],
+  },
+};
+
+export const SCHEDULE: PathItem = {
+  DETAIL: {
+    PATH: "/schedule",
+    LABEL: "Lịch khám",
+    BREADCRUMB: [{ title: "Lịch khám", href: "/schedule" }],
+  },
+};
+
+export const GENERATE_TIME_SLOT: PathItem = {
+  DETAIL: {
+    PATH: "/generate-time-slot",
+    LABEL: "Tạo lịch khám theo bệnh viện",
+    BREADCRUMB: [{ title: "Tạo lịch khám theo bệnh viện", href: "/generate-time-slot" }],
   },
 };
 

@@ -4,6 +4,7 @@ enum Specialty {
   Neurology = "neurology",
   Endocrinology = "endocrinology",
   Pediatrics = "pediatrics",
+  Dermatology = "dermatology",
 }
 
 export { Specialty };
@@ -14,4 +15,5 @@ export const SpecialtyLabel: Record<Specialty, string> = {
   [Specialty.Neurology]: "Thần kinh",
   [Specialty.Endocrinology]: "Nội tiết",
   [Specialty.Pediatrics]: "Nhi khoa",
+  [Specialty.Dermatology]: "Da liễu",
 };

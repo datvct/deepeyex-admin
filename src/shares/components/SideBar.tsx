@@ -13,11 +13,11 @@ import {
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
-import { ChevronLeft, ChevronRight, Globe, LogOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, LogOut, VideotapeIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
-import logo from "../../assets/logo.jpg";
-import { persistor, useAppDispatch } from "../stores";
+import { persistor, RootState, useAppDispatch } from "../stores";
 import { clearTokens } from "../stores/authSlice";
 
 const { Sider } = Layout;
@@ -40,7 +40,8 @@ const Sidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const currentPath = location.pathname;
 
-  const menuItems: CustomMenuItem[] = [
+  const { role } = useSelector((state: RootState) => state.auth);
+  const fullMenuItems: CustomMenuItem[] = [
     {
       key: "dashboard",
       label: t("sidebar.dashboard"),
@@ -95,7 +96,41 @@ const Sidebar: React.FC = () => {
       icon: <FaCalendarCheck className="w-5 h-5" />,
       url: "/appointments",
     },
+    {
+      key: "video-chat",
+      label: t("sidebar.videoChat"),
+      icon: <VideotapeIcon className="w-5 h-5" />,
+      url: "/video-chat",
+    },
+    {
+      key: "schedule",
+      label: t("sidebar.schedule"),
+      icon: <FaCalendarCheck className="w-5 h-5" />,
+      url: "/schedule",
+    },
+    {
+      key: "generate-time-slot",
+      label: t("sidebar.generateTimeSlot"),
+      icon: <FaCalendarAlt className="w-5 h-5" />,
+      url: "/generate-time-slot",
+    },
   ];
+
+  const menuItems = useMemo(() => {
+    if (role === "admin")
+      return fullMenuItems.filter((item) => !["generate-time-slot", "schedule"].includes(item.key));
+
+    if (role === "doctor") {
+      return fullMenuItems.filter((item) =>
+        ["appointments", "timeslots", "video-chat", "dashboard", "schedule"].includes(item.key),
+      );
+    }
+    if (role === "hospital") {
+      return fullMenuItems.filter((item) => ["generate-time-slot", "dashboard"].includes(item.key));
+    }
+
+    return [];
+  }, [role, t]);
 
   useEffect(() => {
     const pathSegments = currentPath.split("/").filter(Boolean);
@@ -180,7 +215,7 @@ const Sidebar: React.FC = () => {
           <div className="drop-shadow-sm shadow-gray-200 sticky top-0 z-10 bg-white">
             <div className="flex flex-row items-center justify-center py-3 px-4 w-full relative">
               <img
-                src={logo}
+                src={"/logo.jpg"}
                 alt="Logo"
                 className={`${
                   isCollapsed ? "translate-x-0" : "-translate-x-3"

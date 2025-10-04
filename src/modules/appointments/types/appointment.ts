@@ -7,7 +7,6 @@ import { AppointmentStatus } from "../enums/appointment-status";
 export type Appointment = {
   appointment_id: string;
   appointment_code: string;
-  slot_id: string;
   patient_id: string;
   hospital_id: string;
   specialty: Specialty;
@@ -18,6 +17,6 @@ export type Appointment = {
   updated_at: string;
   checked_in_at?: string | null;
 
-  timeSlot: TimeSlot;
+  time_slots: TimeSlot[];
   patient: Patient;
 };

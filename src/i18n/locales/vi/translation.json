@@ -63,7 +63,10 @@
     "appointments": "Lịch hẹn khám",
     "settings": "Cài đặt",
     "changeLanguage": "Thay đổi ngôn ngữ",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "videoChat": "Trò chuyện video",
+    "schedule": "Lịch khám",
+    "generateTimeSlot": "Tạo lịch khám"
   },
   "header": {
     "profile": "Thông tin tài khoản",
@@ -103,6 +106,8 @@
       "url_map": "URL bản đồ",
       "city": "Thành phố",
       "ward": "Phường/Xã",
+      "latitude": "Vĩ độ",
+      "longitude": "Kinh độ",
       "placeholder": {
         "name": "Nhập tên bệnh viện",
         "address": "Nhập địa chỉ bệnh viện",
@@ -110,7 +115,10 @@
         "email": "Nhập email",
         "url_map": "Nhập URL bản đồ",
         "city": "Thành phố",
-        "ward": "Phường/Xã"
+        "ward": "Phường/Xã",
+        "latitude": "Vĩ độ",
+        "longitude": "Kinh độ",
+        "image": "Tải ảnh"
       }
     },
     "messages": {
@@ -382,7 +390,8 @@
     "roles": {
       "admin": "Quản trị viên",
       "doctor": "Bác sĩ",
-      "patient": "Bệnh nhân"
+      "patient": "Bệnh nhân",
+      "hospital": "Bệnh viện"
     },
     "messages": {
       "load_error": "Không thể lấy danh sách tài khoản. Vui lòng thử lại sau.",

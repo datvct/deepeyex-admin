@@ -7,7 +7,7 @@ type Doctor = {
   email?: string;
   image?: string;
   specialty: Specialty;
-  hospital_id: number;
+  hospital_id: string;
   user_id: number;
   createdAt: string;
   updatedAt: string;

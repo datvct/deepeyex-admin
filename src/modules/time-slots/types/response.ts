@@ -6,6 +6,7 @@ type GetTimeSlotResponse = ApiResponse<TimeSlot>;
 type CreateTimeSlotResponse = ApiResponse<TimeSlot>;
 type UpdateTimeSlotResponse = ApiResponse<TimeSlot>;
 type DeleteTimeSlotResponse = ApiResponse<null>;
+type CreateMultiShiftSlotsResponse = ApiResponse<TimeSlot[]>;
 
 export {
   ListTimeSlotsResponse,
@@ -13,4 +14,5 @@ export {
   CreateTimeSlotResponse,
   UpdateTimeSlotResponse,
   DeleteTimeSlotResponse,
+  CreateMultiShiftSlotsResponse,
 };

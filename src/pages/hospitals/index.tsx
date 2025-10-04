@@ -97,6 +97,8 @@ export default function HospitalsPage() {
       url_map: hospital.url_map,
       ward: hospital.ward,
       city: hospital.city,
+      latitude: hospital.latitude,
+      longitude: hospital.longitude,
       logo: hospital.image
         ? [
             {
@@ -236,7 +238,6 @@ export default function HospitalsPage() {
               >
                 <Input placeholder={t("hospital.form.placeholder.name")} />
               </Form.Item>
-
               <Form.Item
                 name="phone"
                 label={t("hospital.form.phone")}
@@ -249,7 +250,6 @@ export default function HospitalsPage() {
               >
                 <Input placeholder={t("hospital.form.placeholder.phone")} />
               </Form.Item>
-
               <Form.Item
                 name="email"
                 label={t("hospital.form.email")}
@@ -262,7 +262,6 @@ export default function HospitalsPage() {
               >
                 <Input placeholder={t("hospital.form.placeholder.email")} />
               </Form.Item>
-
               <Form.Item
                 name="url_map"
                 label={t("hospital.form.url_map")}
@@ -275,6 +274,38 @@ export default function HospitalsPage() {
               >
                 <Input placeholder={t("hospital.form.placeholder.url_map")} />
               </Form.Item>
+              <Form.Item
+                name="latitude"
+                label={t("hospital.form.latitude")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.latitude"),
+                  },
+                  {
+                    pattern: /^-?\d+(\.\d+)?$/,
+                    message: t("hospital.form.placeholder.latitude"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.latitude")} />
+              </Form.Item>
+              <Form.Item
+                name="longitude"
+                label={t("hospital.form.longitude")}
+                rules={[
+                  {
+                    required: true,
+                    message: t("hospital.form.placeholder.longitude"),
+                  },
+                  {
+                    pattern: /^-?\d+(\.\d+)?$/,
+                    message: t("hospital.form.placeholder.longitude"),
+                  },
+                ]}
+              >
+                <Input placeholder={t("hospital.form.placeholder.longitude")} />
+              </Form.Item>{" "}
             </Col>
 
             {/* Cột phải */}
