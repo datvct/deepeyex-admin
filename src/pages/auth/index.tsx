@@ -25,13 +25,11 @@ export default function LoginPage() {
         return;
       }
       if (tokens?.role === ROLES.HOSPITAL) {
-        if (tokens?.role === ROLES.DOCTOR) {
-          const doctor = await DoctorApi.getById(data.data?.user_id || "");
-          const payload = {
-            doctor: doctor,
-          };
-          dispatch(setDoctor(payload?.doctor ?? ({} as Doctor)));
-        }
+        const doctor = await DoctorApi.getByUserId(data.data?.user_id || "");
+        const payload = {
+          doctor: doctor.data,
+        };
+        dispatch(setDoctor(payload?.doctor ?? ({} as Doctor)));
       }
       if (tokens?.role === ROLES.DOCTOR) {
         const doctor = await DoctorApi.getByUserId(data.data?.user_id || "");
