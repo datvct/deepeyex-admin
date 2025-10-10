@@ -4,8 +4,9 @@ import { LogOut, UserCog, UserPen, LockKeyhole, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import Breadcrumbs from "../shares/components/Breadcrumbs";
-import { persistor, useAppDispatch } from "../shares/stores";
+import { persistor, RootState, useAppDispatch } from "../shares/stores";
 import { clearTokens } from "../shares/stores/authSlice";
+import { useSelector } from "react-redux";
 
 const { Header } = Layout;
 
@@ -13,7 +14,7 @@ const HeaderLayout = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
+  const { doctor } = useSelector((state: RootState) => state.auth);
   // Menu dropdown cho tài khoản
   const accountItems: MenuProps["items"] = [
     {
@@ -62,7 +63,7 @@ const HeaderLayout = () => {
             <Dropdown menu={{ items: accountItems }} placement="bottomRight" arrow>
               <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded-md transition-all">
                 <UserCog className="w-5 h-5 text-gray-600" />
-                <span className="font-medium">Admin</span>
+                <span className="font-medium">{doctor?.full_name}</span>
               </div>
             </Dropdown>
           </div>
