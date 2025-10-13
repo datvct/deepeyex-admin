@@ -66,7 +66,8 @@
     "logout": "Đăng xuất",
     "videoChat": "Trò chuyện video",
     "schedule": "Lịch khám",
-    "generateTimeSlot": "Tạo lịch khám"
+    "generateTimeSlot": "Tạo lịch khám",
+    "services": "Dịch vụ"
   },
   "header": {
     "profile": "Thông tin tài khoản",
@@ -223,6 +224,49 @@
       "delete_success": "Xóa bệnh nhân thành công",
       "delete_error": "Xóa bệnh nhân thất bại",
       "load_error": "Không thể lấy danh sách bệnh nhân. Vui lòng thử lại sau."
+    }
+  },
+  "service": {
+    "title": "Quản lý dịch vụ",
+    "subtitle": "Danh sách dịch vụ khám bệnh",
+    "add": "Thêm dịch vụ",
+    "edit": "Sửa dịch vụ",
+    "deleteSuccess": "Xóa dịch vụ thành công",
+    "deleteError": "Xóa dịch vụ thất bại",
+    "createSuccess": "Thêm dịch vụ thành công",
+    "createError": "Thêm dịch vụ thất bại",
+    "updateSuccess": "Cập nhật dịch vụ thành công",
+    "updateError": "Cập nhật dịch vụ thất bại",
+    "assignSuccess": "Gán dịch vụ cho bác sĩ thành công",
+    "assignError": "Gán dịch vụ thất bại",
+    "removeSuccess": "Xóa dịch vụ khỏi bác sĩ thành công",
+    "removeError": "Xóa dịch vụ khỏi bác sĩ thất bại",
+    "form": {
+      "name": "Tên dịch vụ",
+      "duration": "Thời gian (phút)",
+      "price": "Giá (VNĐ)",
+      "placeholder": {
+        "name": "Nhập tên dịch vụ (VD: Khám mắt tổng quát)",
+        "duration": "Nhập thời gian khám (phút)",
+        "price": "Nhập giá dịch vụ"
+      },
+      "validation": {
+        "name": "Vui lòng nhập tên dịch vụ",
+        "duration": "Vui lòng nhập thời gian",
+        "price": "Vui lòng nhập giá"
+      }
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Tên dịch vụ",
+      "duration": "Thời gian",
+      "price": "Giá",
+      "createdAt": "Ngày tạo",
+      "updatedAt": "Cập nhật"
+    },
+    "error": {
+      "loadTitle": "Lỗi tải dữ liệu",
+      "loadDescription": "Không thể lấy danh sách dịch vụ. Vui lòng thử lại sau."
     }
   },
   "drug": {

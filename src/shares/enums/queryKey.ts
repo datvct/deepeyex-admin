@@ -7,4 +7,5 @@ export enum QueryKeyEnum {
   Order = "orders",
   TimeSlot = "timeslots",
   Appointment = "appointments",
+  Service = "services",
 }

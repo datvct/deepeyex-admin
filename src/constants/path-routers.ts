@@ -126,4 +126,12 @@ export const PROFILE: PathItem = {
   },
 };
 
+export const SERVICES: PathItem = {
+  DETAIL: {
+    PATH: "/services",
+    LABEL: "Dịch vụ",
+    BREADCRUMB: [{ title: "Dịch vụ", href: "/services" }],
+  },
+};
+
 export * as Paths from "./path-routers";
