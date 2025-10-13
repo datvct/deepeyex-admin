@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../../../shares/configs/firebase";
 import { useUploadFileMutation } from "../../../modules/upload/hooks/mutations/use-upload-file.mutation";
+import { useAppSelector } from "../../../shares/stores";
 
 interface Message {
   id: string;
@@ -26,7 +27,12 @@ interface Message {
 
 interface ChatBoxProps {
   conversationId: string;
-  otherUser: string;
+  otherUser: {
+    id: string;
+    name: string;
+    avatar: string;
+    email: string;
+  };
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
@@ -34,6 +40,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
   const [showEmoji, setShowEmoji] = useState(false);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const email = useAppSelector((state) => state.auth.doctor?.email);
 
   const uploadMutation = useUploadFileMutation({
     onError: (err) => {
@@ -77,7 +84,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
     try {
       await addDoc(collection(db, "conversations", conversationId, "messages"), {
         text: trimmed,
-        sender: auth.currentUser?.email ?? "Anonymous",
+        sender: email ?? "Anonymous",
         fileType: "text",
         timestamp: serverTimestamp(),
       });
@@ -97,7 +104,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
       else if (file.type.startsWith("video/")) fileType = "video";
 
       await addDoc(collection(db, "conversations", conversationId, "messages"), {
-        sender: auth.currentUser?.email ?? "Anonymous",
+        sender: email ?? "Anonymous",
         fileUrl: res?.data?.url,
         fileType,
         timestamp: serverTimestamp(),
@@ -142,7 +149,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
           msg.text && (
             <div
               className={`p-2 rounded-2xl max-w-[70%] break-words ${
-                msg.sender === auth.currentUser?.email
+                msg.sender === email
                   ? "bg-blue-500 text-white rounded-br-none"
                   : "bg-gray-200 text-black rounded-bl-none"
               }`}
@@ -160,7 +167,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white border rounded-xl shadow-md">
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-md">
       {/* 🔹 Chat list */}
       <div
         ref={scrollRef}
@@ -168,7 +175,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
         style={{ maxHeight: "450px" }}
       >
         {messages.map((msg) => {
-          const isMe = msg.sender === auth.currentUser?.email;
+          const isMe = msg.sender === email;
           return (
             <div key={msg.id} className={`flex flex-col ${isMe ? "items-end" : "items-start"}`}>
               {renderMessageContent(msg)}

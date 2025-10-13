@@ -7,19 +7,30 @@ import { toast } from "react-toastify";
 import { db } from "../../shares/configs/firebase";
 import ChatHeader from "./components/VideoCallRoom";
 import ChatBox from "./components/Chatbox";
+import { RootState, useAppSelector } from "../../shares/stores";
 
 interface Conversation {
   id: string;
   participants: string[];
-  createdAt?: {
-    seconds: number;
-    nanoseconds: number;
+  doctorInfo: {
+    id: string;
+    name: string;
+    avatar: string;
+    email: string;
   };
+  patientInfo: {
+    id: string;
+    name: string;
+    avatar: string;
+    email: string;
+  };
+  lastAppointmentId?: string;
   lastMessage?: string;
-  appointmentId?: string;
+  createdAt?: { seconds: number; nanoseconds: number };
+  updatedAt?: { seconds: number; nanoseconds: number };
 }
 
-const VideoChatPage = () => {
+const Consultation = () => {
   const [isCheckingMic, setIsCheckingMic] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
   const [selectedChat, setSelectedChat] = useState<Conversation | null>(null); // dùng cho tab lịch sử tư vấn
@@ -29,66 +40,44 @@ const VideoChatPage = () => {
   const [activeTab, setActiveTab] = useState("online");
   const [showInfo, setShowInfo] = useState(false);
 
-  const patientEmail = "nguyenlegiabao810@gmail.com";
-  const doctorEmail = "baon00382xxx@gmail.com";
+  const user_id = useAppSelector((state: RootState) => state.auth.doctor?.doctor_id);
+  const auth = useAppSelector((state: RootState) => state.auth);
+  console.log(auth.doctor?.email)
 
-  // 🔹 Tạo hội thoại mẫu nếu chưa có
   useEffect(() => {
-    const setupConversation = async () => {
-      try {
-        const q = query(
-          collection(db, "conversations"),
-          where("participants", "array-contains", patientEmail),
-        );
-        const snapshot = await getDocs(q);
-        const exists = snapshot.docs.find(
-          (d) =>
-            d.data().participants.includes(patientEmail) &&
-            d.data().participants.includes(doctorEmail),
-        );
+    if (!user_id) return;
 
-        if (!exists) {
-          const convId = "conversation-" + Date.now();
-          const conversationRef = doc(db, "conversations", convId);
-          await setDoc(conversationRef, {
-            participants: [patientEmail, doctorEmail],
-            createdAt: new Date(),
-            lastMessage: "Xin chào bác sĩ!",
-            appointmentId: "appt-" + Date.now(),
-          });
-          console.log("✅ Đã tạo cuộc hội thoại mẫu giữa 2 email");
-        }
-      } catch (err) {
-        console.error("❌ Lỗi khi tạo conversation mẫu:", err);
-      }
-    };
-    setupConversation();
-  }, []);
-
-  // 🔹 Lấy danh sách hội thoại realtime
-  useEffect(() => {
     const q = query(
       collection(db, "conversations"),
-      where("participants", "array-contains", patientEmail),
+      where("participants", "array-contains", user_id),
     );
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Conversation[];
-      setConversations(data);
-      setLoading(false);
-    });
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Conversation[];
+        setConversations(data);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("❌ Lỗi khi lấy danh sách hội thoại:", error);
+        setLoading(false);
+      },
+    );
 
     return () => unsub();
-  }, []);
+  }, [user_id]);
 
   const handleJoinRoom = (item: Conversation) => {
-    const other = item.participants?.find((p: string) => p !== patientEmail) || "Người dùng khác";
-    message.success(`Đang mở chat với ${other}`);
+    const isPatient = auth?.role === "patient";
+    const other = isPatient ? item.doctorInfo : item.patientInfo;
+
+    message.success(`Đang mở chat với ${other.name}`);
     setSelectedChat(item);
-    setShowInfo(false); // Ẩn info khi chuyển cuộc chat
+    setShowInfo(false);
   };
 
   const checkMicrophone = async () => {
@@ -138,7 +127,7 @@ const VideoChatPage = () => {
               label: "🎥 Phòng tư vấn trực tuyến",
               children: (
                 <div className="flex flex-col items-center justify-center min-h-[600px] bg-gray-100 rounded-xl p-6">
-                  <ChatHeader userId="7d050ea8-a88d-4b67-9f30-d131f8ab8d0c" />
+                  <ChatHeader userId="2993846a-6f43-4201-84cc-acb7da40d0a9" />
                 </div>
               ),
             },
@@ -161,10 +150,8 @@ const VideoChatPage = () => {
                         itemLayout="horizontal"
                         dataSource={conversations}
                         renderItem={(item) => {
-                          const myEmail = patientEmail;
-                          const other =
-                            item.participants?.find((p: string) => p !== myEmail) ||
-                            "Người dùng khác";
+                          const isPatient = auth?.role === "patient";
+                          const other = isPatient ? item.doctorInfo : item.patientInfo;
                           const isActive = selectedChat?.id === item.id;
 
                           return (
@@ -177,11 +164,20 @@ const VideoChatPage = () => {
                               <List.Item.Meta
                                 avatar={
                                   <Avatar
-                                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${other}`}
+                                    src={
+                                      other.avatar ||
+                                      `https://api.dicebear.com/7.x/initials/svg?seed=${other.name}`
+                                    }
                                   />
                                 }
-                                title={<span className="font-semibold">{other}</span>}
-                                description={item.lastMessage || "Chưa có tin nhắn"}
+                                title={<span className="font-semibold">{other.name}</span>}
+                                description={
+                                  item.lastMessage ? (
+                                    item.lastMessage
+                                  ) : (
+                                    <span className="text-gray-400 italic">Chưa có tin nhắn</span>
+                                  )
+                                }
                               />
                             </List.Item>
                           );
@@ -204,24 +200,28 @@ const VideoChatPage = () => {
                           <div className="flex justify-between items-center p-4 border-b bg-white shadow-sm">
                             <div className="flex items-center gap-3">
                               <Avatar
-                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${
-                                  selectedChat.participants.find(
-                                    (p: string) => p !== patientEmail,
-                                  ) || "User"
-                                }`}
+                                src={
+                                  (auth?.role === "patient"
+                                    ? selectedChat.doctorInfo.avatar
+                                    : selectedChat.patientInfo.avatar) ||
+                                  `https://api.dicebear.com/7.x/initials/svg?seed=${
+                                    auth?.role === "patient"
+                                      ? selectedChat.doctorInfo.name
+                                      : selectedChat.patientInfo.name
+                                  }`
+                                }
                                 size={48}
                               />
                               <div>
                                 <p className="font-semibold text-lg text-gray-800">
-                                  {selectedChat.participants.find(
-                                    (p: string) => p !== patientEmail,
-                                  ) || "Người dùng khác"}
+                                  {auth?.role === "patient"
+                                    ? selectedChat.doctorInfo.name
+                                    : selectedChat.patientInfo.name}
                                 </p>
                                 <p className="text-xs text-green-600">Đang hoạt động</p>
                               </div>
                             </div>
 
-                            {/* Icon Info */}
                             <Button
                               type="text"
                               icon={<AiOutlineInfoCircle size={22} />}
@@ -234,8 +234,9 @@ const VideoChatPage = () => {
                             <ChatBox
                               conversationId={selectedChat.id}
                               otherUser={
-                                selectedChat.participants.find((p: string) => p !== patientEmail) ||
-                                "Người dùng khác"
+                                user_id === selectedChat.doctorInfo.id
+                                  ? selectedChat.patientInfo
+                                  : selectedChat.doctorInfo
                               }
                             />
                           </div>
@@ -249,17 +250,17 @@ const VideoChatPage = () => {
                             <div className="flex items-center gap-3 mb-4">
                               <Avatar
                                 size={60}
-                                src={`https://api.dicebear.com/7.x/initials/svg?seed=${
-                                  selectedChat.participants.find(
-                                    (p: string) => p !== patientEmail,
-                                  ) || "User"
-                                }`}
+                                src={
+                                  auth?.role === "patient"
+                                    ? selectedChat.doctorInfo.avatar
+                                    : selectedChat.patientInfo.avatar
+                                }
                               />
                               <div>
                                 <p className="font-semibold text-base">
-                                  {selectedChat.participants.find(
-                                    (p: string) => p !== patientEmail,
-                                  ) || "Người dùng khác"}
+                                  {auth?.role === "patient"
+                                    ? selectedChat.doctorInfo.name
+                                    : selectedChat.patientInfo.name}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                   {selectedChat.participants.join(", ")}
@@ -270,25 +271,18 @@ const VideoChatPage = () => {
                             <div className="space-y-2 text-sm text-gray-600">
                               <p>
                                 <span className="font-medium">Ngày tạo: </span>
-                                {new Date(
-                                  (selectedChat.createdAt?.seconds ??
-                                    Math.floor(Date.now() / 1000)) * 1000,
-                                ).toLocaleString()}
+                                {selectedChat.createdAt
+                                  ? new Date(selectedChat.createdAt.seconds * 1000).toLocaleString()
+                                  : "Không rõ"}
                               </p>
                               <p>
-                                <span className="font-medium">Mã cuộc hẹn: </span>
-                                {selectedChat.appointmentId || "Không có"}
+                                <span className="font-medium">Mã cuộc hẹn cuối: </span>
+                                {selectedChat.lastAppointmentId || "Không có"}
                               </p>
                               <p>
                                 <span className="font-medium">Tin nhắn cuối: </span>
                                 {selectedChat.lastMessage || "Không có"}
                               </p>
-                            </div>
-
-                            <div className="mt-5 border-t pt-3 text-center">
-                              <Button type="default" danger>
-                                Xóa cuộc hội thoại
-                              </Button>
                             </div>
                           </div>
                         )}
@@ -309,4 +303,4 @@ const VideoChatPage = () => {
   );
 };
 
-export default VideoChatPage;
+export default Consultation;
