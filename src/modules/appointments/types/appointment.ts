@@ -16,6 +16,7 @@ export type Appointment = {
   created_at: string;
   updated_at: string;
   checked_in_at?: string | null;
+  service_name?: string;
 
   time_slots: TimeSlot[];
   patient: Patient;
