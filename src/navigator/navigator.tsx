@@ -21,6 +21,7 @@ import Forbidden403 from "../shares/components/Forbidden403";
 import WeeklyScheduleWithModal from "../pages/schedule";
 import React from "react";
 import HospitalScheduleManager from "../pages/generate-time-slots";
+import ServicesPage from "../pages/services";
 
 export const Navigator = () => {
   return (
@@ -129,6 +130,7 @@ export const Navigator = () => {
                 </ProtectedRoute>
               }
             />
+            <Route path={Paths.SERVICES.DETAIL.PATH} element={<ServicesPage />} />
           </Route>
         </Route>
         <Route path="/403" element={<Forbidden403 />} />
