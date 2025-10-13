@@ -9,6 +9,7 @@ import {
   Descriptions,
   Avatar,
   Spin,
+  notification,
 } from "antd";
 import { LeftOutlined, RightOutlined, CalendarOutlined } from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
@@ -170,7 +171,9 @@ const WeeklyScheduleWithModal: React.FC = () => {
                     <div className="text-xs font-bold pl-2">
                       {slot.appointment?.patient.full_name || "Chưa rõ"}
                     </div>
-                    <div className="text-xs font-bold pl-2">DV: </div>
+                    <div className="text-xs text-left font-bold pl-2">
+                      DV: {slot.appointment?.service_name || "Khám tổng quát"}{" "}
+                    </div>
 
                     <div className="font-semibold text-xs flex flex-row gap-1 items-center pl-2">
                       <AlarmClock size={12} />

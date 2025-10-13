@@ -114,6 +114,12 @@ const Sidebar: React.FC = () => {
       icon: <FaCalendarAlt className="w-5 h-5" />,
       url: "/generate-time-slot",
     },
+    {
+      key: "services",
+      label: t("sidebar.services"),
+      icon: <FaPills className="w-5 h-5" />,
+      url: "/services",
+    },
   ];
 
   const menuItems = useMemo(() => {
@@ -122,11 +128,15 @@ const Sidebar: React.FC = () => {
 
     if (role === "doctor") {
       return fullMenuItems.filter((item) =>
-        ["appointments", "timeslots", "video-chat", "dashboard", "schedule"].includes(item.key),
+        ["appointments", "timeslots", "video-chat", "dashboard", "schedule", "services"].includes(
+          item.key,
+        ),
       );
     }
     if (role === "hospital") {
-      return fullMenuItems.filter((item) => ["generate-time-slot", "dashboard"].includes(item.key));
+      return fullMenuItems.filter((item) =>
+        ["generate-time-slot", "dashboard", "services"].includes(item.key),
+      );
     }
 
     return [];

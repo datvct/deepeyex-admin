@@ -88,7 +88,6 @@ export default function HospitalsPage() {
   // ---- Sửa ----
   const handleEdit = (hospital: Hospital) => {
     setEditingHospital(hospital);
-    console.log("Editing hospital:", hospital);
     form.setFieldsValue({
       name: hospital.name,
       address: hospital.address,
@@ -131,7 +130,6 @@ export default function HospitalsPage() {
           ...parsed,
         });
       } else {
-        console.log("Creating hospital with data:", parsed);
         createHospital.mutate(parsed);
       }
 
