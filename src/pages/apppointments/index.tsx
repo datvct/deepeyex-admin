@@ -93,6 +93,9 @@ export default function AppointmentsPage() {
     [AppointmentStatus.CONFIRMED]: "green",
     [AppointmentStatus.CANCELED]: "red",
     [AppointmentStatus.COMPLETED]: "orange",
+    [AppointmentStatus.PENDING_ONLINE]: "purple",
+    [AppointmentStatus.CONFIRMED_ONLINE]: "cyan",
+    [AppointmentStatus.COMPLETED_ONLINE]: "teal",
   };
 
   // ---- Cấu hình cột bảng ----
