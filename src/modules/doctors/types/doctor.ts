@@ -8,7 +8,7 @@ type Doctor = {
   image?: string;
   specialty: Specialty;
   hospital_id: string;
-  user_id: number;
+  user_id: string;
   createdAt: string;
   updatedAt: string;
 };

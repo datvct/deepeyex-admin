@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import { Tabs, List, Avatar, Button, Card, message, Spin } from "antd";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import { collection, onSnapshot, query, where, doc, setDoc, getDocs } from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { db } from "../../shares/configs/firebase";
 import ChatHeader from "./components/VideoCallRoom";
 import ChatBox from "./components/Chatbox";
 import { RootState, useAppSelector } from "../../shares/stores";
+import { useGetAppointmentsOnline } from "../../modules/appointments/hooks/queries/use-get-appointments-online";
+import { Appointment } from "../../modules/appointments/types/appointment";
 
 interface Conversation {
   id: string;
@@ -41,8 +43,9 @@ const Consultation = () => {
   const [showInfo, setShowInfo] = useState(false);
 
   const user_id = useAppSelector((state: RootState) => state.auth.doctor?.doctor_id);
+  const user_id1 = useAppSelector((state: RootState) => state.auth.userId);
   const auth = useAppSelector((state: RootState) => state.auth);
-  console.log(auth.doctor?.email)
+  console.log(auth.doctor?.email);
 
   useEffect(() => {
     if (!user_id) return;
@@ -115,6 +118,10 @@ const Consultation = () => {
     }
   };
 
+  const { data, isLoading, isError } = useGetAppointmentsOnline({
+    doctor_id: user_id || "",
+  });
+
   return (
     <div className="aspect-1.85:1 px-4">
       <Card className="h-full rounded-2xl shadow-md overflow-hidden">
@@ -126,8 +133,70 @@ const Consultation = () => {
               key: "online",
               label: "🎥 Phòng tư vấn trực tuyến",
               children: (
-                <div className="flex flex-col items-center justify-center min-h-[600px] bg-gray-100 rounded-xl p-6">
-                  <ChatHeader userId="2993846a-6f43-4201-84cc-acb7da40d0a9" />
+                <div className="flex flex-col gap-5">
+                  {/** Gọi API lấy danh sách lịch tư vấn online */}
+                  {(() => {
+                    if (isLoading) {
+                      return (
+                        <div className="flex justify-center items-center h-40">
+                          <Spin size="large" />
+                        </div>
+                      );
+                    }
+
+                    if (isError || !data?.data?.length) {
+                      return (
+                        <div className="text-center text-gray-400 mt-6">
+                          Không có lịch tư vấn trực tuyến nào.
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <>
+                        {data.data.map((appointment: Appointment) => (
+                          <div
+                            key={appointment.appointment_id}
+                            className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all cursor-pointer space-x-4"
+                          >
+                            {/* Thông tin bác sĩ */}
+                            <div className="flex items-center gap-4">
+                              {/* Avatar */}
+                              <Avatar
+                                src={
+                                  appointment.patient.image ||
+                                  `https://api.dicebear.com/7.x/initials/svg?seed=${appointment.patient.full_name}`
+                                }
+                                className="w-12 h-12"
+                              />
+
+                              {/* Info */}
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-gray-800 text-base">
+                                  {appointment.patient.full_name || "Bác sĩ"}
+                                </span>
+                                <span className="text-gray-500 text-sm">
+                                  {new Date(appointment.time_slots[0].start_time).toLocaleString()}
+                                </span>
+                                <span className="mt-1 px-2 py-1 w-max rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                  {appointment.status === "PENDING_ONLINE"
+                                    ? "Đang chờ"
+                                    : appointment.status === "CONFIRMED_ONLINE"
+                                    ? "Đã xác nhận"
+                                    : "Hoàn tất"}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Nút gọi video */}
+                            <div>
+                              <ChatHeader userId={appointment.patient.user_id} />
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    );
+                  })()}
                 </div>
               ),
             },
