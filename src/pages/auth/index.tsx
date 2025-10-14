@@ -9,6 +9,9 @@ import { ROLES } from "../../shares/constants/roles";
 const { Content } = Layout;
 import { setDoctor } from "../../shares/stores/authSlice";
 import { Doctor } from "../../modules/doctors/types/doctor";
+import { loadStringeeSdk } from "../../shares/utils/stringee-sdk-loader";
+import { connectToStringee } from "../../shares/utils/stringee";
+import { CallApi } from "../../modules/call/apis/callApi";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -38,7 +41,10 @@ export default function LoginPage() {
         };
         dispatch(setDoctor(payload?.doctor ?? ({} as Doctor)));
       }
-
+      const res = await CallApi.getStringeeToken(data.data?.user_id || "");
+      const stringeeToken = res.data.token;
+      await loadStringeeSdk();
+      connectToStringee(stringeeToken);
       toast.success("Đăng nhập thành công!");
       setLoading(false);
       navigate("/");

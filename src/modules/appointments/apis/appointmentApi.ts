@@ -71,6 +71,17 @@ class AppointmentClient {
     );
     return response.data;
   }
+
+  async getOnlineAppointments(params: {
+    book_user_id?: string;
+    doctorId?: string;
+  }): Promise<ListAppointmentsResponse> {
+    const response = await this.client.get<ListAppointmentsResponse>(
+      `/hospital/appointments/online`,
+      { params },
+    );
+    return response.data;
+  }
 }
 
 const AppointmentApi = new AppointmentClient();
