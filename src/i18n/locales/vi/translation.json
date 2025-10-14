@@ -67,7 +67,9 @@
     "videoChat": "Trò chuyện video",
     "schedule": "Lịch khám",
     "generateTimeSlot": "Tạo lịch khám",
-    "services": "Dịch vụ"
+    "services": "Dịch vụ",
+    "doctorConsultation": "Đang khám bác sĩ",
+    "aiDiagnosis": "Chẩn đoán AI Nhãn khoa"
   },
   "header": {
     "profile": "Thông tin tài khoản",

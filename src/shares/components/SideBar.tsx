@@ -10,6 +10,8 @@ import {
   FaHospitalUser,
   FaPills,
   FaUser,
+  FaStethoscope,
+  FaRobot,
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
@@ -120,6 +122,18 @@ const Sidebar: React.FC = () => {
       icon: <FaPills className="w-5 h-5" />,
       url: "/services",
     },
+    {
+      key: "doctor-consultation",
+      label: t("sidebar.doctorConsultation"),
+      icon: <FaStethoscope className="w-5 h-5" />,
+      url: "/doctor-consultation",
+    },
+    {
+      key: "ai-diagnosis",
+      label: t("sidebar.aiDiagnosis"),
+      icon: <FaRobot className="w-5 h-5" />,
+      url: "/ai-diagnosis",
+    },
   ];
 
   const menuItems = useMemo(() => {
@@ -128,9 +142,16 @@ const Sidebar: React.FC = () => {
 
     if (role === "doctor") {
       return fullMenuItems.filter((item) =>
-        ["appointments", "timeslots", "video-chat", "dashboard", "schedule", "services"].includes(
-          item.key,
-        ),
+        [
+          "appointments",
+          "timeslots",
+          "video-chat",
+          "dashboard",
+          "schedule",
+          "services",
+          "doctor-consultation",
+          "ai-diagnosis",
+        ].includes(item.key),
       );
     }
     if (role === "hospital") {

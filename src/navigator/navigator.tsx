@@ -22,6 +22,8 @@ import WeeklyScheduleWithModal from "../pages/schedule";
 import React from "react";
 import HospitalScheduleManager from "../pages/generate-time-slots";
 import ServicesPage from "../pages/services";
+import DoctorConsultationPage from "../pages/doctor-consultation";
+import AIDiagnosisPage from "../pages/ai-diagnosis";
 
 export const Navigator = () => {
   return (
@@ -131,6 +133,22 @@ export const Navigator = () => {
               }
             />
             <Route path={Paths.SERVICES.DETAIL.PATH} element={<ServicesPage />} />
+            <Route
+              path={Paths.DOCTOR_CONSULTATION.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <DoctorConsultationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.AI_DIAGNOSIS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <AIDiagnosisPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Route>
         <Route path="/403" element={<Forbidden403 />} />
