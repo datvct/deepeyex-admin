@@ -8,4 +8,5 @@ export enum QueryKeyEnum {
   TimeSlot = "timeslots",
   Appointment = "appointments",
   Service = "services",
+  AIDiagnosis = "ai-diagnoses",
 }

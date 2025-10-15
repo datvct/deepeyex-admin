@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Tag, message } from "antd";
+import { Button, Card, Tag, message, Spin } from "antd";
 import {
   EyeOutlined,
   CheckOutlined,
@@ -7,14 +7,44 @@ import {
   RobotOutlined,
   CameraOutlined,
 } from "@ant-design/icons";
-import { mockAIDiagnoses, AIDiagnosis } from "./mockData";
+import { useGetAllAIDiagnosis } from "../../modules/aidiagnosis/hooks/queries/use-get-all-ai-diagnosis.query";
+import { useVerifyDiagnosisMutation } from "../../modules/aidiagnosis/hooks/mutations/use-verify-diagnosis.mutation";
+import { AIDiagnosis as AIDiagnosisType } from "../../modules/aidiagnosis/types/aidiagnosis";
 import AIDiagnosisDetailModal from "./components/AIDiagnosisDetailModal";
+import { useSelector } from "react-redux";
+import { RootState } from "../../shares/stores";
+
+// Disease labels mapping
+const diseaseLabels: Record<string, string> = {
+  conjunctivitis: "Viêm kết mạc",
+  eyelidedema: "Phù mi mắt",
+  healthy_eye: "Mắt khỏe mạnh",
+  hordeolum: "Lẹo mắt",
+  keratitiswithulcer: "Viêm giác mạc có loét",
+  subconjunctival_hemorrhage: "Xuất huyết dưới kết mạc",
+};
 
 const AIDiagnosisPage: React.FC = () => {
-  const [selectedDiagnosis, setSelectedDiagnosis] = useState<AIDiagnosis | null>(null);
+  const [selectedDiagnosis, setSelectedDiagnosis] = useState<AIDiagnosisType | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
-  const handleViewDiagnosis = (diagnosis: AIDiagnosis) => {
+  const { userId, doctor } = useSelector((state: RootState) => state.auth);
+  const { data, isLoading, error, refetch } = useGetAllAIDiagnosis();
+
+  const { mutate: verifyDiagnosis, isPending: isVerifying } = useVerifyDiagnosisMutation({
+    onSuccess: () => {
+      message.success("Đã xác nhận chẩn đoán thành công");
+      setIsDetailModalOpen(false);
+      setSelectedDiagnosis(null);
+      // Refresh danh sách sau khi xác nhận
+      refetch();
+    },
+    onError: (error) => {
+      message.error(`Xác nhận thất bại: ${error.message}`);
+    },
+  });
+
+  const handleViewDiagnosis = (diagnosis: AIDiagnosisType) => {
     setSelectedDiagnosis(diagnosis);
     setIsDetailModalOpen(true);
   };
@@ -24,23 +54,38 @@ const AIDiagnosisPage: React.FC = () => {
     setSelectedDiagnosis(null);
   };
 
-  const handleConfirmDiagnosis = (diagnosisId: string, isCorrect: boolean) => {
-    // Mock function - trong thực tế sẽ gọi API
-    console.log(`Xác nhận chẩn đoán ${diagnosisId}: ${isCorrect ? "Đúng" : "Sai"}`);
-    message.success(
-      isCorrect ? "Đã xác nhận chẩn đoán đúng" : "Đã đánh dấu chẩn đoán không chính xác",
-    );
-    setIsDetailModalOpen(false);
-    setSelectedDiagnosis(null);
+  const handleConfirmDiagnosis = (
+    diagnosisId: string,
+    isCorrect: boolean,
+    notes?: string,
+    signature?: File,
+  ) => {
+    const doctorId = doctor?.doctor_id || userId;
+
+    if (!doctorId) {
+      message.error("Không tìm thấy thông tin bác sĩ");
+      return;
+    }
+
+    const verifyData = {
+      id: diagnosisId,
+      doctor_id: doctorId,
+      status: isCorrect ? "APPROVED" : "REJECTED",
+      notes: notes || (isCorrect ? "Đã xác nhận" : "Không chính xác"),
+      signature: signature,
+    };
+
+    verifyDiagnosis(verifyData);
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
+    const upperStatus = status.toUpperCase();
+    switch (upperStatus) {
+      case "PENDING":
         return "orange";
-      case "confirmed":
+      case "APPROVED":
         return "green";
-      case "rejected":
+      case "REJECTED":
         return "red";
       default:
         return "default";
@@ -48,12 +93,13 @@ const AIDiagnosisPage: React.FC = () => {
   };
 
   const getStatusText = (status: string) => {
-    switch (status) {
-      case "pending":
+    const upperStatus = status.toUpperCase();
+    switch (upperStatus) {
+      case "PENDING":
         return "Chờ xác nhận";
-      case "confirmed":
+      case "APPROVED":
         return "Đã xác nhận";
-      case "rejected":
+      case "REJECTED":
         return "Không chính xác";
       default:
         return status;
@@ -66,6 +112,24 @@ const AIDiagnosisPage: React.FC = () => {
     return "red";
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Spin size="large" tip="Đang tải danh sách chẩn đoán..." />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500">Lỗi: {error.message}</p>
+      </div>
+    );
+  }
+
+  const diagnoses = data?.data || [];
+
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -74,11 +138,11 @@ const AIDiagnosisPage: React.FC = () => {
           Chẩn đoán AI - Nhãn khoa
         </h1>
         <p className="text-gray-600">
-          Danh sách các chẩn đoán bệnh mắt do AI thực hiện cần xác nhận
+          Danh sách các chẩn đoán bệnh mắt do AI thực hiện cần xác nhận ({diagnoses.length})
         </p>
       </div>
 
-      {mockAIDiagnoses.length === 0 ? (
+      {diagnoses?.length === 0 ? (
         <div className="text-center py-12">
           <RobotOutlined className="text-6xl text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-500 mb-2">Không có chẩn đoán AI nào</h3>
@@ -86,80 +150,83 @@ const AIDiagnosisPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid gap-4">
-          {mockAIDiagnoses.map((diagnosis) => (
-            <Card
-              key={diagnosis.diagnosis_id}
-              className="hover:shadow-lg transition-shadow"
-              actions={[
-                <Button
-                  key="view"
-                  type="primary"
-                  icon={<EyeOutlined />}
-                  onClick={() => handleViewDiagnosis(diagnosis)}
-                >
-                  Xem chi tiết
-                </Button>,
-              ]}
-            >
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <RobotOutlined className="text-blue-600 text-xl" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-gray-800">
-                          {diagnosis.patient_name}
-                        </h3>
-                        {diagnosis.eye_images && diagnosis.eye_images.length > 0 && (
-                          <CameraOutlined className="text-green-600 text-sm" title="Có ảnh mắt" />
-                        )}
+          {diagnoses?.map((diagnosis) => {
+            const confidencePercent = Math.round(diagnosis.confidence * 100);
+            const diseaseName = diseaseLabels[diagnosis.disease_code] || diagnosis.disease_code;
+
+            return (
+              <Card
+                key={diagnosis.id}
+                className="hover:shadow-lg transition-shadow"
+                actions={[
+                  <Button
+                    key="view"
+                    type="primary"
+                    icon={<EyeOutlined />}
+                    onClick={() => handleViewDiagnosis(diagnosis)}
+                  >
+                    Xem chi tiết
+                  </Button>,
+                ]}
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <RobotOutlined className="text-blue-600 text-xl" />
                       </div>
-                      <p className="text-sm text-gray-500">ID: {diagnosis.diagnosis_id}</p>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            ID: {diagnosis.patient_id.slice(0, 8)}...
+                          </h3>
+                          {diagnosis.main_image_url && (
+                            <CameraOutlined className="text-green-600 text-sm" title="Có ảnh mắt" />
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500">Mã: {diagnosis.id.slice(0, 13)}...</p>
+                      </div>
                     </div>
-                  </div>
 
-                  <div className="mb-3">
-                    <h4 className="font-medium text-gray-700 mb-2">Triệu chứng:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {diagnosis.symptoms.map((symptom, index) => (
-                        <Tag key={index} color="blue">
-                          {symptom}
-                        </Tag>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mb-3">
-                    <h4 className="font-medium text-gray-700 mb-1">Chẩn đoán AI:</h4>
-                    <p className="text-gray-800 bg-gray-50 p-2 rounded">{diagnosis.ai_diagnosis}</p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Độ tin cậy</p>
-                      <Tag color={getConfidenceColor(diagnosis.confidence_score)}>
-                        {diagnosis.confidence_score}%
-                      </Tag>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Trạng thái</p>
-                      <Tag color={getStatusColor(diagnosis.status)}>
-                        {getStatusText(diagnosis.status)}
-                      </Tag>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Thời gian</p>
-                      <p className="text-gray-800">
-                        {new Date(diagnosis.created_at).toLocaleString("vi-VN")}
+                    <div className="mb-3">
+                      <h4 className="font-medium text-gray-700 mb-1">Chẩn đoán AI:</h4>
+                      <p className="text-gray-800 bg-gray-50 p-2 rounded font-medium">
+                        {diseaseName}
                       </p>
+                    </div>
+
+                    {diagnosis.notes && (
+                      <div className="mb-3">
+                        <h4 className="font-medium text-gray-700 mb-1">Ghi chú:</h4>
+                        <p className="text-sm text-gray-600">{diagnosis.notes}</p>
+                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Độ tin cậy</p>
+                        <Tag color={getConfidenceColor(confidencePercent)}>
+                          {confidencePercent}%
+                        </Tag>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Trạng thái</p>
+                        <Tag color={getStatusColor(diagnosis.status)}>
+                          {getStatusText(diagnosis.status)}
+                        </Tag>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">Thời gian</p>
+                        <p className="text-gray-800">
+                          {new Date(diagnosis.created_at).toLocaleString("vi-VN")}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          ))}
+              </Card>
+            );
+          })}
         </div>
       )}
 
