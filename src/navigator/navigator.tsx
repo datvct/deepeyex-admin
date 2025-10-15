@@ -24,6 +24,7 @@ import HospitalScheduleManager from "../pages/generate-time-slots";
 import ServicesPage from "../pages/services";
 import DoctorConsultationPage from "../pages/doctor-consultation";
 import AIDiagnosisPage from "../pages/ai-diagnosis";
+import EyeDiagnosisPage from "../pages/eye-diagnosis";
 
 export const Navigator = () => {
   return (
@@ -146,6 +147,14 @@ export const Navigator = () => {
               element={
                 <ProtectedRoute roles={[ROLES.DOCTOR]}>
                   <AIDiagnosisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.EYE_DIAGNOSIS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <EyeDiagnosisPage />
                 </ProtectedRoute>
               }
             />

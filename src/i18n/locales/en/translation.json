@@ -69,7 +69,8 @@
     "generateTimeSlot": "Generate Time Slot",
     "services": "Services",
     "doctorConsultation": "Doctor Consultation",
-    "aiDiagnosis": "AI Eye Diagnosis"
+    "aiDiagnosis": "AI Eye Diagnosis",
+    "eyeDiagnosis": "Image Diagnosis"
   },
   "header": {
     "profile": "Profile",

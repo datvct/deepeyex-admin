@@ -69,7 +69,8 @@
     "generateTimeSlot": "Tạo lịch khám",
     "services": "Dịch vụ",
     "doctorConsultation": "Đang khám bác sĩ",
-    "aiDiagnosis": "Chẩn đoán AI Nhãn khoa"
+    "aiDiagnosis": "Chẩn đoán AI Nhãn khoa",
+    "eyeDiagnosis": "Chẩn đoán bằng hình ảnh"
   },
   "header": {
     "profile": "Thông tin tài khoản",

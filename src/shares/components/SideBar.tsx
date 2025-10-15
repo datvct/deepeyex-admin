@@ -12,6 +12,7 @@ import {
   FaUser,
   FaStethoscope,
   FaRobot,
+  FaCamera,
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
@@ -134,6 +135,12 @@ const Sidebar: React.FC = () => {
       icon: <FaRobot className="w-5 h-5" />,
       url: "/ai-diagnosis",
     },
+    {
+      key: "eye-diagnosis",
+      label: t("sidebar.eyeDiagnosis"),
+      icon: <FaCamera className="w-5 h-5" />,
+      url: "/eye-diagnosis",
+    },
   ];
 
   const menuItems = useMemo(() => {
@@ -151,6 +158,7 @@ const Sidebar: React.FC = () => {
           "services",
           "doctor-consultation",
           "ai-diagnosis",
+          "eye-diagnosis",
         ].includes(item.key),
       );
     }

@@ -150,4 +150,12 @@ export const AI_DIAGNOSIS: PathItem = {
   },
 };
 
+export const EYE_DIAGNOSIS: PathItem = {
+  DETAIL: {
+    PATH: "/eye-diagnosis",
+    LABEL: "Chẩn đoán bằng hình ảnh",
+    BREADCRUMB: [{ title: "Chẩn đoán bằng hình ảnh", href: "/eye-diagnosis" }],
+  },
+};
+
 export * as Paths from "./path-routers";
