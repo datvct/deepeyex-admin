@@ -133,7 +133,14 @@ export const Navigator = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={Paths.SERVICES.DETAIL.PATH} element={<ServicesPage />} />
+            <Route
+              path={Paths.SERVICES.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.HOSPITAL]}>
+                  <ServicesPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path={Paths.DOCTOR_CONSULTATION.DETAIL.PATH}
               element={

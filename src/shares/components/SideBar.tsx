@@ -145,7 +145,16 @@ const Sidebar: React.FC = () => {
 
   const menuItems = useMemo(() => {
     if (role === "admin")
-      return fullMenuItems.filter((item) => !["generate-time-slot", "schedule"].includes(item.key));
+      return fullMenuItems.filter(
+        (item) =>
+          ![
+            "generate-time-slot",
+            "schedule",
+            "doctor-consultation",
+            "ai-diagnosis",
+            "eye-diagnosis",
+          ].includes(item.key),
+      );
 
     if (role === "doctor") {
       return fullMenuItems.filter((item) =>
@@ -155,7 +164,6 @@ const Sidebar: React.FC = () => {
           "video-chat",
           "dashboard",
           "schedule",
-          "services",
           "doctor-consultation",
           "ai-diagnosis",
           "eye-diagnosis",

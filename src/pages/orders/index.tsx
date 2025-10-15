@@ -44,7 +44,7 @@ export default function OrdersPage() {
     setSelectedOrder(order);
     form.setFieldsValue({
       order_id: order.order_id,
-      full_name: order.patient.full_name,
+      // full_name: order.patient.full_name,
       status: order.status,
     });
     setIsModalOpen(true);
@@ -135,8 +135,8 @@ export default function OrdersPage() {
               items.map((item) => (
                 <tr key={item.order_item_id}>
                   <td className="p-2 border border-[#dee2e6] overflow-hidden text-ellipsis whitespace-nowrap">
-                    <Tooltip title={item.drug.name} placement="topLeft">
-                      <span className="block truncate">{item.drug.name}</span>
+                    <Tooltip title={item?.item_name} placement="topLeft">
+                      <span className="block truncate">{item.item_name}</span>
                     </Tooltip>
                   </td>
                   <td className="p-2 border border-[#dee2e6] text-center">
@@ -208,9 +208,9 @@ export default function OrdersPage() {
           <Form.Item label={t("order.form.order_id")} name="order_id">
             <Input disabled />
           </Form.Item>
-          <Form.Item label={t("order.form.full_name")} name="full_name">
+          {/* <Form.Item label={t("order.form.full_name")} name="full_name">
             <Input disabled />
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item
             label={t("order.form.status")}
             name="status"
