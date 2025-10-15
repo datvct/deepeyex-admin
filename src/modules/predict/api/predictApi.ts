@@ -2,7 +2,7 @@ import { AxiosInstance } from "axios";
 import { DiagnosisResponse } from "../types/predict";
 import api from "../../../shares/configs/axios";
 
-const endpoint = "/external-eye/predict";
+const endpoint = "/retinal/predict";
 
 class PredictClient {
   private readonly client: AxiosInstance;

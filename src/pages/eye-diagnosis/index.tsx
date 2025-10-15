@@ -28,7 +28,6 @@ interface DiagnosisResult {
   disease: string;
   confidence: number;
   severity: string;
-  recommendations: string[];
   alternative_diagnoses: Array<{ label: string; probability: number }>;
 }
 
@@ -47,61 +46,7 @@ const diseaseLabels: Record<string, string> = {
   hordeolum: "Lẹo mắt",
   keratitiswithulcer: "Viêm giác mạc có loét",
   subconjunctival_hemorrhage: "Xuất huyết dưới kết mạc",
-};
-
-// Get recommendations based on disease
-const getRecommendations = (diseaseLabel: string): string[] => {
-  const recommendations: Record<string, string[]> = {
-    amd: [
-      "Chụp OCT võng mạc",
-      "Chụp mạch máu võng mạc (FFA)",
-      "Test Amsler grid",
-      "Tiêm thuốc chống VEGF",
-      "Bổ sung vitamin và khoáng chất",
-    ],
-    cataract: [
-      "Đo thị lực chi tiết",
-      "Khám sinh hiển vi",
-      "Đánh giá mức độ đục thủy tinh thể",
-      "Phẫu thuật thay thủy tinh thể (IOL)",
-    ],
-    diabetic_retinopathy_proliferate: [
-      "Chụp OCT võng mạc khẩn cấp",
-      "Chụp mạch máu võng mạc (FFA)",
-      "Laser quang đông võng mạc",
-      "Tiêm thuốc chống VEGF",
-      "Kiểm soát đường huyết nghiêm ngặt",
-    ],
-    diabetic_retinopathy_severe: [
-      "Chụp OCT võng mạc",
-      "Chụp mạch máu võng mạc (FFA)",
-      "Laser quang đông võng mạc",
-      "Kiểm soát đường huyết",
-      "Theo dõi định kỳ",
-    ],
-    glaucoma: [
-      "Đo nhãn áp (IOP)",
-      "Khám đáy mắt",
-      "Đo thị trường (Visual Field)",
-      "Chụp OCT",
-      "Thuốc nhỏ mắt hạ nhãn áp",
-    ],
-    conjunctivitis: [
-      "Thuốc nhỏ mắt kháng sinh",
-      "Vệ sinh mắt sạch sẽ",
-      "Tránh dụi mắt",
-      "Theo dõi triệu chứng",
-    ],
-    healthy_eye: ["Duy trì vệ sinh mắt tốt", "Khám định kỳ hàng năm", "Bảo vệ mắt khỏi tia UV"],
-  };
-
-  return (
-    recommendations[diseaseLabel] || [
-      "Khám chuyên khoa mắt",
-      "Thực hiện các xét nghiệm cần thiết",
-      "Theo dõi định kỳ",
-    ]
-  );
+  normal: "Mắt khỏe mạnh",
 };
 
 // Get severity based on probability
@@ -120,7 +65,6 @@ const mapApiResponseToResult = (data: DiagnosisResponse): DiagnosisResult => {
     disease: diseaseName,
     confidence: Math.round(topPrediction.probability * 100),
     severity: getSeverity(topPrediction.probability),
-    recommendations: getRecommendations(topPrediction.label),
     alternative_diagnoses: data.predictions
       .filter((p) => p.label !== topPrediction.label)
       .map((p) => ({
@@ -309,21 +253,6 @@ const EyeDiagnosisPage: React.FC = () => {
 
                 <Divider />
 
-                {/* Recommendations */}
-                <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Điều trị được đề xuất:</h4>
-                  <div className="space-y-2">
-                    {diagnosisResult.recommendations.map((rec, index) => (
-                      <div key={index} className="flex items-start gap-2 text-sm">
-                        <span className="text-blue-600 font-bold">{index + 1}.</span>
-                        <span>{rec}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Divider />
-
                 {/* Alternative Diagnoses */}
                 <div>
                   <h4 className="font-semibold text-gray-700 mb-2">Chẩn đoán thay thế:</h4>
@@ -339,10 +268,11 @@ const EyeDiagnosisPage: React.FC = () => {
 
                 <Divider />
 
-                <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
-                  <p className="text-sm text-yellow-800">
-                    <strong>Lưu ý:</strong> Kết quả chẩn đoán AI chỉ mang tính chất tham khảo. Vui
-                    lòng khám trực tiếp với bác sĩ chuyên khoa để có chẩn đoán chính xác.
+                <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                  <p className="text-sm text-blue-800">
+                    <strong>Lưu ý:</strong> Kết quả chẩn đoán AI mang tính chất hỗ trợ và tham khảo.
+                    Vui lòng kết hợp với kinh nghiệm lâm sàng và các xét nghiệm bổ sung để đưa ra
+                    chẩn đoán chính xác cuối cùng.
                   </p>
                 </div>
               </div>
