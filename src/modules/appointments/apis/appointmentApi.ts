@@ -19,8 +19,8 @@ class AppointmentClient {
   }
 
   // ---------------- List All Appointments ----------------
-  async getAll(): Promise<ListAppointmentsResponse> {
-    const response = await this.client.get<ListAppointmentsResponse>(endpoint);
+  async getAll(params?: Record<string, any>): Promise<ListAppointmentsResponse> {
+    const response = await this.client.get<ListAppointmentsResponse>(endpoint, { params });
     return response.data;
   }
 

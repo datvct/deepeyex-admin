@@ -15,6 +15,7 @@ import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { createPatientSchema } from "../../modules/patients/schemas/createPatient.schema";
 import z from "zod";
 import { userData } from "../../shares/constants/mockApiUser";
+import { FilterField } from "../../shares/components/AdvancedFilter";
 
 const { Option } = Select;
 
@@ -22,7 +23,8 @@ export default function PatientsPage() {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
-  const { data, isLoading, isError } = useListPatientsQuery();
+  const [filters, setFilters] = useState<Record<string, any>>({});
+  const { data, isLoading, isError } = useListPatientsQuery({ filters });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
@@ -122,6 +124,44 @@ export default function PatientsPage() {
     }
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "full_name",
+      label: t("patient.columns.full_name"),
+      type: "text",
+      placeholder: "Nhập tên bệnh nhân",
+      width: 200,
+    },
+    {
+      name: "gender",
+      label: t("patient.columns.gender"),
+      type: "select",
+      placeholder: "Chọn giới tính",
+      options: [
+        { label: t("patient.gender.male"), value: "male" },
+        { label: t("patient.gender.female"), value: "female" },
+        { label: t("patient.gender.other"), value: "other" },
+      ],
+      width: 150,
+    },
+    {
+      name: "birth_date",
+      label: "Tháng/Năm sinh",
+      type: "month",
+      placeholder: "Chọn tháng/năm sinh",
+      width: 200,
+    },
+  ];
+
   const columns = [
     { title: t("patient.columns.id"), dataIndex: "patient_id", key: "patient_id", width: "10%" },
     {
@@ -185,6 +225,10 @@ export default function PatientsPage() {
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={(patient) => deletePatient.mutate(patient.patient_id)}
+          useAdvancedFilter={true}
+          filterFields={filterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

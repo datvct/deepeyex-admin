@@ -19,8 +19,8 @@ class OrderClient {
   }
 
   // ---------------- List All Orders ----------------
-  async getAll(): Promise<ListOrdersResponse> {
-    const response = await this.client.get<ListOrdersResponse>(endpoint);
+  async getAll(params?: Record<string, any>): Promise<ListOrdersResponse> {
+    const response = await this.client.get<ListOrdersResponse>(endpoint, { params });
     return response.data;
   }
 

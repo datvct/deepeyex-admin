@@ -8,10 +8,16 @@ type Options = Omit<
   "queryKey" | "queryFn"
 >;
 
-export function useListUsersQuery(options?: Options) {
+interface UseListUsersQueryParams extends Options {
+  filters?: Record<string, any>;
+}
+
+export function useListUsersQuery(options?: UseListUsersQueryParams) {
+  const { filters, ...queryOptions } = options || {};
+
   return useQuery({
-    queryKey: [QueryKeyEnum.User],
-    queryFn: () => UserApi.getAll(),
-    ...options,
+    queryKey: [QueryKeyEnum.User, filters],
+    queryFn: () => UserApi.getAll(filters),
+    ...queryOptions,
   });
 }

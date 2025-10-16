@@ -3,15 +3,18 @@ import { QueryKeyEnum } from "../../../../shares/enums/queryKey";
 import { ListDrugsResponse } from "../../types/response";
 import { DrugApi } from "../../apis/drugApi";
 
-type Options = Omit<
-  UseQueryOptions<ListDrugsResponse, Error, ListDrugsResponse, QueryKey>,
-  "queryKey" | "queryFn"
->;
+export interface UseListDrugsQueryParams {
+  filters?: Record<string, any>;
+  options?: Omit<
+    UseQueryOptions<ListDrugsResponse, Error, ListDrugsResponse, QueryKey>,
+    "queryKey" | "queryFn"
+  >;
+}
 
-export function useListDrugsQuery(options?: Options) {
+export function useListDrugsQuery({ filters, options }: UseListDrugsQueryParams = {}) {
   return useQuery({
-    queryKey: [QueryKeyEnum.Drug],
-    queryFn: () => DrugApi.getAll(),
+    queryKey: [QueryKeyEnum.Drug, filters],
+    queryFn: () => DrugApi.getAll(filters),
     ...options,
   });
 }

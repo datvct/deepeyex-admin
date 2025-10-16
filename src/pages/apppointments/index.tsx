@@ -10,14 +10,17 @@ import { useListAppointmentsQuery } from "../../modules/appointments/hooks/queri
 import { useUpdateAppointmentStatusMutation } from "../../modules/appointments/hooks/mutations/use-update-appointment-status.mutation";
 import { AppointmentStatus } from "../../modules/appointments/enums/appointment-status";
 import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
+import { FilterField } from "../../shares/components/AdvancedFilter";
+import { useListDoctorsQuery } from "../../modules/doctors/hooks/queries/use-get-doctors.query";
 
 export default function AppointmentsPage() {
   const { t } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListAppointmentsQuery();
+  const { data, isLoading, isError } = useListAppointmentsQuery({ filters });
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
@@ -26,6 +29,8 @@ export default function AppointmentsPage() {
     isLoading: isLoadingHospitals,
     isError: isErrorHospitals,
   } = useListHospitalsQuery();
+
+  const { data: doctorData, isLoading: isLoadingDoctors } = useListDoctorsQuery({});
 
   const hospitalMap: Record<string, string> = {};
   if (hospitalData?.data) {
@@ -88,6 +93,14 @@ export default function AppointmentsPage() {
     }
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
   const statusColors: Record<AppointmentStatus, string> = {
     [AppointmentStatus.PENDING]: "blue",
     [AppointmentStatus.CONFIRMED]: "green",
@@ -97,6 +110,40 @@ export default function AppointmentsPage() {
     [AppointmentStatus.CONFIRMED_ONLINE]: "cyan",
     [AppointmentStatus.COMPLETED_ONLINE]: "teal",
   };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "patient_name",
+      label: t("appointment.columns.patient"),
+      type: "text",
+      placeholder: "Nhập tên bệnh nhân",
+      width: 200,
+    },
+    {
+      name: "status",
+      label: t("appointment.columns.status"),
+      type: "select",
+      placeholder: "Chọn trạng thái",
+      options: Object.entries(AppointmentStatus).map(([key, value]) => ({
+        label: t(`appointment.status.${key.toLowerCase()}`),
+        value: key,
+      })),
+      width: 200,
+    },
+    {
+      name: "doctor_id",
+      label: t("appointment.doctor"),
+      type: "select",
+      placeholder: "Chọn bác sĩ",
+      options:
+        doctorData?.data?.map((doctor) => ({
+          label: doctor.full_name,
+          value: doctor.doctor_id,
+        })) || [],
+      width: 250,
+    },
+  ];
 
   // ---- Cấu hình cột bảng ----
   const appointmentColumns = [
@@ -201,6 +248,10 @@ export default function AppointmentsPage() {
           dataSource={appointments}
           onEdit={handleEditStatus}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={filterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

@@ -16,6 +16,7 @@ import { useGetDoctorsByHospitalIdQuery } from "../../modules/doctors/hooks/quer
 import { UserAddOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
+import { FilterField } from "../../shares/components/AdvancedFilter";
 
 export default function ServicesPage() {
   const { t } = useTranslation();
@@ -25,15 +26,18 @@ export default function ServicesPage() {
   const [form] = Form.useForm();
   const [assignForm] = Form.useForm();
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
   const { role, doctor } = useSelector((state: RootState) => state.auth);
   const isHospitalRole = role === "hospital";
   const hospitalId = doctor?.hospital_id;
 
-  const { data, isLoading, isError } = useGetServicesQuery();
+  const { data, isLoading, isError } = useGetServicesQuery({ filters });
 
   // Lấy danh sách bác sĩ theo role
-  const { data: allDoctorsData } = useListDoctorsQuery({ enabled: !isHospitalRole });
+  const { data: allDoctorsData } = useListDoctorsQuery({
+    options: { enabled: !isHospitalRole },
+  });
   const { data: hospitalDoctorsData } = useGetDoctorsByHospitalIdQuery({
     hospitalId: hospitalId || "",
     enabled: isHospitalRole && !!hospitalId,
@@ -162,6 +166,33 @@ export default function ServicesPage() {
     deleteServiceMutation.mutate(service.service_id);
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "name",
+      label: t("service.columns.name"),
+      type: "text",
+      placeholder: "Nhập tên dịch vụ",
+      width: 250,
+    },
+    {
+      name: "duration",
+      label: t("service.columns.duration"),
+      type: "number",
+      placeholder: "Nhập thời gian (phút)",
+      min: 0,
+      width: 200,
+    },
+  ];
+
   // Định nghĩa columns cho table
   const columns = [
     {
@@ -248,6 +279,10 @@ export default function ServicesPage() {
         onDelete={handleDelete}
         rowKey="service_id"
         addButtonText={t("service.add")}
+        useAdvancedFilter={true}
+        filterFields={filterFields}
+        onFilter={handleFilter}
+        onResetFilter={handleResetFilter}
       />
 
       <Modal

@@ -355,7 +355,10 @@
       "pending": "Pending",
       "confirmed": "Confirmed",
       "canceled": "Canceled",
-      "completed": "Completed"
+      "completed": "Completed",
+      "pending_online": "Pending Online",
+      "confirmed_online": "Confirmed Online",
+      "completed_online": "Completed Online"
     },
     "messages": {
       "load_error": "Unable to fetch appointments. Please try again later.",

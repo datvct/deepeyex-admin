@@ -27,8 +27,8 @@ class UserClient {
   }
 
   // ---------------- List All Users ----------------
-  async getAll(): Promise<ListUsersResponse> {
-    const response = await this.client.get<ListUsersResponse>(endpoint);
+  async getAll(params?: Record<string, any>): Promise<ListUsersResponse> {
+    const response = await this.client.get<ListUsersResponse>(endpoint, { params });
     return response.data;
   }
 

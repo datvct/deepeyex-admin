@@ -9,6 +9,8 @@ import { useListOrdersQuery } from "../../modules/orders/hooks/queries/use-get-o
 import { useUpdateOrderStatusMutation } from "../../modules/orders/hooks/mutations/use-update-order-status.mutation";
 import { OrderStatus, OrderStatusLabel } from "../../modules/orders/enums/order-status";
 import { useTranslation } from "react-i18next";
+import { FilterField } from "../../shares/components/AdvancedFilter";
+import dayjs from "dayjs";
 
 export default function OrdersPage() {
   const { t } = useTranslation();
@@ -16,8 +18,9 @@ export default function OrdersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListOrdersQuery();
+  const { data, isLoading, isError } = useListOrdersQuery({ filters });
   const [orders, setOrders] = useState<Order[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
@@ -69,12 +72,42 @@ export default function OrdersPage() {
     }
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
   const statusColors: Record<OrderStatus, string> = {
     [OrderStatus.PENDING]: "blue",
     [OrderStatus.PAID]: "green",
     [OrderStatus.CANCELED]: "red",
     [OrderStatus.DELIVERED]: "orange",
   };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "status",
+      label: t("order.columns.status"),
+      type: "select",
+      placeholder: "Chọn trạng thái",
+      options: Object.entries(OrderStatusLabel).map(([key, label]) => ({
+        label: t(`order.status.${key}`),
+        value: key,
+      })),
+      width: 200,
+    },
+    {
+      name: "order_date",
+      label: "Ngày đặt",
+      type: "date",
+      placeholder: "Chọn ngày đặt",
+      width: 200,
+    },
+  ];
 
   // ---- Cấu hình cột bảng ----
   const orderColumns = [
@@ -160,10 +193,23 @@ export default function OrdersPage() {
       title: t("order.columns.status"),
       dataIndex: "status",
       key: "status",
+      width: "10%",
       render: (status: string) => (
         <Tag color={statusColors[status as OrderStatus] || "default"}>
           {t(`order.status.${status}`)}
         </Tag>
+      ),
+    },
+    {
+      title: "Ngày đặt",
+      dataIndex: "created_at",
+      key: "created_at",
+      width: "12%",
+      render: (created_at: string) => (
+        <div>
+          <p>{dayjs(created_at).format("DD/MM/YYYY")}</p>
+          <p className="text-gray-500 text-sm">{dayjs(created_at).format("HH:mm:ss")}</p>
+        </div>
       ),
     },
   ];
@@ -189,6 +235,10 @@ export default function OrdersPage() {
           dataSource={orders}
           onEdit={handleEditStatus}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={filterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

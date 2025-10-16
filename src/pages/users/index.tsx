@@ -4,6 +4,7 @@ import type { ColumnsType } from "antd/es/table";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import CrudTable from "../../shares/components/CrudTable.tsx";
+import AdvancedFilter, { FilterField } from "../../shares/components/AdvancedFilter.tsx";
 import { useQueryClient } from "@tanstack/react-query";
 import { User } from "../../modules/users/types/user.ts";
 import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-users.query.ts";
@@ -25,13 +26,15 @@ export default function UserPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [filterParams, setFilterParams] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListUsersQuery();
+  const { data, isLoading, isError } = useListUsersQuery({ filters: filterParams });
 
   const roleColors: Record<Role, string> = {
     [Role.Patient]: "green",
     [Role.Doctor]: "blue",
     [Role.Admin]: "red",
+    [Role.Hospital]: "purple",
   };
 
   // ---- Mutation: Delete
@@ -72,6 +75,39 @@ export default function UserPage() {
       setUsers(data.data);
     }
   }, [data]);
+
+  // Filter fields cho User
+  const userFilterFields: FilterField[] = [
+    {
+      name: "search",
+      label: "Tìm kiếm",
+      type: "text",
+      placeholder: "Tìm theo username",
+      width: "100%",
+    },
+    {
+      name: "role",
+      label: "Vai trò",
+      type: "select",
+      width: "100%",
+      options: [
+        { label: t("user.roles.admin"), value: Role.Admin },
+        { label: t("user.roles.doctor"), value: Role.Doctor },
+        { label: t("user.roles.patient"), value: Role.Patient },
+        { label: t("user.roles.hospital"), value: Role.Hospital },
+      ],
+    },
+  ];
+
+  const handleFilter = (filterValues: Record<string, any>) => {
+    // Gửi filter params lên API
+    setFilterParams(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    // Reset filter params
+    setFilterParams({});
+  };
 
   const handleAddUser = () => {
     setEditingUser(null);
@@ -169,6 +205,10 @@ export default function UserPage() {
           onAdd={handleAddUser}
           onEdit={handleEditUser}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={userFilterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

@@ -18,6 +18,7 @@ import { createDoctorSchema } from "../../modules/doctors/schemas/createDoctor.s
 import z from "zod";
 import { useTranslation } from "react-i18next";
 import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-users.query";
+import AdvancedFilter, { FilterField } from "../../shares/components/AdvancedFilter";
 
 export default function DoctorsPage() {
   const { t } = useTranslation();
@@ -28,8 +29,9 @@ export default function DoctorsPage() {
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [editingDoctor, setEditingDoctor] = useState<Doctor | null>(null);
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListDoctorsQuery();
+  const { data, isLoading, isError } = useListDoctorsQuery({ filters });
 
   const { data: dataUser, isLoading: isLoadingUser, isError: isErrorUser } = useListUsersQuery();
 
@@ -139,6 +141,48 @@ export default function DoctorsPage() {
     deleteDoctor.mutate(doctor.doctor_id);
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "full_name",
+      label: t("doctor.form.name"),
+      type: "text",
+      placeholder: "Nhập tên bác sĩ",
+      width: 200,
+    },
+    {
+      name: "specialty",
+      label: t("doctor.form.specialty"),
+      type: "select",
+      placeholder: "Chọn chuyên khoa",
+      options: Object.values(Specialty).map((specialty) => ({
+        label: SpecialtyLabel[specialty],
+        value: specialty,
+      })),
+      width: 200,
+    },
+    {
+      name: "hospital_id",
+      label: t("doctor.form.hospital"),
+      type: "select",
+      placeholder: "Chọn bệnh viện",
+      options:
+        hospitalData?.data?.map((hospital) => ({
+          label: hospital.name,
+          value: hospital.hospital_id,
+        })) || [],
+      width: 250,
+    },
+  ];
+
   const columns: ColumnsType<Doctor> = [
     { title: "ID", dataIndex: "doctor_id", key: "doctor_id", width: "8%" },
     {
@@ -186,6 +230,7 @@ export default function DoctorsPage() {
           className="mb-4"
         />
       )}
+
       <Spin spinning={isLoading}>
         <CrudTable
           title={t("doctor.title")}
@@ -197,6 +242,10 @@ export default function DoctorsPage() {
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={filterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

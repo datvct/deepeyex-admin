@@ -1,7 +1,11 @@
 import { Alert, Col, Form, Input, Modal, Row, Select, Spin, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import CrudTable from "../../shares/components/CrudTable";
-import { useListHospitalsQuery } from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
+import { FilterField } from "../../shares/components/AdvancedFilter";
+import {
+  useListHospitalsQuery,
+  UseListHospitalsQueryParams,
+} from "../../modules/hospitals/hooks/queries/use-get-hospitals.query";
 import { Hospital } from "../../modules/hospitals/types/hospital";
 import { useDeleteHospitalMutation } from "../../modules/hospitals/hooks/mutations/use-delete-hospital.mutation";
 import { toast } from "react-toastify";
@@ -22,8 +26,9 @@ export default function HospitalsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [filterParams, setFilterParams] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListHospitalsQuery();
+  const { data, isLoading, isError } = useListHospitalsQuery({ filters: filterParams });
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
   const [cities, setCities] = useState<City[]>([]);
@@ -77,7 +82,7 @@ export default function HospitalsPage() {
       setHospitals(data.data);
     }
   }, [data]);
-
+  3;
   // ---- Thêm mới ----
   const handleAdd = () => {
     setEditingHospital(null);
@@ -162,6 +167,56 @@ export default function HospitalsPage() {
     }
   };
 
+  // Filter fields cho Hospital
+  const hospitalFilterFields: FilterField[] = [
+    {
+      name: "name",
+      label: "Tên bệnh viện",
+      type: "text",
+      placeholder: "Tìm theo tên bệnh viện...",
+      span: 6,
+      width: 300,
+    },
+    {
+      name: "address",
+      label: "Địa chỉ",
+      type: "text",
+      placeholder: "Tìm theo địa chỉ...",
+      span: 6,
+      width: 300,
+    },
+    {
+      name: "city",
+      label: "Thành phố",
+      type: "select",
+      placeholder: "Chọn thành phố",
+      span: 4,
+      width: 200,
+      options: cities.map((city) => ({
+        label: city.name,
+        value: city.name,
+      })),
+    },
+    {
+      name: "ward",
+      label: "Phường/Xã",
+      type: "text",
+      placeholder: "Nhập phường/xã",
+      span: 4,
+      width: 200,
+    },
+  ];
+
+  const handleFilter = (filterValues: Record<string, any>) => {
+    // Gửi filter params lên API
+    setFilterParams(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    // Reset filter params
+    setFilterParams({});
+  };
+
   // ---- Cấu hình cột bảng ----
   const hospitalColumns = [
     { title: "ID", dataIndex: "hospital_id", key: "hospital_id", width: "10%" },
@@ -177,8 +232,17 @@ export default function HospitalsPage() {
           "-"
         ),
     },
-    { title: t("hospital.form.name"), dataIndex: "name", key: "name", width: "25%" },
-    { title: t("hospital.form.address"), dataIndex: "address", key: "address", width: "20%" },
+    { title: t("hospital.form.name"), dataIndex: "name", key: "name", width: "20%" },
+    {
+      title: t("hospital.form.address"),
+      dataIndex: "address",
+      key: "address",
+      width: "25%",
+      render: (address: string, record: Hospital) => {
+        const fullAddress = [address, record.ward, record.city].filter(Boolean).join(", ");
+        return <span>{fullAddress || "-"}</span>;
+      },
+    },
     { title: t("hospital.form.phone"), dataIndex: "phone", key: "phone", width: "10%" },
     { title: t("hospital.form.email"), dataIndex: "email", key: "email", width: "15%" },
   ];
@@ -205,6 +269,10 @@ export default function HospitalsPage() {
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={hospitalFilterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 
