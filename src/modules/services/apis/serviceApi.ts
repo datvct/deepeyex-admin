@@ -8,8 +8,8 @@ const BASE_URL = "/hospital/services";
 
 export const ServiceApi = {
   // Lấy danh sách tất cả services
-  getAll: async (): Promise<ListServicesResponse> => {
-    const response = await api.get<ListServicesResponse>(BASE_URL);
+  getAll: async (params?: Record<string, any>): Promise<ListServicesResponse> => {
+    const response = await api.get<ListServicesResponse>(BASE_URL, { params });
     return response.data;
   },
 

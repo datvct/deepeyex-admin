@@ -8,10 +8,16 @@ type Options = Omit<
   "queryKey" | "queryFn"
 >;
 
-export function useListHospitalsQuery(options?: Options) {
+export interface UseListHospitalsQueryParams extends Options {
+  filters?: Record<string, any>;
+}
+
+export function useListHospitalsQuery(options?: UseListHospitalsQueryParams) {
+  const { filters, ...queryOptions } = options || {};
+
   return useQuery({
-    queryKey: [QueryKeyEnum.Hospital],
-    queryFn: () => HospitalApi.getAll(),
-    ...options,
+    queryKey: [QueryKeyEnum.Hospital, filters],
+    queryFn: () => HospitalApi.getAll(filters),
+    ...queryOptions,
   });
 }

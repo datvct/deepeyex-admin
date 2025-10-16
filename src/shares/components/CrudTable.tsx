@@ -3,6 +3,7 @@ import { PlusCircleFilled, EditOutlined, DeleteOutlined } from "@ant-design/icon
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Filter from "./Filter";
+import AdvancedFilter, { FilterField } from "./AdvancedFilter";
 import { formatDateTime } from "../utils/helper";
 
 const { Title, Text } = Typography;
@@ -17,6 +18,11 @@ interface CrudTableProps<T> {
   onAdd?: () => void;
   onEdit?: (record: T) => void;
   onDelete?: (record: T) => void;
+  // Advanced Filter props
+  useAdvancedFilter?: boolean;
+  filterFields?: FilterField[];
+  onFilter?: (values: Record<string, any>) => void;
+  onResetFilter?: () => void;
 }
 
 export default function CrudTable<T>({
@@ -29,6 +35,11 @@ export default function CrudTable<T>({
   onAdd,
   onEdit,
   onDelete,
+  // Advanced Filter props
+  useAdvancedFilter = false,
+  filterFields = [],
+  onFilter,
+  onResetFilter,
 }: CrudTableProps<T>) {
   const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState("");
@@ -97,7 +108,12 @@ export default function CrudTable<T>({
         )}
       </div>
 
-      <Filter placeholder={t("table.searchPlaceholder")} onFilter={setFilterValue} />
+      {/* Hiển thị AdvancedFilter hoặc Filter thông thường */}
+      {useAdvancedFilter && filterFields.length > 0 && onFilter ? (
+        <AdvancedFilter fields={filterFields} onFilter={onFilter} onReset={onResetFilter} />
+      ) : (
+        <Filter placeholder={t("table.searchPlaceholder")} onFilter={setFilterValue} />
+      )}
 
       <Table
         rowKey={rowKey}

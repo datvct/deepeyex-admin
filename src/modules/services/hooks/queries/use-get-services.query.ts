@@ -4,15 +4,18 @@ import { QueryKeyEnum } from "../../../../shares/enums/queryKey";
 import { ListServicesResponse } from "../../types/response";
 import { ServiceApi } from "../../apis/serviceApi";
 
-type Options = Omit<
-  UseQueryOptions<ListServicesResponse, Error, ListServicesResponse, QueryKey>,
-  "queryKey" | "queryFn"
->;
+export interface UseGetServicesQueryParams {
+  filters?: Record<string, any>;
+  options?: Omit<
+    UseQueryOptions<ListServicesResponse, Error, ListServicesResponse, QueryKey>,
+    "queryKey" | "queryFn"
+  >;
+}
 
-export const useGetServicesQuery = (options?: Options) => {
+export const useGetServicesQuery = ({ filters, options }: UseGetServicesQueryParams = {}) => {
   return useQuery({
-    queryKey: [QueryKeyEnum.Service],
-    queryFn: () => ServiceApi.getAll(),
+    queryKey: [QueryKeyEnum.Service, filters],
+    queryFn: () => ServiceApi.getAll(filters),
     ...options,
   });
 };

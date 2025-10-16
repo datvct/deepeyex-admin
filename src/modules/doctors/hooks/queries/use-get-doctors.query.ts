@@ -3,15 +3,18 @@ import { QueryKeyEnum } from "../../../../shares/enums/queryKey";
 import { ListDoctorsResponse } from "../../types/response";
 import { DoctorApi } from "../../apis/doctorApi";
 
-type Options = Omit<
-  UseQueryOptions<ListDoctorsResponse, Error, ListDoctorsResponse, QueryKey>,
-  "queryKey" | "queryFn"
->;
+export interface UseListDoctorsQueryParams {
+  filters?: Record<string, any>;
+  options?: Omit<
+    UseQueryOptions<ListDoctorsResponse, Error, ListDoctorsResponse, QueryKey>,
+    "queryKey" | "queryFn"
+  >;
+}
 
-export function useListDoctorsQuery(options?: Options) {
+export function useListDoctorsQuery({ filters, options }: UseListDoctorsQueryParams = {}) {
   return useQuery({
-    queryKey: [QueryKeyEnum.Doctor],
-    queryFn: () => DoctorApi.getAll(),
+    queryKey: [QueryKeyEnum.Doctor, filters],
+    queryFn: () => DoctorApi.getAll(filters),
     ...options,
   });
 }

@@ -13,6 +13,7 @@ import { useCreateDrugMutation } from "../../modules/drugs/hooks/mutations/use-c
 import { useUpdateDrugMutation } from "../../modules/drugs/hooks/mutations/use-update-drug.mutation";
 import { createDrugSchema } from "../../modules/drugs/schemas/createDrug.schema";
 import { useTranslation } from "react-i18next";
+import { FilterField } from "../../shares/components/AdvancedFilter";
 
 export default function DrugsPage() {
   const { t } = useTranslation();
@@ -20,8 +21,9 @@ export default function DrugsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const [filters, setFilters] = useState<Record<string, any>>({});
 
-  const { data, isLoading, isError } = useListDrugsQuery();
+  const { data, isLoading, isError } = useListDrugsQuery({ filters });
   const [drugs, setDrugs] = useState<Drug[]>([]);
   const [editingDrug, setEditingDrug] = useState<Drug | null>(null);
 
@@ -136,6 +138,57 @@ export default function DrugsPage() {
     deleteDrug.mutate(drug.drug_id);
   };
 
+  const handleFilter = (filterValues: Record<string, any>) => {
+    setFilters(filterValues);
+  };
+
+  const handleResetFilter = () => {
+    setFilters({});
+  };
+
+  // Cấu hình filter fields
+  const filterFields: FilterField[] = [
+    {
+      name: "name",
+      label: t("drug.columns.name"),
+      type: "text",
+      placeholder: "Nhập tên thuốc",
+      width: 200,
+    },
+    {
+      name: "min_price",
+      label: "Giá tối thiểu",
+      type: "number",
+      placeholder: "Nhập giá tối thiểu",
+      min: 0,
+      width: 150,
+    },
+    {
+      name: "max_price",
+      label: "Giá tối đa",
+      type: "number",
+      placeholder: "Nhập giá tối đa",
+      min: 0,
+      width: 150,
+    },
+    {
+      name: "min_stock",
+      label: "Tồn kho tối thiểu",
+      type: "number",
+      placeholder: "Nhập số lượng",
+      min: 0,
+      width: 150,
+    },
+    {
+      name: "max_stock",
+      label: "Tồn kho tối đa",
+      type: "number",
+      placeholder: "Nhập số lượng",
+      min: 0,
+      width: 150,
+    },
+  ];
+
   // ---- Cấu hình cột bảng ----
   const drugColumns = [
     { title: t("drug.columns.id"), dataIndex: "drug_id", key: "drug_id", width: "10%" },
@@ -227,6 +280,10 @@ export default function DrugsPage() {
           onAdd={handleAdd}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          useAdvancedFilter={true}
+          filterFields={filterFields}
+          onFilter={handleFilter}
+          onResetFilter={handleResetFilter}
         />
       </Spin>
 

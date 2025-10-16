@@ -29,8 +29,8 @@ class DoctorClient {
   }
 
   // ---------------- List All Doctors ----------------
-  async getAll(): Promise<ListDoctorsResponse> {
-    const response = await this.client.get<ListDoctorsResponse>(endpoint);
+  async getAll(params?: Record<string, any>): Promise<ListDoctorsResponse> {
+    const response = await this.client.get<ListDoctorsResponse>(endpoint, { params });
     return response.data;
   }
 

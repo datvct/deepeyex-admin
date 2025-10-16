@@ -27,8 +27,8 @@ class DrugClient {
   }
 
   // ---------------- List All Drugs ----------------
-  async getAll(): Promise<ListDrugsResponse> {
-    const response = await this.client.get<ListDrugsResponse>(endpoint);
+  async getAll(params?: Record<string, any>): Promise<ListDrugsResponse> {
+    const response = await this.client.get<ListDrugsResponse>(endpoint, { params });
     return response.data;
   }
 

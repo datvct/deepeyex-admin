@@ -3,15 +3,21 @@ import { QueryKeyEnum } from "../../../../shares/enums/queryKey";
 import { ListAppointmentsResponse } from "../../types/response";
 import { AppointmentApi } from "../../apis/appointmentApi";
 
-type Options = Omit<
-  UseQueryOptions<ListAppointmentsResponse, Error, ListAppointmentsResponse, QueryKey>,
-  "queryKey" | "queryFn"
->;
+export interface UseListAppointmentsQueryParams {
+  filters?: Record<string, any>;
+  options?: Omit<
+    UseQueryOptions<ListAppointmentsResponse, Error, ListAppointmentsResponse, QueryKey>,
+    "queryKey" | "queryFn"
+  >;
+}
 
-export function useListAppointmentsQuery(options?: Options) {
+export function useListAppointmentsQuery({
+  filters,
+  options,
+}: UseListAppointmentsQueryParams = {}) {
   return useQuery({
-    queryKey: [QueryKeyEnum.Appointment],
-    queryFn: () => AppointmentApi.getAll(),
+    queryKey: [QueryKeyEnum.Appointment, filters],
+    queryFn: () => AppointmentApi.getAll(filters),
     ...options,
   });
 }

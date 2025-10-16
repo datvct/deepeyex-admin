@@ -403,7 +403,10 @@
       "pending": "Chờ xác nhận",
       "confirmed": "Đã xác nhận",
       "canceled": "Đã hủy",
-      "completed": "Hoàn thành"
+      "completed": "Hoàn thành",
+      "pending_online": "Chờ tư vấn trực tuyến",
+      "confirmed_online": "Đang tư vấn trực tuyến",
+      "completed_online": "Hoàn tất tư vấn trực tuyến"
     },
     "messages": {
       "load_error": "Không thể lấy danh sách lịch hẹn. Vui lòng thử lại sau.",
