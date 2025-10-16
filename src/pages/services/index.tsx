@@ -12,7 +12,10 @@ import { useUpdateServiceMutation } from "../../modules/services/hooks/mutations
 import { useAssignServiceMutation } from "../../modules/services/hooks/mutations/use-assign-service.mutation";
 import { useTranslation } from "react-i18next";
 import { useListDoctorsQuery } from "../../modules/doctors/hooks/queries/use-get-doctors.query";
+import { useGetDoctorsByHospitalIdQuery } from "../../modules/doctors/hooks/queries/use-get-doctor-by-hospital-id.query";
 import { UserAddOutlined } from "@ant-design/icons";
+import { useSelector } from "react-redux";
+import { RootState } from "../../shares/stores";
 
 export default function ServicesPage() {
   const { t } = useTranslation();
@@ -23,8 +26,21 @@ export default function ServicesPage() {
   const [assignForm] = Form.useForm();
   const queryClient = useQueryClient();
 
+  const { role, doctor } = useSelector((state: RootState) => state.auth);
+  const isHospitalRole = role === "hospital";
+  const hospitalId = doctor?.hospital_id;
+
   const { data, isLoading, isError } = useGetServicesQuery();
-  const { data: doctorsData } = useListDoctorsQuery();
+
+  // Lấy danh sách bác sĩ theo role
+  const { data: allDoctorsData } = useListDoctorsQuery({ enabled: !isHospitalRole });
+  const { data: hospitalDoctorsData } = useGetDoctorsByHospitalIdQuery({
+    hospitalId: hospitalId || "",
+    enabled: isHospitalRole && !!hospitalId,
+  });
+
+  const doctorsData = isHospitalRole ? hospitalDoctorsData : allDoctorsData;
+
   const [services, setServices] = useState<Service[]>([]);
   const [editingService, setEditingService] = useState<Service | null>(null);
 
@@ -209,15 +225,17 @@ export default function ServicesPage() {
           <h2 className="text-2xl font-bold">{t("service.title")}</h2>
           <p className="text-gray-500">{t("service.subtitle")}</p>
         </div> */}
-        <Button
-          type="primary"
-          icon={<UserAddOutlined />}
-          onClick={handleAssign}
-          size="large"
-          className="bg-green-600 hover:bg-green-700"
-        >
-          Gán dịch vụ cho bác sĩ
-        </Button>
+        {isHospitalRole && (
+          <Button
+            type="primary"
+            icon={<UserAddOutlined />}
+            onClick={handleAssign}
+            size="large"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Gán dịch vụ cho bác sĩ
+          </Button>
+        )}
       </div>
 
       <CrudTable

@@ -134,4 +134,28 @@ export const SERVICES: PathItem = {
   },
 };
 
+export const DOCTOR_CONSULTATION: PathItem = {
+  DETAIL: {
+    PATH: "/doctor-consultation",
+    LABEL: "Đang khám bác sĩ",
+    BREADCRUMB: [{ title: "Đang khám bác sĩ", href: "/doctor-consultation" }],
+  },
+};
+
+export const AI_DIAGNOSIS: PathItem = {
+  DETAIL: {
+    PATH: "/ai-diagnosis",
+    LABEL: "Chẩn đoán AI Nhãn khoa",
+    BREADCRUMB: [{ title: "Chẩn đoán AI Nhãn khoa", href: "/ai-diagnosis" }],
+  },
+};
+
+export const EYE_DIAGNOSIS: PathItem = {
+  DETAIL: {
+    PATH: "/eye-diagnosis",
+    LABEL: "Chẩn đoán bằng hình ảnh",
+    BREADCRUMB: [{ title: "Chẩn đoán bằng hình ảnh", href: "/eye-diagnosis" }],
+  },
+};
+
 export * as Paths from "./path-routers";

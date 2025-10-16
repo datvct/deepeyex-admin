@@ -22,6 +22,9 @@ import WeeklyScheduleWithModal from "../pages/schedule";
 import React from "react";
 import HospitalScheduleManager from "../pages/generate-time-slots";
 import ServicesPage from "../pages/services";
+import DoctorConsultationPage from "../pages/doctor-consultation";
+import AIDiagnosisPage from "../pages/ai-diagnosis";
+import EyeDiagnosisPage from "../pages/eye-diagnosis";
 
 export const Navigator = () => {
   return (
@@ -130,7 +133,38 @@ export const Navigator = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path={Paths.SERVICES.DETAIL.PATH} element={<ServicesPage />} />
+            <Route
+              path={Paths.SERVICES.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.HOSPITAL]}>
+                  <ServicesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.DOCTOR_CONSULTATION.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <DoctorConsultationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.AI_DIAGNOSIS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <AIDiagnosisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.EYE_DIAGNOSIS.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <EyeDiagnosisPage />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Route>
         <Route path="/403" element={<Forbidden403 />} />

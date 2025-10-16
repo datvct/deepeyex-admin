@@ -67,7 +67,10 @@
     "videoChat": "Video Chat",
     "schedule": "Schedules",
     "generateTimeSlot": "Generate Time Slot",
-    "services": "Services"
+    "services": "Services",
+    "doctorConsultation": "Doctor Consultation",
+    "aiDiagnosis": "AI Eye Diagnosis",
+    "eyeDiagnosis": "Image Diagnosis"
   },
   "header": {
     "profile": "Profile",
