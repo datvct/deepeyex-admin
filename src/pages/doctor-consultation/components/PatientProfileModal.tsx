@@ -1,33 +1,26 @@
-import React, { useState } from "react";
-import {
-  Modal,
-  Form,
-  Input,
-  Button,
-  DatePicker,
-  message,
-  Tabs,
-  Card,
-  Row,
-  Col,
-  Divider,
-} from "antd";
-import { Appointment } from "../../../modules/appointments/types/appointment";
-import {
-  UserOutlined,
-  MedicineBoxOutlined,
-  CalendarOutlined,
-  FileTextOutlined,
-} from "@ant-design/icons";
+import React, { useState, useEffect } from "react";
+import { Modal, Form, Button, Tabs, Spin } from "antd";
+import { UserOutlined, ExperimentOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
+import { Appointment } from "../../../modules/appointments/types/appointment";
+import { useCheckMedicalRecordQuery } from "../../../modules/medical-records/hooks/queries/use-check-medical-record.query";
+import { MedicalRecord } from "../../../modules/medical-records/types/medical-record";
+import { useCreateFullRecordMutation } from "../../../modules/medical-records/hooks/mutations/use-create-full-record.mutation";
+import { useCompleteRecordMutation } from "../../../modules/medical-records/hooks/mutations/use-complete-record.mutation";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyEnum } from "../../../shares/enums/queryKey";
+import { toast } from "react-toastify";
+import PatientInfoTab from "./PatientInfoTab";
+import PrescriptionTab from "./PrescriptionTab";
+import AIDiagnosisTab from "./AIDiagnosisTab";
 
-const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 interface PatientProfileModalProps {
   appointment: Appointment;
   isOpen: boolean;
   onClose: () => void;
+  onSaveSuccess?: (recordId: string, appointment: Appointment) => void;
 }
 
 interface PrescriptionForm {
@@ -35,12 +28,7 @@ interface PrescriptionForm {
   dosage: string;
   frequency: string;
   duration: string;
-  notes?: string;
-}
-
-interface FollowUpForm {
-  follow_up_date: dayjs.Dayjs | null;
-  reason: string;
+  custom_times?: string[];
   notes?: string;
 }
 
@@ -48,53 +36,182 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
   appointment,
   isOpen,
   onClose,
+  onSaveSuccess,
 }) => {
   const [prescriptionForm] = Form.useForm<PrescriptionForm>();
-  const [followUpForm] = Form.useForm<FollowUpForm>();
+  const [diagnosisForm] = Form.useForm();
   const [prescriptions, setPrescriptions] = useState<PrescriptionForm[]>([]);
   const [activeTab, setActiveTab] = useState("profile");
+  const queryClient = useQueryClient();
+
+  // State để lưu action và record data
+  const [medicalRecordAction, setMedicalRecordAction] = useState<"create" | "update">("create");
+  const [existingRecord, setExistingRecord] = useState<MedicalRecord | null>(null);
+  const [attachmentFileList, setAttachmentFileList] = useState<any[]>([]);
+
+  // Check medical record when modal opens
+  const {
+    data: checkData,
+    isLoading: isCheckingRecord,
+    refetch: refetchCheck,
+  } = useCheckMedicalRecordQuery(appointment.appointment_id || "", {
+    enabled: !!appointment.appointment_id && isOpen,
+  });
+
+  // Mutation: Create Full Record
+  const createFullRecordMutation = useCreateFullRecordMutation({
+    onSuccess: (response) => {
+      toast.success("Tạo hồ sơ bệnh án thành công!");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.MedicalRecord] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
+
+      // Data trực tiếp là record, không có wrapper
+      const recordId = response?.data?.record_id || "";
+      console.log("✅ Record ID saved:", recordId);
+
+      // Đóng modal và callback lên parent
+      onClose();
+      onSaveSuccess?.(recordId, appointment);
+    },
+    onError: (error) => {
+      toast.error("Lỗi tạo hồ sơ: " + error.message);
+    },
+  });
+
+  // Mutation: Complete Record (Update)
+  const completeRecordMutation = useCompleteRecordMutation({
+    onSuccess: (response) => {
+      toast.success("Cập nhật hồ sơ bệnh án thành công!");
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.MedicalRecord] });
+      queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
+
+      // Data trực tiếp là record, không có wrapper
+      const recordId = response?.data?.record_id || existingRecord?.record_id || "";
+      console.log("✅ Record ID saved (update):", recordId);
+
+      // Đóng modal và callback lên parent
+      onClose();
+      onSaveSuccess?.(recordId, appointment);
+    },
+    onError: (error) => {
+      toast.error("Lỗi cập nhật hồ sơ: " + error.message);
+    },
+  });
+
+  // Cập nhật state khi có data từ API
+  useEffect(() => {
+    if (checkData?.data) {
+      setMedicalRecordAction(checkData.data.action);
+
+      if (checkData.data.action === "update" && checkData.data.record) {
+        const record = checkData.data.record as MedicalRecord;
+        setExistingRecord(record);
+
+        // Set form values với data có sẵn
+        diagnosisForm.setFieldsValue({
+          diagnosis: record.diagnosis,
+          notes: record.notes,
+        });
+
+        // Set existing attachments to file list
+        if (record.attachments && record.attachments.length > 0) {
+          const existingFiles = record.attachments.map((att, index) => ({
+            uid: att.id || `${index}`,
+            name: `attachment-${index + 1}`,
+            status: "done",
+            url: att.file_url,
+            type: att.file_type,
+          }));
+          setAttachmentFileList(existingFiles as any);
+        }
+
+        // Set existing prescriptions
+        if (record.prescriptions && record.prescriptions.length > 0) {
+          // Note: Backend prescriptions structure khác với form prescription
+          // Có thể cần convert hoặc hiển thị riêng
+        }
+      } else {
+        setExistingRecord(null);
+        diagnosisForm.resetFields();
+        setAttachmentFileList([]);
+        setPrescriptions([]);
+      }
+    }
+  }, [checkData, diagnosisForm]);
 
   const handleAddPrescription = (values: PrescriptionForm) => {
     setPrescriptions([...prescriptions, values]);
     prescriptionForm.resetFields();
-    message.success("Đã thêm toa thuốc");
+    toast.success("Đã thêm toa thuốc");
   };
 
   const handleRemovePrescription = (index: number) => {
     const newPrescriptions = prescriptions.filter((_, i) => i !== index);
     setPrescriptions(newPrescriptions);
-    message.success("Đã xóa toa thuốc");
+    toast.success("Đã xóa toa thuốc");
   };
 
-  const handleScheduleFollowUp = (values: FollowUpForm) => {
-    // Mock data cho hẹn tái khám
-    const followUpData = {
-      follow_up_id: `followup_${Date.now()}`,
-      appointment_id: appointment.appointment_id,
-      follow_up_date: values.follow_up_date?.format("YYYY-MM-DD"),
-      reason: values.reason,
-      notes: values.notes,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
+  const handleSaveConsultation = async () => {
+    try {
+      // Validate diagnosis form
+      const diagnosisValues = await diagnosisForm.validateFields();
 
-    console.log("Hẹn tái khám:", followUpData);
-    message.success("Đã hẹn tái khám thành công");
-    followUpForm.resetFields();
+      // Prepare attachments
+      const attachments = attachmentFileList
+        .filter((file) => file.originFileObj) // Chỉ lấy file mới upload
+        .map((file) => ({
+          file: file.originFileObj as File,
+          file_type: file.type || "OTHER",
+        }));
+
+      // Prepare prescription data
+      const prescriptionData =
+        prescriptions.length > 0
+          ? {
+              patient_id: appointment.patient_id,
+              source: "DOCTOR",
+              description: "Toa thuốc từ bác sĩ",
+              items: prescriptions.map((p) => ({
+                drug_name: p.drug_name,
+                dosage: p.dosage,
+                frequency: p.frequency,
+                duration_days: parseInt(p.duration) || 7,
+                notes: p.notes,
+                start_date: new Date().toISOString(), // Full datetime format
+                custom_times: p.custom_times || [],
+              })),
+            }
+          : undefined;
+
+      if (medicalRecordAction === "create") {
+        // Create Full Record
+        createFullRecordMutation.mutate({
+          patient_id: appointment.patient_id,
+          doctor_id: appointment.doctor_id || "",
+          appointment_id: appointment.appointment_id || "",
+          diagnosis: diagnosisValues.diagnosis,
+          notes: diagnosisValues.notes,
+          attachments: attachments.length > 0 ? attachments : undefined,
+          prescription: prescriptionData,
+        });
+      } else {
+        // Complete Record (Update)
+        completeRecordMutation.mutate({
+          record_id: existingRecord?.record_id || "",
+          diagnosis: diagnosisValues.diagnosis,
+          notes: diagnosisValues.notes,
+          attachments: attachments.length > 0 ? attachments : undefined,
+          prescription: prescriptionData,
+        });
+      }
+    } catch (error) {
+      console.error("Validation failed:", error);
+      toast.error("Vui lòng điền đầy đủ thông tin chẩn đoán");
+    }
   };
 
-  const handleSaveConsultation = () => {
-    const consultationData = {
-      appointment_id: appointment.appointment_id,
-      patient_id: appointment.patient_id,
-      doctor_id: appointment.doctor_id,
-      prescriptions,
-      consultation_date: new Date().toISOString(),
-      // Có thể thêm các thông tin khác như chẩn đoán, ghi chú khám bệnh
-    };
-    console.log("Lưu thông tin khám bệnh:", consultationData);
-    message.success("Đã lưu thông tin khám bệnh");
-    onClose();
+  const handleUploadChange = ({ fileList }: any) => {
+    setAttachmentFileList(fileList);
   };
 
   return (
@@ -103,225 +220,79 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
         <div className="flex items-center gap-2">
           <UserOutlined className="text-blue-600" />
           <span>Hồ sơ bệnh nhân - {appointment.patient.full_name}</span>
+          {medicalRecordAction === "update" && existingRecord && (
+            <span className="text-sm text-green-600 ml-2">(Đã có hồ sơ)</span>
+          )}
         </div>
       }
       open={isOpen}
       onCancel={onClose}
       width={1000}
       footer={[
-        <Button key="cancel" onClick={onClose}>
+        <Button
+          key="cancel"
+          onClick={onClose}
+          disabled={createFullRecordMutation.isPending || completeRecordMutation.isPending}
+        >
           Đóng
         </Button>,
-        <Button key="save" type="primary" onClick={handleSaveConsultation}>
-          Lưu thông tin khám bệnh
+        <Button
+          key="save"
+          type="primary"
+          onClick={handleSaveConsultation}
+          loading={
+            isCheckingRecord ||
+            createFullRecordMutation.isPending ||
+            completeRecordMutation.isPending
+          }
+        >
+          {medicalRecordAction === "update" ? "Cập nhật hồ sơ" : "Lưu thông tin khám bệnh"}
         </Button>,
       ]}
     >
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <TabPane tab="Thông tin bệnh nhân" key="profile">
-          <div className="space-y-4">
-            <Card>
-              <Row gutter={[16, 16]}>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Họ và tên</label>
-                    <p className="text-gray-800">{appointment.patient.full_name}</p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Giới tính</label>
-                    <p className="text-gray-800">{appointment.patient.gender}</p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Ngày sinh</label>
-                    <p className="text-gray-800">{appointment.patient.dob}</p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Số điện thoại</label>
-                    <p className="text-gray-800">{appointment.patient.phone}</p>
-                  </div>
-                </Col>
-                <Col span={24}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Địa chỉ</label>
-                    <p className="text-gray-800">{appointment.patient.address}</p>
-                  </div>
-                </Col>
-              </Row>
-            </Card>
+      {isCheckingRecord ? (
+        <div className="flex justify-center items-center py-12">
+          <Spin size="large" tip="Đang kiểm tra hồ sơ bệnh án..." />
+        </div>
+      ) : (
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
+          <TabPane tab="Thông tin bệnh nhân" key="profile">
+            <PatientInfoTab
+              appointment={appointment}
+              diagnosisForm={diagnosisForm}
+              medicalRecordAction={medicalRecordAction}
+              attachmentFileList={attachmentFileList}
+              existingAttachments={existingRecord?.attachments}
+              onUploadChange={handleUploadChange}
+            />
+          </TabPane>
 
-            <Card title="Thông tin lịch khám">
-              <Row gutter={[16, 16]}>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Bác sĩ</label>
-                    <p className="text-gray-800">{appointment.doctor.full_name}</p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Chuyên khoa</label>
-                    <p className="text-gray-800">{appointment.specialty}</p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Thời gian khám</label>
-                    <p className="text-gray-800">
-                      {appointment.time_slots[0]?.start_time} -{" "}
-                      {appointment.time_slots[0]?.end_time}
-                    </p>
-                  </div>
-                </Col>
-                <Col span={12}>
-                  <div>
-                    <label className="text-sm font-medium text-gray-600">Trạng thái</label>
-                    <p className="text-gray-800">{appointment.status}</p>
-                  </div>
-                </Col>
-              </Row>
-            </Card>
-          </div>
-        </TabPane>
+          <TabPane tab="Toa thuốc" key="prescription">
+            <PrescriptionTab
+              form={prescriptionForm}
+              prescriptions={prescriptions}
+              existingPrescriptions={existingRecord?.prescriptions}
+              onAddPrescription={handleAddPrescription}
+              onRemovePrescription={handleRemovePrescription}
+            />
+          </TabPane>
 
-        <TabPane tab="Toa thuốc" key="prescription">
-          <div className="space-y-4">
-            <Card title="Thêm toa thuốc">
-              <Form form={prescriptionForm} onFinish={handleAddPrescription} layout="vertical">
-                <Row gutter={16}>
-                  <Col span={8}>
-                    <Form.Item
-                      name="drug_name"
-                      label="Tên thuốc"
-                      rules={[{ required: true, message: "Vui lòng nhập tên thuốc" }]}
-                    >
-                      <Input placeholder="Nhập tên thuốc" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={8}>
-                    <Form.Item
-                      name="dosage"
-                      label="Liều lượng"
-                      rules={[{ required: true, message: "Vui lòng nhập liều lượng" }]}
-                    >
-                      <Input placeholder="Ví dụ: 500mg" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={8}>
-                    <Form.Item
-                      name="frequency"
-                      label="Tần suất"
-                      rules={[{ required: true, message: "Vui lòng nhập tần suất" }]}
-                    >
-                      <Input placeholder="Ví dụ: 3 lần/ngày" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item
-                      name="duration"
-                      label="Thời gian dùng"
-                      rules={[{ required: true, message: "Vui lòng nhập thời gian dùng" }]}
-                    >
-                      <Input placeholder="Ví dụ: 7 ngày" />
-                    </Form.Item>
-                  </Col>
-                  <Col span={12}>
-                    <Form.Item name="notes" label="Ghi chú">
-                      <Input placeholder="Ghi chú thêm (tùy chọn)" />
-                    </Form.Item>
-                  </Col>
-                </Row>
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" icon={<MedicineBoxOutlined />}>
-                    Thêm toa thuốc
-                  </Button>
-                </Form.Item>
-              </Form>
-            </Card>
-
-            {prescriptions.length > 0 && (
-              <Card title="Danh sách toa thuốc">
-                <div className="space-y-3">
-                  {prescriptions.map((prescription, index) => (
-                    <div key={index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-800">{prescription.drug_name}</h4>
-                          <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
-                            <div>
-                              <span className="text-gray-600">Liều lượng:</span>{" "}
-                              {prescription.dosage}
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Tần suất:</span>{" "}
-                              {prescription.frequency}
-                            </div>
-                            <div>
-                              <span className="text-gray-600">Thời gian:</span>{" "}
-                              {prescription.duration}
-                            </div>
-                            {prescription.notes && (
-                              <div>
-                                <span className="text-gray-600">Ghi chú:</span> {prescription.notes}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <Button type="text" danger onClick={() => handleRemovePrescription(index)}>
-                          Xóa
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+          {existingRecord &&
+            existingRecord.ai_diagnoses &&
+            existingRecord.ai_diagnoses.length > 0 && (
+              <TabPane
+                tab={
+                  <span>
+                    <ExperimentOutlined /> Chẩn đoán AI
+                  </span>
+                }
+                key="ai-diagnosis"
+              >
+                <AIDiagnosisTab aiDiagnoses={existingRecord.ai_diagnoses} />
+              </TabPane>
             )}
-          </div>
-        </TabPane>
-
-        <TabPane tab="Hẹn tái khám" key="followup">
-          <Card>
-            <Form form={followUpForm} onFinish={handleScheduleFollowUp} layout="vertical">
-              <Form.Item
-                name="follow_up_date"
-                label="Ngày tái khám"
-                rules={[{ required: true, message: "Vui lòng chọn ngày tái khám" }]}
-              >
-                <DatePicker
-                  className="w-full"
-                  placeholder="Chọn ngày tái khám"
-                  disabledDate={(current) => current && current < dayjs().startOf("day")}
-                />
-              </Form.Item>
-
-              <Form.Item
-                name="reason"
-                label="Lý do tái khám"
-                rules={[{ required: true, message: "Vui lòng nhập lý do tái khám" }]}
-              >
-                <TextArea rows={4} placeholder="Nhập lý do tái khám..." />
-              </Form.Item>
-
-              <Form.Item name="notes" label="Ghi chú (tùy chọn)">
-                <TextArea rows={3} placeholder="Nhập ghi chú thêm (nếu có)..." />
-              </Form.Item>
-
-              <Form.Item>
-                <Button type="primary" htmlType="submit" icon={<CalendarOutlined />}>
-                  Hẹn tái khám
-                </Button>
-              </Form.Item>
-            </Form>
-          </Card>
-        </TabPane>
-      </Tabs>
+        </Tabs>
+      )}
     </Modal>
   );
 };
