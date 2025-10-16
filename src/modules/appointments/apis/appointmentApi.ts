@@ -8,6 +8,10 @@ import {
   UpdateAppointmentStatusResponse,
 } from "../types/response";
 import { UpdateAppointmentStatusRequest } from "../types/body";
+import {
+  CreateFollowUpAppointmentBody,
+  CreateFollowUpAppointmentResponse,
+} from "../types/follow-up";
 
 const endpoint = "/hospital/appointments";
 
@@ -79,6 +83,24 @@ class AppointmentClient {
     const response = await this.client.get<ListAppointmentsResponse>(
       `/hospital/appointments/online`,
       { params },
+    );
+    return response.data;
+  }
+
+  async getAppointmentsTodayByDoctorId(doctorId: string): Promise<ListAppointmentsResponse> {
+    const response = await this.client.get<ListAppointmentsResponse>(
+      `/hospital/appointments/today?doctor_id=${doctorId}`,
+    );
+    return response.data;
+  }
+
+  // ---------------- Create Follow-up Appointment ----------------
+  async createFollowUp(
+    body: CreateFollowUpAppointmentBody,
+  ): Promise<CreateFollowUpAppointmentResponse> {
+    const response = await this.client.post<CreateFollowUpAppointmentResponse>(
+      `${endpoint}/follow-up`,
+      body,
     );
     return response.data;
   }

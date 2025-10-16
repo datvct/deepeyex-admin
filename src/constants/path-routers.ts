@@ -137,8 +137,8 @@ export const SERVICES: PathItem = {
 export const DOCTOR_CONSULTATION: PathItem = {
   DETAIL: {
     PATH: "/doctor-consultation",
-    LABEL: "Đang khám bác sĩ",
-    BREADCRUMB: [{ title: "Đang khám bác sĩ", href: "/doctor-consultation" }],
+    LABEL: "Khám bệnh",
+    BREADCRUMB: [{ title: "Khám bệnh", href: "/doctor-consultation" }],
   },
 };
 

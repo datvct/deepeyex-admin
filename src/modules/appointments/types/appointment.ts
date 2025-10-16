@@ -18,6 +18,7 @@ export type Appointment = {
   updated_at: string;
   checked_in_at?: string | null;
   service_name?: string;
+  related_record_id?: string | null; // ID của medical record liên quan (nếu là tái khám)
   doctor: Doctor;
   time_slots: TimeSlot[];
   patient: Patient;
