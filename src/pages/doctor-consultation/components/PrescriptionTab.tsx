@@ -36,6 +36,34 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
   onRemovePrescription,
 }) => {
   const [customTimes, setCustomTimes] = useState<dayjs.Dayjs[]>([]);
+  const [frequency, setFrequency] = useState<number>(0);
+
+  // Auto-generate times based on frequency
+  const handleFrequencyChange = (value: string) => {
+    const freq = parseInt(value) || 0;
+    setFrequency(freq);
+
+    // Preset times for frequency 1-3
+    const presetTimes: { [key: number]: string[] } = {
+      1: ["08:00"],
+      2: ["08:00", "18:00"],
+      3: ["08:00", "12:00", "18:00"],
+    };
+
+    if (freq >= 1 && freq <= 3) {
+      // Auto-generate times for frequency 1-3
+      const times = presetTimes[freq].map((timeStr) => dayjs(timeStr, "HH:mm"));
+      setCustomTimes(times);
+    } else if (freq >= 4) {
+      // For frequency >= 4, create empty slots for manual input
+      const emptyTimes = Array(freq)
+        .fill(null)
+        .map(() => dayjs("08:00", "HH:mm"));
+      setCustomTimes(emptyTimes);
+    } else {
+      setCustomTimes([]);
+    }
+  };
 
   const handleAddTime = () => {
     setCustomTimes([...customTimes, dayjs()]);
@@ -57,10 +85,13 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
   const handleFinish = (values: any) => {
     const formattedValues = {
       ...values,
+      frequency: `${values.frequency}`, // Convert to string
       custom_times: customTimes.map((time) => time.format("HH:mm")),
     };
     onAddPrescription(formattedValues);
+    form.resetFields();
     setCustomTimes([]);
+    setFrequency(0);
   };
 
   return (
@@ -94,10 +125,21 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
             <Col span={8}>
               <Form.Item
                 name="frequency"
-                label="Tần suất"
-                rules={[{ required: true, message: "Vui lòng nhập tần suất" }]}
+                label="Tần suất (số lần/ngày)"
+                rules={[
+                  { required: true, message: "Vui lòng nhập tần suất" },
+                  {
+                    pattern: /^[1-9]\d*$/,
+                    message: "Vui lòng nhập số nguyên dương",
+                  },
+                ]}
               >
-                <Input placeholder="Ví dụ: 3 lần/ngày" />
+                <Input
+                  placeholder="Ví dụ: 3"
+                  type="number"
+                  min={1}
+                  onChange={(e) => handleFrequencyChange(e.target.value)}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -126,43 +168,68 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                     <ClockCircleOutlined className="mr-1" />
                     Giờ uống thuốc (nhắc nhở bệnh nhân)
                   </label>
-                  <Button
-                    type="dashed"
-                    size="small"
-                    icon={<PlusOutlined />}
-                    onClick={handleAddTime}
-                  >
-                    Thêm giờ uống
-                  </Button>
+                  {frequency >= 4 && (
+                    <Button
+                      type="dashed"
+                      size="small"
+                      icon={<PlusOutlined />}
+                      onClick={handleAddTime}
+                    >
+                      Thêm giờ uống
+                    </Button>
+                  )}
                 </div>
                 {customTimes.length > 0 ? (
-                  <div className="grid grid-cols-3 gap-3">
-                    {customTimes.map((time, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <TimePicker
-                          value={time}
-                          format="HH:mm"
-                          onChange={(t) => handleTimeChange(t, index)}
-                          placeholder="Chọn giờ"
-                          className="flex-1"
-                        />
-                        <Button
-                          type="text"
-                          danger
-                          size="small"
-                          icon={<CloseOutlined />}
-                          onClick={() => handleRemoveTime(index)}
-                        />
+                  <div className="space-y-2">
+                    {frequency >= 1 && frequency <= 3 && (
+                      <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                        <p className="text-sm text-blue-800 mb-2">
+                          ✓ Tự động thiết lập giờ uống cho {frequency} lần/ngày:
+                        </p>
+                        <div className="flex gap-2 flex-wrap">
+                          {customTimes.map((time, index) => (
+                            <Tag key={index} color="blue" icon={<ClockCircleOutlined />}>
+                              {time.format("HH:mm")}
+                            </Tag>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
+                    {frequency >= 4 && (
+                      <div>
+                        <p className="text-sm text-orange-600 mb-2">
+                          Vui lòng điều chỉnh thời gian uống thuốc ({frequency} lần/ngày):
+                        </p>
+                        <div className="grid grid-cols-3 gap-3">
+                          {customTimes.map((time, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <TimePicker
+                                value={time}
+                                format="HH:mm"
+                                onChange={(t) => handleTimeChange(t, index)}
+                                placeholder="Chọn giờ"
+                                className="flex-1"
+                              />
+                              <Button
+                                type="text"
+                                danger
+                                size="small"
+                                icon={<CloseOutlined />}
+                                onClick={() => handleRemoveTime(index)}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center p-4 bg-gray-50 rounded border border-dashed border-gray-300">
                     <p className="text-sm text-gray-500">
-                      Bấm "Thêm giờ uống" để thiết lập lịch nhắc nhở cho bệnh nhân
+                      Nhập tần suất để tự động thiết lập giờ uống
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Ví dụ: 08:00, 12:00, 18:00 (uống 3 lần/ngày)
+                      1 lần: 08:00 | 2 lần: 08:00, 18:00 | 3 lần: 08:00, 12:00, 18:00
                     </p>
                   </div>
                 )}
@@ -191,7 +258,8 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                         <span className="text-gray-600">Liều lượng:</span> {prescription.dosage}
                       </div>
                       <div>
-                        <span className="text-gray-600">Tần suất:</span> {prescription.frequency}
+                        <span className="text-gray-600">Tần suất:</span> {prescription.frequency}{" "}
+                        lần/ngày
                       </div>
                       <div>
                         <span className="text-gray-600">Thời gian:</span> {prescription.duration}{" "}

@@ -30,6 +30,7 @@ interface PrescriptionForm {
   duration: string;
   custom_times?: string[];
   notes?: string;
+  status?: string;
 }
 
 const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
@@ -180,6 +181,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
                 start_date: new Date().toISOString(), // Full datetime format
                 custom_times: p.custom_times || [],
               })),
+              status: "APPROVED",
             }
           : undefined;
 
