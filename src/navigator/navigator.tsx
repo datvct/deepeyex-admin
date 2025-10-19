@@ -45,6 +45,14 @@ export const Navigator = () => {
                 </ProtectedRoute>
               }
             />
+            {/* <Route
+              path={Paths.DASHBOARD_DOCTOR.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <DoctorDashboard />
+                </ProtectedRoute>
+              }
+            /> */}
             <Route
               path={Paths.USERS.DETAIL.PATH}
               element={

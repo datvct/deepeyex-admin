@@ -15,6 +15,9 @@ import {
   Cell,
 } from "recharts";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { RootState } from "../../shares/stores";
+import DoctorDashboard from "./DoctorDashboard";
 
 const visitorsData = [
   { date: "2025-09-01", visitors: 320 },
@@ -44,7 +47,11 @@ const COLORS = ["#4F46E5", "#06B6D4", "#F97316"];
 
 export default function DashboardAnalytics() {
   const { t } = useTranslation();
-
+  const { role } = useSelector((state: RootState) => state.auth);
+  const isDoctor = role === "doctor";
+  if (isDoctor) {
+    return <DoctorDashboard />;
+  }
   return (
     <div className="min-h-screen">
       <div>
