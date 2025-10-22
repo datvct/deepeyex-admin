@@ -5,7 +5,7 @@ import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import { useCreateFollowUpMutation } from "../../../modules/appointments/hooks/mutations/use-create-follow-up.mutation";
 import { useGetAvailableSlotsByDateQuery } from "../../../modules/time-slots/hooks/queries/use-get-available-slots-by-date.query";
-import { useGetServicesByDoctorIdQuery } from "../../../modules/services/hooks/queries/use-get-services-by-doctor-id.query";
+import { useGetServiceByIdQuery } from "../../../modules/services/hooks/queries/use-get-service-by-id.query";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyEnum } from "../../../shares/enums/queryKey";
 import { toast } from "react-toastify";
@@ -52,13 +52,23 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
     },
   });
 
-  // Query: Get services by doctor
-  const { data: servicesData, isLoading: isLoadingServices } = useGetServicesByDoctorIdQuery(
-    doctorId,
+  // Query: Get default service (ID cố định)
+  const DEFAULT_SERVICE_ID = "23026186-21ff-4d1d-91af-0bb7cad6a691";
+  const { data: serviceData, isLoading: isLoadingService } = useGetServiceByIdQuery(
+    DEFAULT_SERVICE_ID,
     {
-      enabled: !!doctorId && isOpen,
+      enabled: isOpen,
     },
   );
+
+  // Set default service name when modal opens and service data is loaded
+  React.useEffect(() => {
+    if (serviceData?.data && isOpen) {
+      form.setFieldsValue({
+        service_name: serviceData.data.name,
+      });
+    }
+  }, [serviceData, isOpen, form]);
 
   // Mutation: Create Follow-up Appointment
   const createFollowUpMutation = useCreateFollowUpMutation({
@@ -191,23 +201,17 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
         </Form.Item>
 
         <Form.Item name="service_name" label="Dịch vụ khám">
-          <Select
-            placeholder="Chọn dịch vụ (tùy chọn)"
-            allowClear
-            showSearch
-            loading={isLoadingServices}
-            filterOption={(input, option) =>
-              String(option?.children || "")
-                .toLowerCase()
-                .includes(input.toLowerCase())
+          <Input
+            placeholder="Đang tải dịch vụ..."
+            disabled
+            suffix={
+              isLoadingService ? (
+                <Spin size="small" />
+              ) : serviceData?.data?.price ? (
+                <span className="text-gray-500">{serviceData.data.price.toLocaleString()} VNĐ</span>
+              ) : null
             }
-          >
-            {servicesData?.data?.map((service) => (
-              <Select.Option key={service.service_id} value={service.name}>
-                {service.name} - {service.price?.toLocaleString()} VNĐ
-              </Select.Option>
-            ))}
-          </Select>
+          />
         </Form.Item>
 
         <Form.Item

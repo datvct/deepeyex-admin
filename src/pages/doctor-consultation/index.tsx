@@ -39,16 +39,12 @@ const DoctorConsultationPage: React.FC = () => {
   };
 
   const handleSaveSuccess = (recordId: string, appointment: Appointment) => {
-    console.log("🎉 Save success callback - recordId:", recordId);
-    console.log("🎉 Appointment data:", appointment);
-
     setSavedRecordId(recordId);
     setFollowUpAppointment(appointment);
 
     // Hiển thị confirm modal bằng state
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        console.log("⏰ Setting showConfirmModal to true");
         setShowConfirmModal(true);
       });
     });

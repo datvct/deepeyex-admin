@@ -45,7 +45,6 @@ const Consultation = () => {
   const user_id = useAppSelector((state: RootState) => state.auth.doctor?.doctor_id);
   const user_id1 = useAppSelector((state: RootState) => state.auth.userId);
   const auth = useAppSelector((state: RootState) => state.auth);
-  console.log(auth.doctor?.email);
 
   useEffect(() => {
     if (!user_id) return;

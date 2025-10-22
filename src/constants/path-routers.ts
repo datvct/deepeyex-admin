@@ -158,4 +158,12 @@ export const EYE_DIAGNOSIS: PathItem = {
   },
 };
 
+// export const DASHBOARD_DOCTOR: PathItem = {
+//   DETAIL: {
+//     PATH: "/dashboard-doctor",
+//     LABEL: "Bảng điều khiển",
+//     BREADCRUMB: [{ title: "Bảng điều khiển", href: "/dashboard-doctor" }],
+//   },
+// };
+
 export * as Paths from "./path-routers";

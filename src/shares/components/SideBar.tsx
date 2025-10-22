@@ -141,6 +141,12 @@ const Sidebar: React.FC = () => {
       icon: <FaCamera className="w-5 h-5" />,
       url: "/eye-diagnosis",
     },
+    // {
+    //   key: "dashboard-doctor",
+    //   label: t("sidebar.dashboardDoctor"),
+    //   icon: <FaHome className="w-5 h-5" />,
+    //   url: "/dashboard-doctor",
+    // },
   ];
 
   const menuItems = useMemo(() => {
@@ -159,6 +165,7 @@ const Sidebar: React.FC = () => {
     if (role === "doctor") {
       return fullMenuItems.filter((item) =>
         [
+          // "dashboard-doctor",
           "appointments",
           "timeslots",
           "video-chat",
