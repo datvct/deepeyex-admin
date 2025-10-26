@@ -15,6 +15,7 @@ import {
   Empty,
   Space,
   Timeline,
+  Radio,
 } from "antd";
 import {
   UserOutlined,
@@ -29,7 +30,6 @@ import {
   ExperimentOutlined,
   LineChartOutlined,
   TeamOutlined,
-  PieChartOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
@@ -44,9 +44,6 @@ import {
   Line,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -59,6 +56,7 @@ const DoctorDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { doctor } = useSelector((state: RootState) => state.auth);
   const doctorId = doctor?.doctor_id || "";
+  const [timeRange, setTimeRange] = React.useState<"day" | "week" | "month">("week");
 
   // Fetch data
   const { data: todayAppointments, isLoading: loadingToday } =
@@ -98,34 +96,52 @@ const DoctorDashboard: React.FC = () => {
       )
       .slice(0, 5);
 
-    // Data for charts
-    // Last 7 days appointments chart data
-    const last7DaysData = Array.from({ length: 7 }, (_, i) => {
-      const date = dayjs().subtract(6 - i, "day");
-      const dateStr = date.format("DD/MM");
-      const appointmentsForDay = all.filter((a) => {
-        const appointmentDate = dayjs(a.created_at);
-        return appointmentDate.isSame(date, "day");
-      });
-      return {
-        date: dateStr,
-        count: appointmentsForDay.length,
-      };
-    });
+    // Data for charts - Dynamic based on timeRange
+    let chartData: Array<{ [key: string]: string | number }> = [];
 
-    // Monthly appointments (last 6 months)
-    const last6MonthsData = Array.from({ length: 6 }, (_, i) => {
-      const month = dayjs().subtract(5 - i, "month");
-      const monthStr = month.format("MM/YYYY");
-      const appointmentsForMonth = all.filter((a) => {
-        const appointmentDate = dayjs(a.created_at);
-        return appointmentDate.isSame(month, "month") && appointmentDate.isSame(month, "year");
+    if (timeRange === "day") {
+      // Last 7 days by hour
+      chartData = Array.from({ length: 24 }, (_, i) => {
+        const hour = i.toString().padStart(2, "0");
+        const appointmentsForHour = today.filter((a) => {
+          if (!a.time_slots[0]?.start_time) return false;
+          const hourTime = dayjs(a.time_slots[0].start_time).format("HH");
+          return hourTime === hour;
+        });
+        return {
+          time: `${hour}:00`,
+          count: appointmentsForHour.length,
+        };
       });
-      return {
-        month: monthStr,
-        count: appointmentsForMonth.length,
-      };
-    });
+    } else if (timeRange === "week") {
+      // Last 7 days
+      chartData = Array.from({ length: 7 }, (_, i) => {
+        const date = dayjs().subtract(6 - i, "day");
+        const dateStr = date.format("DD/MM");
+        const appointmentsForDay = all.filter((a) => {
+          const appointmentDate = dayjs(a.created_at);
+          return appointmentDate.isSame(date, "day");
+        });
+        return {
+          date: dateStr,
+          count: appointmentsForDay.length,
+        };
+      });
+    } else if (timeRange === "month") {
+      // Last 6 months
+      chartData = Array.from({ length: 6 }, (_, i) => {
+        const month = dayjs().subtract(5 - i, "month");
+        const monthStr = month.format("MM/YYYY");
+        const appointmentsForMonth = all.filter((a) => {
+          const appointmentDate = dayjs(a.created_at);
+          return appointmentDate.isSame(month, "month") && appointmentDate.isSame(month, "year");
+        });
+        return {
+          date: monthStr,
+          count: appointmentsForMonth.length,
+        };
+      });
+    }
 
     // Status breakdown data for pie chart
     const statusData = [
@@ -154,12 +170,12 @@ const DoctorDashboard: React.FC = () => {
         total: uniquePatients.size,
       },
       chartData: {
-        last7Days: last7DaysData,
-        last6Months: last6MonthsData,
+        appointments: chartData,
         status: statusData,
+        timeRange,
       },
     };
-  }, [todayAppointments, allAppointments, medicalRecords]);
+  }, [todayAppointments, allAppointments, medicalRecords, timeRange]);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -493,56 +509,55 @@ const DoctorDashboard: React.FC = () => {
           </Card>
         </Col>
 
-        {/* Line Chart - Last 7 Days Appointments */}
-        <Col xs={24} lg={12}>
+        {/* Unified Chart with Time Range Selector */}
+        <Col xs={24}>
           <Card
             title={
-              <span>
-                <LineChartOutlined className="mr-2" />
-                Lịch khám 7 ngày gần đây
-              </span>
+              <div className="flex items-center justify-between">
+                <span>
+                  <LineChartOutlined className="mr-2" />
+                  Thống kê lịch khám
+                </span>
+                <Radio.Group
+                  value={timeRange}
+                  onChange={(e) => setTimeRange(e.target.value)}
+                  buttonStyle="solid"
+                  size="small"
+                >
+                  <Radio.Button value="day">Ngày</Radio.Button>
+                  <Radio.Button value="week">Tuần</Radio.Button>
+                  <Radio.Button value="month">Tháng</Radio.Button>
+                </Radio.Group>
+              </div>
             }
             className="shadow-sm"
           >
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats.chartData.last7Days}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#1890ff"
-                  name="Số lịch khám"
-                  strokeWidth={2}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </Card>
-        </Col>
-
-        {/* Bar Chart - Last 6 Months */}
-        <Col xs={24} lg={12}>
-          <Card
-            title={
-              <span>
-                <ExperimentOutlined className="mr-2" />
-                Lịch khám theo tháng (6 tháng gần đây)
-              </span>
-            }
-            className="shadow-sm"
-          >
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={stats.chartData.last6Months}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="count" name="Số lịch khám" fill="#52c41a" />
-              </BarChart>
+            <ResponsiveContainer width="100%" height={400}>
+              {timeRange === "day" ? (
+                <LineChart data={stats.chartData.appointments}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="time" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#1890ff"
+                    name="Số lịch khám"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              ) : (
+                <BarChart data={stats.chartData.appointments}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey={timeRange === "week" ? "date" : "date"} />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" name="Số lịch khám" fill="#52c41a" />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </Card>
         </Col>
