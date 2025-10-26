@@ -42,8 +42,6 @@ import { Appointment } from "../../modules/appointments/types/appointment";
 import {
   LineChart,
   Line,
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -533,31 +531,20 @@ const DoctorDashboard: React.FC = () => {
             className="shadow-sm"
           >
             <ResponsiveContainer width="100%" height={400}>
-              {timeRange === "day" ? (
-                <LineChart data={stats.chartData.appointments}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="time" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="count"
-                    stroke="#1890ff"
-                    name="Số lịch khám"
-                    strokeWidth={2}
-                  />
-                </LineChart>
-              ) : (
-                <BarChart data={stats.chartData.appointments}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey={timeRange === "week" ? "date" : "date"} />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="count" name="Số lịch khám" fill="#52c41a" />
-                </BarChart>
-              )}
+              <LineChart data={stats.chartData.appointments}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey={timeRange === "day" ? "time" : "date"} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#1890ff"
+                  name="Số lịch khám"
+                  strokeWidth={2}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </Card>
         </Col>
