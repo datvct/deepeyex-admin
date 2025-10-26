@@ -3,12 +3,21 @@ import { Appointment } from "../../modules/appointments/types/appointment";
 import PatientProfileModal from "./components/PatientProfileModal";
 import FollowUpModal from "./components/FollowUpModal";
 import ViewMedicalRecordModal from "./components/ViewMedicalRecordModal";
-import { Button, Spin, Alert, Modal } from "antd";
-import { EyeOutlined, UserOutlined, FileTextOutlined } from "@ant-design/icons";
+import { Button, Spin, Alert, Modal, Input, message } from "antd";
+import {
+  EyeOutlined,
+  UserOutlined,
+  FileTextOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import { useGetAppointmentsTodayByDoctorIdQuery } from "../../modules/appointments/hooks/queries/use-get-appointments-today-by-doctor.query";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
-import { useGetMedicalRecordByPatientIdQuery } from "../../modules/medical-records/hooks/queries/use-get-medical-record-by-patient-id.query";
+import { useEmergencyCancelAppointmentMutation } from "../../modules/appointments/hooks/mutations/use-emergency-cancel-appointment.mutation";
+import { AppointmentStatus } from "../../modules/appointments/enums/appointment-status";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyEnum } from "../../shares/enums/queryKey";
+import { toast } from "react-toastify";
 
 const DoctorConsultationPage: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -25,10 +34,36 @@ const DoctorConsultationPage: React.FC = () => {
   const [viewingPatientId, setViewingPatientId] = useState<string>("");
   const [viewingPatientName, setViewingPatientName] = useState<string>("");
 
+  // State cho cancel appointment modal
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelingAppointment, setCancelingAppointment] = useState<Appointment | null>(null);
+  const [cancelReason, setCancelReason] = useState<string>("");
+
   const { doctor, userId } = useSelector((state: RootState) => state.auth);
   const doctorId = doctor?.doctor_id || "";
+  const queryClient = useQueryClient();
 
   const { data, isLoading, isError } = useGetAppointmentsTodayByDoctorIdQuery(doctorId);
+
+  const emergencyCancelMutation = useEmergencyCancelAppointmentMutation({
+    onSuccess: (data) => {
+      message.success(
+        data.data?.note || "Hủy lịch khám thành công và tự động chuyển đến bác sĩ thay thế!",
+      );
+      setIsCancelModalOpen(false);
+      setCancelReason("");
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeyEnum.Appointment, "today", doctorId],
+      });
+    },
+    onError: (error: any) => {
+      // Parse error message from response
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Có lỗi xảy ra khi hủy lịch khám!";
+
+      toast.error("Không có bác sĩ nào thay thế! Vui lòng liên hệ với admin để được hỗ trợ.");
+    },
+  });
 
   // const {
   //   data: medicalRecordData,
@@ -79,6 +114,26 @@ const DoctorConsultationPage: React.FC = () => {
     setIsViewRecordModalOpen(true);
   };
 
+  const handleCancelAppointment = (appointment: Appointment) => {
+    setCancelingAppointment(appointment);
+    setIsCancelModalOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    if (!cancelingAppointment) return;
+
+    emergencyCancelMutation.mutate({
+      appointment_id: cancelingAppointment.appointment_id,
+      reason: cancelReason || "Hủy lịch khẩn cấp",
+    });
+  };
+
+  const handleCancelCancelModal = () => {
+    setIsCancelModalOpen(false);
+    setCancelingAppointment(null);
+    setCancelReason("");
+  };
+
   const inProgressAppointments = data?.data || [];
 
   if (isLoading) {
@@ -103,11 +158,13 @@ const DoctorConsultationPage: React.FC = () => {
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Đang khám bác sĩ</h1>
-        <p className="text-gray-600">
-          Danh sách lịch khám hôm nay ({inProgressAppointments.length})
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Danh sách khám bệnh</h1>
+          <p className="text-gray-600">
+            Danh sách lịch khám hôm nay ({inProgressAppointments.length})
+          </p>
+        </div>
       </div>
 
       {inProgressAppointments.length === 0 ? (
@@ -258,6 +315,20 @@ const DoctorConsultationPage: React.FC = () => {
                   >
                     Xem hồ sơ cũ
                   </Button>
+
+                  {/* Nút hủy lịch - chỉ hiện khi status PENDING hoặc CONFIRMED */}
+                  {(appointment.status === AppointmentStatus.PENDING ||
+                    appointment.status === AppointmentStatus.CONFIRMED) && (
+                    <Button
+                      danger
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => handleCancelAppointment(appointment)}
+                      size="large"
+                      className="flex items-center gap-2"
+                    >
+                      Hủy lịch
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -318,6 +389,53 @@ const DoctorConsultationPage: React.FC = () => {
           patientName={viewingPatientName}
         />
       )}
+
+      {/* Cancel Appointment Modal */}
+      <Modal
+        title="Xác nhận hủy lịch khám"
+        open={isCancelModalOpen}
+        onOk={handleConfirmCancel}
+        onCancel={handleCancelCancelModal}
+        okText="Xác nhận hủy"
+        cancelText="Hủy"
+        okButtonProps={{ danger: true, loading: emergencyCancelMutation.isPending }}
+        centered
+      >
+        <div className="space-y-4">
+          {cancelingAppointment && (
+            <>
+              <p className="text-gray-700 mb-2">
+                Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân{" "}
+                <strong>{cancelingAppointment.patient?.full_name}</strong>?
+              </p>
+              <div className="bg-gray-50 p-3 rounded">
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Mã lịch:</strong> {cancelingAppointment.appointment_code}
+                </p>
+                <p className="text-sm text-gray-600 mb-1">
+                  <strong>Dịch vụ:</strong> {cancelingAppointment.service_name || "Khám tổng quát"}
+                </p>
+                <p className="text-sm text-gray-600">
+                  <strong>Thời gian:</strong>{" "}
+                  {cancelingAppointment.time_slots[0]?.start_time &&
+                    new Date(cancelingAppointment.time_slots[0].start_time).toLocaleString("vi-VN")}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Lý do hủy (tùy chọn):
+                </label>
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Ví dụ: Có ca khám gấp, bác sĩ nghỉ phép..."
+                  value={cancelReason}
+                  onChange={(e) => setCancelReason(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };

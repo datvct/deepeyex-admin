@@ -11,13 +11,21 @@ import {
   Spin,
   notification,
 } from "antd";
-import { LeftOutlined, RightOutlined, CalendarOutlined } from "@ant-design/icons";
+import {
+  LeftOutlined,
+  RightOutlined,
+  CalendarOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
 import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import isBetween from "dayjs/plugin/isBetween";
 import "dayjs/locale/vi";
 import { capitalize, getGenderLabel } from "../../shares/utils/helper";
-import { AppointmentStatusLabel } from "../../modules/appointments/enums/appointment-status";
+import {
+  AppointmentStatusLabel,
+  AppointmentStatus,
+} from "../../modules/appointments/enums/appointment-status";
 import { AlarmClock, Printer } from "lucide-react";
 import { RootState } from "../../shares/stores";
 import { useSelector } from "react-redux";
@@ -25,6 +33,9 @@ import { useGetTimeSlotsByDoctorIdAndDateRangeQuery } from "../../modules/time-s
 import { TimeSlot } from "../../modules/time-slots/types/time-slot";
 import { useGetAppointmentsByDoctorIdQuery } from "../../modules/appointments/hooks/queries/use-get-appointments-by-doctor-id.query";
 import { Appointment } from "../../modules/appointments/types/appointment";
+import { useCancelAppointmentMutation } from "../../modules/appointments/hooks/mutations/use-cancel-appointment.mutation";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeyEnum } from "../../shares/enums/queryKey";
 
 dayjs.extend(isoWeek);
 dayjs.extend(isBetween);
@@ -51,7 +62,9 @@ const WeeklyScheduleWithModal: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const { doctor } = useSelector((state: RootState) => state.auth);
+  const queryClient = useQueryClient();
 
   const startOfWeek = useMemo(() => selectedDate.isoWeekday(1), [selectedDate]);
   const endOfWeek = useMemo(() => startOfWeek.add(6, "day"), [startOfWeek]);
@@ -63,6 +76,35 @@ const WeeklyScheduleWithModal: React.FC = () => {
   );
 
   const { data: appointmentData } = useGetAppointmentsByDoctorIdQuery(doctor?.doctor_id || "");
+
+  const cancelAppointmentMutation = useCancelAppointmentMutation({
+    onSuccess: () => {
+      notification.success({
+        message: "Hủy lịch khám thành công!",
+        description: "Lịch khám đã được hủy thành công.",
+      });
+      setCancelModalVisible(false);
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeyEnum.TimeSlot, "doctor", doctor?.doctor_id],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Không thể hủy lịch khám. Vui lòng thử lại sau.";
+
+      notification.error({
+        message: "Có lỗi xảy ra",
+        description: errorMessage,
+      });
+    },
+  });
+
+  const handleCancelAppointment = () => {
+    if (!selectedAppointment) return;
+    cancelAppointmentMutation.mutate(selectedAppointment.appointment_id);
+  };
 
   // Tạo map slotId -> appointment
   const appointmentMap = useMemo(() => {
@@ -324,8 +366,27 @@ const WeeklyScheduleWithModal: React.FC = () => {
       <Modal
         title="Thông tin chi tiết appointment"
         open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={null}
+        onCancel={() => {
+          setModalVisible(false);
+          setSelectedAppointment(null);
+        }}
+        footer={[
+          <Button key="close" onClick={() => setModalVisible(false)}>
+            Đóng
+          </Button>,
+          selectedAppointment &&
+            (selectedAppointment.status === AppointmentStatus.PENDING ||
+              selectedAppointment.status === AppointmentStatus.CONFIRMED) && (
+              <Button
+                key="cancel"
+                danger
+                icon={<CloseCircleOutlined />}
+                onClick={() => setCancelModalVisible(true)}
+              >
+                Hủy lịch
+              </Button>
+            ),
+        ]}
       >
         {selectedAppointment && (
           <Descriptions column={1} bordered size="small">
@@ -339,7 +400,9 @@ const WeeklyScheduleWithModal: React.FC = () => {
                 ]
               }
             </Descriptions.Item>
-            <Descriptions.Item label="Ghi chú">{selectedAppointment.notes}</Descriptions.Item>
+            <Descriptions.Item label="Ghi chú">
+              {selectedAppointment.notes || "Không có"}
+            </Descriptions.Item>
             <Descriptions.Item label="Thời gian slot">
               {dayjs(selectedAppointment.time_slots[0].start_time).format("HH:mm")} -{" "}
               {dayjs(selectedAppointment.time_slots[0].end_time).format("HH:mm")}
@@ -361,6 +424,23 @@ const WeeklyScheduleWithModal: React.FC = () => {
             </Descriptions.Item>
           </Descriptions>
         )}
+      </Modal>
+
+      {/* Modal xác nhận hủy lịch */}
+      <Modal
+        title="Xác nhận hủy lịch khám"
+        open={cancelModalVisible}
+        onOk={handleCancelAppointment}
+        onCancel={() => setCancelModalVisible(false)}
+        okText="Xác nhận hủy"
+        cancelText="Hủy"
+        okButtonProps={{ danger: true, loading: cancelAppointmentMutation.isPending }}
+        centered
+      >
+        <p>
+          Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân{" "}
+          <strong>{selectedAppointment?.patient?.full_name}</strong>?
+        </p>
       </Modal>
     </div>
   );

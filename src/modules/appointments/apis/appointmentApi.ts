@@ -6,6 +6,7 @@ import {
   GetAppointmentResponse,
   ListAppointmentsResponse,
   UpdateAppointmentStatusResponse,
+  EmergencyCancelAppointmentResponse,
 } from "../types/response";
 import { UpdateAppointmentStatusRequest } from "../types/body";
 import {
@@ -101,6 +102,26 @@ class AppointmentClient {
     const response = await this.client.post<CreateFollowUpAppointmentResponse>(
       `${endpoint}/follow-up`,
       body,
+    );
+    return response.data;
+  }
+
+  // ---------------- Emergency Cancel Appointment ----------------
+  async emergencyCancel(
+    appointmentId: string,
+    reason: string,
+  ): Promise<EmergencyCancelAppointmentResponse> {
+    const response = await this.client.put<EmergencyCancelAppointmentResponse>(
+      `${endpoint}/${appointmentId}/emergency-cancel`,
+      { reason },
+    );
+    return response.data;
+  }
+
+  // ---------------- Cancel Appointment ----------------
+  async cancel(appointmentId: string): Promise<UpdateAppointmentStatusResponse> {
+    const response = await this.client.put<UpdateAppointmentStatusResponse>(
+      `${endpoint}/${appointmentId}/cancel`,
     );
     return response.data;
   }
