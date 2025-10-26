@@ -43,10 +43,13 @@ export interface MedicalRecord {
   doctor_id: string;
   diagnosis: string;
   notes?: string;
-  related_record_id?: string;
-  created_at: string;
-  updated_at: string;
+  related_record_id?: string | null;
+  CreatedAt?: string; // API response
+  created_at?: string; // API response
+  UpdatedAt?: string; // API response
+  updated_at?: string; // API response
   ai_diagnoses?: AIDiagnosis[];
   attachments?: Attachment[];
   prescriptions?: Prescription[];
+  appointment?: any; // API có thể trả về appointment data
 }

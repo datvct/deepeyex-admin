@@ -8,6 +8,7 @@ import { EyeOutlined, UserOutlined, FileTextOutlined } from "@ant-design/icons";
 import { useGetAppointmentsTodayByDoctorIdQuery } from "../../modules/appointments/hooks/queries/use-get-appointments-today-by-doctor.query";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
+import { useGetMedicalRecordByPatientIdQuery } from "../../modules/medical-records/hooks/queries/use-get-medical-record-by-patient-id.query";
 
 const DoctorConsultationPage: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -21,12 +22,21 @@ const DoctorConsultationPage: React.FC = () => {
 
   // State cho view medical record modal
   const [isViewRecordModalOpen, setIsViewRecordModalOpen] = useState(false);
-  const [viewingRecordId, setViewingRecordId] = useState<string>("");
+  const [viewingPatientId, setViewingPatientId] = useState<string>("");
+  const [viewingPatientName, setViewingPatientName] = useState<string>("");
 
   const { doctor, userId } = useSelector((state: RootState) => state.auth);
   const doctorId = doctor?.doctor_id || "";
 
   const { data, isLoading, isError } = useGetAppointmentsTodayByDoctorIdQuery(doctorId);
+
+  // const {
+  //   data: medicalRecordData,
+  //   isLoading: isMedicalRecordLoading,
+  //   isError: isMedicalRecordError,
+  // } = useGetMedicalRecordByPatientIdQuery(appointment.patient_id, {
+  //   enabled: !!appointment.patient_id,
+  // });
 
   const handleViewPatientProfile = (appointment: Appointment) => {
     setSelectedAppointment(appointment);
@@ -63,8 +73,9 @@ const DoctorConsultationPage: React.FC = () => {
     setFollowUpAppointment(null);
   };
 
-  const handleViewOldRecord = (recordId: string) => {
-    setViewingRecordId(recordId);
+  const handleViewOldRecord = (patientId: string, patientName: string) => {
+    setViewingPatientId(patientId);
+    setViewingPatientName(patientName);
     setIsViewRecordModalOpen(true);
   };
 
@@ -233,17 +244,20 @@ const DoctorConsultationPage: React.FC = () => {
                     Tạo hồ sơ
                   </Button>
 
-                  {/* Hiển thị nút xem hồ sơ cũ nếu có related_record_id */}
-                  {appointment?.related_record_id && (
-                    <Button
-                      icon={<FileTextOutlined />}
-                      onClick={() => handleViewOldRecord(appointment?.related_record_id || "")}
-                      size="large"
-                      className="flex items-center gap-2"
-                    >
-                      Xem hồ sơ cũ
-                    </Button>
-                  )}
+                  {/* Nút xem hồ sơ cũ */}
+                  <Button
+                    icon={<FileTextOutlined />}
+                    onClick={() =>
+                      handleViewOldRecord(
+                        appointment.patient_id,
+                        appointment.patient?.full_name || "Bệnh nhân",
+                      )
+                    }
+                    size="large"
+                    className="flex items-center gap-2"
+                  >
+                    Xem hồ sơ cũ
+                  </Button>
                 </div>
               </div>
             </div>
@@ -292,14 +306,16 @@ const DoctorConsultationPage: React.FC = () => {
       )}
 
       {/* View Medical Record Modal */}
-      {viewingRecordId && (
+      {viewingPatientId && (
         <ViewMedicalRecordModal
           isOpen={isViewRecordModalOpen}
           onClose={() => {
             setIsViewRecordModalOpen(false);
-            setViewingRecordId("");
+            setViewingPatientId("");
+            setViewingPatientName("");
           }}
-          recordId={viewingRecordId}
+          patientId={viewingPatientId}
+          patientName={viewingPatientName}
         />
       )}
     </div>

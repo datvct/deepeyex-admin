@@ -29,6 +29,7 @@ import {
   ExperimentOutlined,
   LineChartOutlined,
   TeamOutlined,
+  PieChartOutlined,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
@@ -38,6 +39,21 @@ import { useGetMedicalRecordsQuery } from "../../modules/medical-records/hooks/q
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Appointment } from "../../modules/appointments/types/appointment";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const DoctorDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -75,8 +91,48 @@ const DoctorDashboard: React.FC = () => {
 
     // Recent medical records (last 5)
     const recentRecords = records
-      .sort((a, b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
+      .sort(
+        (a, b) =>
+          dayjs(b.created_at || b.CreatedAt || 0).unix() -
+          dayjs(a.created_at || a.CreatedAt || 0).unix(),
+      )
       .slice(0, 5);
+
+    // Data for charts
+    // Last 7 days appointments chart data
+    const last7DaysData = Array.from({ length: 7 }, (_, i) => {
+      const date = dayjs().subtract(6 - i, "day");
+      const dateStr = date.format("DD/MM");
+      const appointmentsForDay = all.filter((a) => {
+        const appointmentDate = dayjs(a.created_at);
+        return appointmentDate.isSame(date, "day");
+      });
+      return {
+        date: dateStr,
+        count: appointmentsForDay.length,
+      };
+    });
+
+    // Monthly appointments (last 6 months)
+    const last6MonthsData = Array.from({ length: 6 }, (_, i) => {
+      const month = dayjs().subtract(5 - i, "month");
+      const monthStr = month.format("MM/YYYY");
+      const appointmentsForMonth = all.filter((a) => {
+        const appointmentDate = dayjs(a.created_at);
+        return appointmentDate.isSame(month, "month") && appointmentDate.isSame(month, "year");
+      });
+      return {
+        month: monthStr,
+        count: appointmentsForMonth.length,
+      };
+    });
+
+    // Status breakdown data for pie chart
+    const statusData = [
+      { name: "Hoàn thành", value: completed, color: "#52c41a" },
+      { name: "Đã xác nhận", value: confirmed, color: "#1890ff" },
+      { name: "Đang chờ", value: pending, color: "#fa8c16" },
+    ];
 
     return {
       today: {
@@ -96,6 +152,11 @@ const DoctorDashboard: React.FC = () => {
       },
       patients: {
         total: uniquePatients.size,
+      },
+      chartData: {
+        last7Days: last7DaysData,
+        last6Months: last6MonthsData,
+        status: statusData,
       },
     };
   }, [todayAppointments, allAppointments, medicalRecords]);
@@ -429,6 +490,60 @@ const DoctorDashboard: React.FC = () => {
                 },
               ]}
             />
+          </Card>
+        </Col>
+
+        {/* Line Chart - Last 7 Days Appointments */}
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <span>
+                <LineChartOutlined className="mr-2" />
+                Lịch khám 7 ngày gần đây
+              </span>
+            }
+            className="shadow-sm"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={stats.chartData.last7Days}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#1890ff"
+                  name="Số lịch khám"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+        </Col>
+
+        {/* Bar Chart - Last 6 Months */}
+        <Col xs={24} lg={12}>
+          <Card
+            title={
+              <span>
+                <ExperimentOutlined className="mr-2" />
+                Lịch khám theo tháng (6 tháng gần đây)
+              </span>
+            }
+            className="shadow-sm"
+          >
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={stats.chartData.last6Months}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="count" name="Số lịch khám" fill="#52c41a" />
+              </BarChart>
+            </ResponsiveContainer>
           </Card>
         </Col>
       </Row>
