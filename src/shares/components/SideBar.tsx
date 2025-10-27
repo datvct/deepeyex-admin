@@ -13,6 +13,7 @@ import {
   FaStethoscope,
   FaRobot,
   FaCamera,
+  FaCalendarDay,
 } from "react-icons/fa";
 import { FaUserDoctor } from "react-icons/fa6";
 import { IoIosSettings } from "react-icons/io";
@@ -141,6 +142,12 @@ const Sidebar: React.FC = () => {
       icon: <FaCamera className="w-5 h-5" />,
       url: "/eye-diagnosis",
     },
+    {
+      key: "create-follow-up",
+      label: "Tạo lịch tái khám",
+      icon: <FaCalendarDay className="w-5 h-5" />,
+      url: "/appointments/create-follow-up",
+    },
     // {
     //   key: "dashboard-doctor",
     //   label: t("sidebar.dashboardDoctor"),
@@ -174,6 +181,7 @@ const Sidebar: React.FC = () => {
           "doctor-consultation",
           "ai-diagnosis",
           "eye-diagnosis",
+          "create-follow-up",
         ].includes(item.key),
       );
     }

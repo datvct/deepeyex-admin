@@ -12,6 +12,7 @@ import { UpdateAppointmentStatusRequest } from "../types/body";
 import {
   CreateFollowUpAppointmentBody,
   CreateFollowUpAppointmentResponse,
+  CreatePendingFollowUpBody,
 } from "../types/follow-up";
 
 const endpoint = "/hospital/appointments";
@@ -101,6 +102,17 @@ class AppointmentClient {
   ): Promise<CreateFollowUpAppointmentResponse> {
     const response = await this.client.post<CreateFollowUpAppointmentResponse>(
       `${endpoint}/follow-up`,
+      body,
+    );
+    return response.data;
+  }
+
+  // ---------------- Create Pending Follow-up Appointment ----------------
+  async createPendingFollowUp(
+    body: CreatePendingFollowUpBody,
+  ): Promise<CreateFollowUpAppointmentResponse> {
+    const response = await this.client.post<CreateFollowUpAppointmentResponse>(
+      `${endpoint}/pending-follow-up`,
       body,
     );
     return response.data;

@@ -158,6 +158,14 @@ export const EYE_DIAGNOSIS: PathItem = {
   },
 };
 
+export const CREATE_FOLLOW_UP: PathItem = {
+  DETAIL: {
+    PATH: "/appointments/create-follow-up",
+    LABEL: "Tạo lịch tái khám",
+    BREADCRUMB: [{ title: "Tạo lịch tái khám", href: "/appointments/create-follow-up" }],
+  },
+};
+
 // export const DASHBOARD_DOCTOR: PathItem = {
 //   DETAIL: {
 //     PATH: "/dashboard-doctor",

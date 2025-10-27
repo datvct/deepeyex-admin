@@ -14,10 +14,13 @@ import { useGetAppointmentsTodayByDoctorIdQuery } from "../../modules/appointmen
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
 import { useEmergencyCancelAppointmentMutation } from "../../modules/appointments/hooks/mutations/use-emergency-cancel-appointment.mutation";
+import { useUpdateAppointmentStatusMutation } from "../../modules/appointments/hooks/mutations/use-update-appointment-status.mutation";
 import { AppointmentStatus } from "../../modules/appointments/enums/appointment-status";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { toast } from "react-toastify";
+import { EmailApi } from "../../modules/emails/apis/emailApi";
+import dayjs from "dayjs";
 
 const DoctorConsultationPage: React.FC = () => {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
@@ -62,6 +65,47 @@ const DoctorConsultationPage: React.FC = () => {
         error?.response?.data?.message || error?.message || "Có lỗi xảy ra khi hủy lịch khám!";
 
       toast.error("Không có bác sĩ nào thay thế! Vui lòng liên hệ với admin để được hỗ trợ.");
+    },
+  });
+
+  const updateStatusMutation = useUpdateAppointmentStatusMutation({
+    onSuccess: async () => {
+      message.success("Cập nhật trạng thái thành công!");
+
+      // Gửi email thông báo hủy lịch
+      if (cancelingAppointment) {
+        try {
+          await EmailApi.sendCancelNotification({
+            appointment_id: cancelingAppointment.appointment_id,
+            patient_id: cancelingAppointment.patient_id,
+            patient_name: cancelingAppointment.patient?.full_name || "",
+            patient_email: cancelingAppointment.patient?.email || "",
+            doctor_name: cancelingAppointment.doctor?.full_name || "",
+            appointment_date: cancelingAppointment.time_slots[0]?.start_time
+              ? dayjs(cancelingAppointment.time_slots[0].start_time).format("DD/MM/YYYY")
+              : "",
+            appointment_time: cancelingAppointment.time_slots[0]?.start_time
+              ? dayjs(cancelingAppointment.time_slots[0].start_time).format("HH:mm")
+              : "",
+            reason: cancelReason || "Hủy lịch khẩn cấp",
+          });
+          console.log("Email đã được gửi thành công!");
+        } catch (error) {
+          console.error("Lỗi gửi email:", error);
+          // Không hiển thị lỗi cho user vì trạng thái đã được update thành công
+        }
+      }
+
+      setIsCancelModalOpen(false);
+      setCancelReason("");
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeyEnum.Appointment, "today", doctorId],
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Không thể cập nhật trạng thái!";
+      message.error(errorMessage);
     },
   });
 
@@ -122,9 +166,10 @@ const DoctorConsultationPage: React.FC = () => {
   const handleConfirmCancel = () => {
     if (!cancelingAppointment) return;
 
-    emergencyCancelMutation.mutate({
+    // Sử dụng updateStatus thay vì emergencyCancel
+    updateStatusMutation.mutate({
       appointment_id: cancelingAppointment.appointment_id,
-      reason: cancelReason || "Hủy lịch khẩn cấp",
+      status: AppointmentStatus.CANCELED,
     });
   };
 
@@ -398,7 +443,7 @@ const DoctorConsultationPage: React.FC = () => {
         onCancel={handleCancelCancelModal}
         okText="Xác nhận hủy"
         cancelText="Hủy"
-        okButtonProps={{ danger: true, loading: emergencyCancelMutation.isPending }}
+        okButtonProps={{ danger: true, loading: updateStatusMutation.isPending }}
         centered
       >
         <div className="space-y-4">
