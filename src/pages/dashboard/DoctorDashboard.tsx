@@ -15,6 +15,7 @@ import {
   Empty,
   Space,
   Timeline,
+  Radio,
 } from "antd";
 import {
   UserOutlined,
@@ -38,11 +39,22 @@ import { useGetMedicalRecordsQuery } from "../../modules/medical-records/hooks/q
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Appointment } from "../../modules/appointments/types/appointment";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const DoctorDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { doctor } = useSelector((state: RootState) => state.auth);
   const doctorId = doctor?.doctor_id || "";
+  const [timeRange, setTimeRange] = React.useState<"day" | "week" | "month">("week");
 
   // Fetch data
   const { data: todayAppointments, isLoading: loadingToday } =
@@ -75,8 +87,66 @@ const DoctorDashboard: React.FC = () => {
 
     // Recent medical records (last 5)
     const recentRecords = records
-      .sort((a, b) => dayjs(b.created_at).unix() - dayjs(a.created_at).unix())
+      .sort(
+        (a, b) =>
+          dayjs(b.created_at || b.CreatedAt || 0).unix() -
+          dayjs(a.created_at || a.CreatedAt || 0).unix(),
+      )
       .slice(0, 5);
+
+    // Data for charts - Dynamic based on timeRange
+    let chartData: Array<{ [key: string]: string | number }> = [];
+
+    if (timeRange === "day") {
+      // Last 7 days by hour
+      chartData = Array.from({ length: 24 }, (_, i) => {
+        const hour = i.toString().padStart(2, "0");
+        const appointmentsForHour = today.filter((a) => {
+          if (!a.time_slots[0]?.start_time) return false;
+          const hourTime = dayjs(a.time_slots[0].start_time).format("HH");
+          return hourTime === hour;
+        });
+        return {
+          time: `${hour}:00`,
+          count: appointmentsForHour.length,
+        };
+      });
+    } else if (timeRange === "week") {
+      // Last 7 days
+      chartData = Array.from({ length: 7 }, (_, i) => {
+        const date = dayjs().subtract(6 - i, "day");
+        const dateStr = date.format("DD/MM");
+        const appointmentsForDay = all.filter((a) => {
+          const appointmentDate = dayjs(a.created_at);
+          return appointmentDate.isSame(date, "day");
+        });
+        return {
+          date: dateStr,
+          count: appointmentsForDay.length,
+        };
+      });
+    } else if (timeRange === "month") {
+      // Last 6 months
+      chartData = Array.from({ length: 6 }, (_, i) => {
+        const month = dayjs().subtract(5 - i, "month");
+        const monthStr = month.format("MM/YYYY");
+        const appointmentsForMonth = all.filter((a) => {
+          const appointmentDate = dayjs(a.created_at);
+          return appointmentDate.isSame(month, "month") && appointmentDate.isSame(month, "year");
+        });
+        return {
+          date: monthStr,
+          count: appointmentsForMonth.length,
+        };
+      });
+    }
+
+    // Status breakdown data for pie chart
+    const statusData = [
+      { name: "Hoàn thành", value: completed, color: "#52c41a" },
+      { name: "Đã xác nhận", value: confirmed, color: "#1890ff" },
+      { name: "Đang chờ", value: pending, color: "#fa8c16" },
+    ];
 
     return {
       today: {
@@ -97,8 +167,13 @@ const DoctorDashboard: React.FC = () => {
       patients: {
         total: uniquePatients.size,
       },
+      chartData: {
+        appointments: chartData,
+        status: statusData,
+        timeRange,
+      },
     };
-  }, [todayAppointments, allAppointments, medicalRecords]);
+  }, [todayAppointments, allAppointments, medicalRecords, timeRange]);
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -429,6 +504,48 @@ const DoctorDashboard: React.FC = () => {
                 },
               ]}
             />
+          </Card>
+        </Col>
+
+        {/* Unified Chart with Time Range Selector */}
+        <Col xs={24}>
+          <Card
+            title={
+              <div className="flex items-center justify-between">
+                <span>
+                  <LineChartOutlined className="mr-2" />
+                  Thống kê lịch khám
+                </span>
+                <Radio.Group
+                  value={timeRange}
+                  onChange={(e) => setTimeRange(e.target.value)}
+                  buttonStyle="solid"
+                  size="small"
+                >
+                  <Radio.Button value="day">Ngày</Radio.Button>
+                  <Radio.Button value="week">Tuần</Radio.Button>
+                  <Radio.Button value="month">Tháng</Radio.Button>
+                </Radio.Group>
+              </div>
+            }
+            className="shadow-sm"
+          >
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={stats.chartData.appointments}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey={timeRange === "day" ? "time" : "date"} />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#1890ff"
+                  name="Số lịch khám"
+                  strokeWidth={2}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </Card>
         </Col>
       </Row>

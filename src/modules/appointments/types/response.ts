@@ -8,6 +8,13 @@ type UpdateAppointmentResponse = ApiResponse<Appointment>;
 type DeleteAppointmentResponse = ApiResponse<null>;
 type UpdateAppointmentStatusResponse = ApiResponse<Appointment>;
 
+interface EmergencyCancelResponse {
+  reason: string;
+  note: string;
+}
+
+type EmergencyCancelAppointmentResponse = ApiResponse<EmergencyCancelResponse>;
+
 export {
   ListAppointmentsResponse,
   GetAppointmentResponse,
@@ -15,4 +22,6 @@ export {
   UpdateAppointmentResponse,
   DeleteAppointmentResponse,
   UpdateAppointmentStatusResponse,
+  EmergencyCancelAppointmentResponse,
+  EmergencyCancelResponse,
 };

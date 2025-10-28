@@ -25,6 +25,7 @@ import ServicesPage from "../pages/services";
 import DoctorConsultationPage from "../pages/doctor-consultation";
 import AIDiagnosisPage from "../pages/ai-diagnosis";
 import EyeDiagnosisPage from "../pages/eye-diagnosis";
+import CreateFollowUpPage from "../pages/appointments/create-follow-up";
 
 export const Navigator = () => {
   return (
@@ -170,6 +171,14 @@ export const Navigator = () => {
               element={
                 <ProtectedRoute roles={[ROLES.DOCTOR]}>
                   <EyeDiagnosisPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={Paths.CREATE_FOLLOW_UP.DETAIL.PATH}
+              element={
+                <ProtectedRoute roles={[ROLES.DOCTOR]}>
+                  <CreateFollowUpPage />
                 </ProtectedRoute>
               }
             />

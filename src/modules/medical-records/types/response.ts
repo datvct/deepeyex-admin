@@ -3,7 +3,11 @@ import { ApiResponse } from "../../../shares/types/response";
 import { AIDiagnosis } from "../../aidiagnosis/types/aidiagnosis";
 import { MedicalRecord } from "./medical-record";
 
-export type MedicalRecordResponse = ApiResponse<MedicalRecord>;
+export interface MedicalRecordByPatientIdData {
+  records: MedicalRecord[];
+}
+
+export type MedicalRecordResponse = ApiResponse<MedicalRecordByPatientIdData>;
 
 export type ListMedicalRecordsResponse = ApiResponse<MedicalRecord[]>;
 

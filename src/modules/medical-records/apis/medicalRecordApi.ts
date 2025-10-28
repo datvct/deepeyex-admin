@@ -79,6 +79,14 @@ class MedicalRecordClient {
     return response.data;
   }
 
+  // ---------------- Get MedicalRecord by Patient ID ----------------
+  async getByPatientId(patientId: string): Promise<MedicalRecordResponse> {
+    const response = await this.client.get<MedicalRecordResponse>(
+      `${endpoint}/patient?patient_id=${patientId}`,
+    );
+    return response.data;
+  }
+
   // ---------------- Create Full Record ----------------
   async createFullRecord(body: CreateFullRecordBody): Promise<CreateFullRecordResponse> {
     const formData = new FormData();
