@@ -80,7 +80,10 @@ const DoctorConsultationPage: React.FC = () => {
             patient_id: cancelingAppointment.patient_id,
             patient_name: cancelingAppointment.patient?.full_name || "",
             patient_email: cancelingAppointment.patient?.email || "",
+            doctor_id: cancelingAppointment.doctor_id || "",
             doctor_name: cancelingAppointment.doctor?.full_name || "",
+            hospital_id: cancelingAppointment.hospital_id || "",
+            service_name: cancelingAppointment.service_name || "",
             appointment_date: cancelingAppointment.time_slots[0]?.start_time
               ? dayjs(cancelingAppointment.time_slots[0].start_time).format("DD/MM/YYYY")
               : "",
