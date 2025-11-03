@@ -8,7 +8,10 @@ interface SendCancelNotificationBody {
   patient_id: string;
   patient_name: string;
   patient_email: string;
+  doctor_id: string;
   doctor_name: string;
+  hospital_id: string;
+  service_name: string;
   appointment_date: string;
   appointment_time: string;
   reason: string;

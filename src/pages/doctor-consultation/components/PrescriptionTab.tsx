@@ -181,35 +181,21 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                 </div>
                 {customTimes.length > 0 ? (
                   <div className="space-y-2">
-                    {frequency >= 1 && frequency <= 3 && (
-                      <div className="bg-blue-50 p-3 rounded border border-blue-200">
-                        <p className="text-sm text-blue-800 mb-2">
-                          ✓ Tự động thiết lập giờ uống cho {frequency} lần/ngày:
-                        </p>
-                        <div className="flex gap-2 flex-wrap">
-                          {customTimes.map((time, index) => (
-                            <Tag key={index} color="blue" icon={<ClockCircleOutlined />}>
-                              {time.format("HH:mm")}
-                            </Tag>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {frequency >= 4 && (
-                      <div>
-                        <p className="text-sm text-orange-600 mb-2">
-                          Vui lòng điều chỉnh thời gian uống thuốc ({frequency} lần/ngày):
-                        </p>
-                        <div className="grid grid-cols-3 gap-3">
-                          {customTimes.map((time, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <TimePicker
-                                value={time}
-                                format="HH:mm"
-                                onChange={(t) => handleTimeChange(t, index)}
-                                placeholder="Chọn giờ"
-                                className="flex-1"
-                              />
+                    <div>
+                      <p className="text-sm text-blue-600 mb-2">
+                        Thời gian uống thuốc ({frequency} lần/ngày):
+                      </p>
+                      <div className="grid grid-cols-3 gap-3">
+                        {customTimes.map((time, index) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <TimePicker
+                              value={time}
+                              format="HH:mm"
+                              onChange={(t) => handleTimeChange(t, index)}
+                              placeholder="Chọn giờ"
+                              className="flex-1"
+                            />
+                            {frequency >= 4 && (
                               <Button
                                 type="text"
                                 danger
@@ -217,11 +203,11 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                                 icon={<CloseOutlined />}
                                 onClick={() => handleRemoveTime(index)}
                               />
-                            </div>
-                          ))}
-                        </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                    )}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center p-4 bg-gray-50 rounded border border-dashed border-gray-300">
