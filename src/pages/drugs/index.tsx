@@ -110,7 +110,6 @@ export default function DrugsPage() {
       const parsed = createDrugSchema.parse(formattedValues);
 
       if (editingDrug) {
-        console.log("Editing drug:", editingDrug);
         updateDrug.mutate({
           drug_id: editingDrug.drug_id,
           ...parsed,

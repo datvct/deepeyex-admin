@@ -51,7 +51,10 @@ api.interceptors.response.use(
         }
       } catch (refreshErr) {
         store.dispatch(clearTokens());
-        window.location.href = `/login`;
+        // Chỉ redirect về login nếu không phải đang ở trang login
+        if (window.location.pathname !== "/login") {
+          window.location.href = `/login`;
+        }
       }
     }
 

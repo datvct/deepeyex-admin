@@ -68,7 +68,6 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
 
       // Data trực tiếp là record, không có wrapper
       const recordId = response?.data?.record_id || "";
-      console.log("✅ Record ID saved:", recordId);
 
       // Đóng modal và callback lên parent
       onClose();
@@ -88,7 +87,6 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
 
       // Data trực tiếp là record, không có wrapper
       const recordId = response?.data?.record_id || existingRecord?.record_id || "";
-      console.log("✅ Record ID saved (update):", recordId);
 
       // Đóng modal và callback lên parent
       onClose();

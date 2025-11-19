@@ -92,7 +92,6 @@ const DoctorConsultationPage: React.FC = () => {
               : "",
             reason: cancelReason || "Hủy lịch khẩn cấp",
           });
-          console.log("Email đã được gửi thành công!");
         } catch (error) {
           console.error("Lỗi gửi email:", error);
           // Không hiển thị lỗi cho user vì trạng thái đã được update thành công
@@ -143,13 +142,11 @@ const DoctorConsultationPage: React.FC = () => {
   };
 
   const handleConfirmFollowUp = () => {
-    console.log("👍 User chọn Có - Mở FollowUpModal");
     setShowConfirmModal(false);
     setIsFollowUpModalOpen(true);
   };
 
   const handleCancelFollowUp = () => {
-    console.log("👎 User chọn Không");
     setShowConfirmModal(false);
     setSavedRecordId("");
     setFollowUpAppointment(null);

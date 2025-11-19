@@ -41,7 +41,9 @@ export const Navigator = () => {
             <Route
               path={Paths.DASHBOARD.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL]}>
+                <ProtectedRoute
+                  roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL, ROLES.RECEPTIONIST]}
+                >
                   <DashboardPage />
                 </ProtectedRoute>
               }
@@ -65,7 +67,7 @@ export const Navigator = () => {
             <Route
               path={Paths.DOCTORS.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.HOSPITAL]}>
                   <DoctorsPage />
                 </ProtectedRoute>
               }
@@ -89,7 +91,7 @@ export const Navigator = () => {
             <Route
               path={Paths.DRUGS.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL]}>
                   <DrugsPage />
                 </ProtectedRoute>
               }
@@ -97,7 +99,7 @@ export const Navigator = () => {
             <Route
               path={Paths.ORDERS.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL]}>
                   <OrdersPage />
                 </ProtectedRoute>
               }
@@ -105,7 +107,7 @@ export const Navigator = () => {
             <Route
               path={Paths.TIMESLOTS.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR, ROLES.HOSPITAL]}>
                   <TimeSlotsPage />
                 </ProtectedRoute>
               }
@@ -113,7 +115,7 @@ export const Navigator = () => {
             <Route
               path={Paths.APPOINTMENTS.DETAIL.PATH}
               element={
-                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.DOCTOR]}>
+                <ProtectedRoute roles={[ROLES.ADMIN, ROLES.HOSPITAL, ROLES.RECEPTIONIST]}>
                   <AppointmentsPage />
                 </ProtectedRoute>
               }

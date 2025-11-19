@@ -7,8 +7,13 @@ import {
   ListAppointmentsResponse,
   UpdateAppointmentStatusResponse,
   EmergencyCancelAppointmentResponse,
+  UpdateAppointmentResponse,
 } from "../types/response";
-import { UpdateAppointmentStatusRequest } from "../types/body";
+import {
+  UpdateAppointmentStatusRequest,
+  UpdateAppointmentByReceptionistRequest,
+  CreateBookingRequest,
+} from "../types/body";
 import {
   CreateFollowUpAppointmentBody,
   CreateFollowUpAppointmentResponse,
@@ -27,6 +32,18 @@ class AppointmentClient {
   // ---------------- List All Appointments ----------------
   async getAll(params?: Record<string, any>): Promise<ListAppointmentsResponse> {
     const response = await this.client.get<ListAppointmentsResponse>(endpoint, { params });
+    return response.data;
+  }
+
+  // ---------------- List All Appointments By Hospital ID ----------------
+  async getAllByHospitalId(
+    hospitalId: string,
+    params?: Record<string, any>,
+  ): Promise<ListAppointmentsResponse> {
+    const response = await this.client.get<ListAppointmentsResponse>(
+      `${endpoint}/hospital/${hospitalId}`,
+      { params },
+    );
     return response.data;
   }
 
@@ -135,6 +152,24 @@ class AppointmentClient {
     const response = await this.client.put<UpdateAppointmentStatusResponse>(
       `${endpoint}/${appointmentId}/cancel`,
     );
+    return response.data;
+  }
+
+  // ---------------- Update Appointment by Receptionist ----------------
+  async updateByReceptionist(
+    appointmentId: string,
+    body: UpdateAppointmentByReceptionistRequest,
+  ): Promise<UpdateAppointmentResponse> {
+    const response = await this.client.put<UpdateAppointmentResponse>(
+      `${endpoint}/${appointmentId}/receptionist`,
+      body,
+    );
+    return response.data;
+  }
+
+  // ---------------- Create Booking ----------------
+  async createBooking(body: CreateBookingRequest): Promise<GetAppointmentResponse> {
+    const response = await this.client.post<GetAppointmentResponse>(`/hospital/bookings`, body);
     return response.data;
   }
 }

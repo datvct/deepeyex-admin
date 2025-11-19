@@ -328,7 +328,7 @@ export default function DoctorsPage() {
           >
             <Select placeholder={t("doctor.form.placeholder.user")} allowClear>
               {dataUser?.data
-                ?.filter((user) => user.role === "doctor")
+                ?.filter((user) => user.role === "doctor" || user.role === "receptionist")
                 .map((user) => (
                   <Select.Option key={user.id} value={user.id}>
                     {user.username || user.email || user.id}
