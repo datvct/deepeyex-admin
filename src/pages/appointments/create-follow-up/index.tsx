@@ -76,8 +76,6 @@ const CreateFollowUpPage: React.FC = () => {
     },
   });
 
-  console.log("timeSlotsData", timeSlotsData, selectedDoctorId, selectedDate);
-
   const createPendingFollowUpMutation = useCreatePendingFollowUpMutation({
     onSuccess: (data) => {
       message.success("Tạo lịch tái khám thành công!");
@@ -145,16 +143,12 @@ const CreateFollowUpPage: React.FC = () => {
         "reason",
       ]);
 
-      console.log("Form values:", values);
-
       // Lọc slot_ids để loại bỏ null
       const slotIds = Array.isArray(values.slot_ids)
         ? values.slot_ids.filter((id) => id != null)
         : values.slot_ids
         ? [values.slot_ids].filter((id) => id != null)
         : [];
-
-      console.log("Slot IDs:", slotIds);
 
       // Lấy hospital_id từ doctor
       const selectedDoctor = doctorsData?.data?.find((d) => d.doctor_id === selectedDoctorId);
@@ -176,8 +170,6 @@ const CreateFollowUpPage: React.FC = () => {
       if (values.related_record_id) {
         payload.related_record_id = values.related_record_id;
       }
-
-      console.log("Payload:", payload);
 
       createPendingFollowUpMutation.mutate(payload);
     } catch (error) {

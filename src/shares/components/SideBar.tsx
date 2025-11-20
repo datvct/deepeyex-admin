@@ -173,8 +173,8 @@ const Sidebar: React.FC = () => {
       return fullMenuItems.filter((item) =>
         [
           // "dashboard-doctor",
-          "appointments",
-          "timeslots",
+          // "appointments",
+          // "timeslots",
           "video-chat",
           "dashboard",
           "schedule",
@@ -187,8 +187,20 @@ const Sidebar: React.FC = () => {
     }
     if (role === "hospital") {
       return fullMenuItems.filter((item) =>
-        ["generate-time-slot", "dashboard", "services"].includes(item.key),
+        [
+          "generate-time-slot",
+          "dashboard",
+          "services",
+          "appointments",
+          "timeslots",
+          "orders",
+          "drugs",
+          "doctors",
+        ].includes(item.key),
       );
+    }
+    if (role === "receptionist") {
+      return fullMenuItems.filter((item) => ["dashboard", "appointments"].includes(item.key));
     }
 
     return [];
