@@ -17,6 +17,7 @@ import {
   CalendarOutlined,
   CloseCircleOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import dayjs, { Dayjs } from "dayjs";
 import isoWeek from "dayjs/plugin/isoWeek";
 import isBetween from "dayjs/plugin/isBetween";
@@ -51,20 +52,21 @@ interface TableColumn {
   render: (slots: TimeSlot[]) => React.ReactNode;
 }
 
-// ---- Các ca khám ----
-const caKham = [
-  { key: "morning", label: "Sáng", start: "06:00", end: "12:00" },
-  { key: "afternoon", label: "Chiều", start: "13:00", end: "17:30" },
-  { key: "evening", label: "Tối", start: "18:00", end: "22:00" },
-];
-
 const WeeklyScheduleWithModal: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const { doctor } = useSelector((state: RootState) => state.auth);
   const queryClient = useQueryClient();
+
+  // ---- Các ca khám ----
+  const caKham = [
+    { key: "morning", label: t("schedule.shifts.morning"), start: "06:00", end: "12:00" },
+    { key: "afternoon", label: t("schedule.shifts.afternoon"), start: "13:00", end: "17:30" },
+    { key: "evening", label: t("schedule.shifts.evening"), start: "18:00", end: "22:00" },
+  ];
 
   const startOfWeek = useMemo(() => selectedDate.isoWeekday(1), [selectedDate]);
   const endOfWeek = useMemo(() => startOfWeek.add(6, "day"), [startOfWeek]);
@@ -80,8 +82,8 @@ const WeeklyScheduleWithModal: React.FC = () => {
   const cancelAppointmentMutation = useCancelAppointmentMutation({
     onSuccess: () => {
       notification.success({
-        message: "Hủy lịch khám thành công!",
-        description: "Lịch khám đã được hủy thành công.",
+        message: t("schedule.cancelSuccess"),
+        description: t("schedule.cancelSuccessDescription"),
       });
       setCancelModalVisible(false);
       queryClient.invalidateQueries({
@@ -90,12 +92,10 @@ const WeeklyScheduleWithModal: React.FC = () => {
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Không thể hủy lịch khám. Vui lòng thử lại sau.";
+        error?.response?.data?.message || error?.message || t("schedule.cancelErrorMessage");
 
       notification.error({
-        message: "Có lỗi xảy ra",
+        message: t("schedule.cancelError"),
         description: errorMessage,
       });
     },
@@ -170,7 +170,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
       render: (slots: TimeSlot[]) => {
         const now = dayjs();
         if (!slots || slots.length === 0) {
-          return <div className="text-gray-400 text-xs">Không có lịch</div>;
+          return <div className="text-gray-400 text-xs">{t("schedule.noSchedule")}</div>;
         }
 
         const bookedSlots = slots.filter((s) => s.appointment_id);
@@ -211,10 +211,11 @@ const WeeklyScheduleWithModal: React.FC = () => {
                 >
                   <div className="flex flex-col items-start gap-1 text-center w-full border-l-2 border-[#e35750]">
                     <div className="text-xs font-bold pl-2">
-                      {slot.appointment?.patient.full_name || "Chưa rõ"}
+                      {slot.appointment?.patient.full_name || t("schedule.unknown")}
                     </div>
                     <div className="text-xs text-left font-bold pl-2">
-                      DV: {slot.appointment?.service_name || "Khám tổng quát"}{" "}
+                      {t("schedule.service")}{" "}
+                      {slot.appointment?.service_name || t("schedule.generalCheckup")}{" "}
                     </div>
 
                     <div className="font-semibold text-xs flex flex-row gap-1 items-center pl-2">
@@ -242,7 +243,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
                           }
                         }}
                       >
-                        Xem chi tiết
+                        {t("schedule.viewDetails")}
                       </Button>
                     </div>
                   </div>
@@ -269,7 +270,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
                       {dayjs(firstSlot.start_time).format("HH:mm")} -{" "}
                       {dayjs(lastSlot.end_time).format("HH:mm")}
                     </div>
-                    <div className="text-xs font-bold">Trống</div>
+                    <div className="text-xs font-bold">{t("schedule.empty")}</div>
                   </div>
                 </div>
               );
@@ -282,7 +283,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
 
   const columns = [
     {
-      title: "Ca Khám",
+      title: t("schedule.shift"),
       dataIndex: "ca",
       key: "ca",
       width: "8%",
@@ -293,11 +294,11 @@ const WeeklyScheduleWithModal: React.FC = () => {
 
   return (
     <div className="p-4 flex flex-col gap-3">
-      <Title level={3}>Lịch khám bệnh (Tuần)</Title>
+      <Title level={3}>{t("schedule.title")}</Title>
       <div className="flex justify-between items-center mb-2">
         <div className="text-gray-600">
-          Tuần từ <b>{startOfWeek.format("DD/MM/YYYY")}</b> đến{" "}
-          <b>{endOfWeek.format("DD/MM/YYYY")}</b>
+          {t("schedule.weekRange")} <b>{startOfWeek.format("DD/MM/YYYY")}</b>{" "}
+          {t("schedule.weekRangeTo")} <b>{endOfWeek.format("DD/MM/YYYY")}</b>
         </div>
         <Space>
           <Button
@@ -321,18 +322,18 @@ const WeeklyScheduleWithModal: React.FC = () => {
               style={{ marginRight: 8 }}
             >
               <CalendarOutlined />
-              Hiện tại
+              {t("schedule.current")}
             </Button>
             <Button type="primary" onClick={() => window.print()}>
               <Printer size={14} />
-              In Lịch
+              {t("schedule.print")}
             </Button>
           </div>
         </Space>
       </div>
 
       {isFetching ? (
-        <Spin tip="Đang tải lịch khám..." />
+        <Spin tip={t("schedule.loading")} />
       ) : (
         <Table
           bordered
@@ -343,19 +344,21 @@ const WeeklyScheduleWithModal: React.FC = () => {
           scroll={{ x: "max-content" }}
           rowKey="ca"
           rowClassName={(record) => {
-            if (record.ca === "Sáng") return "row-morning";
-            if (record.ca === "Chiều") return "row-afternoon";
-            if (record.ca === "Tối") return "row-evening";
+            if (record.ca === t("schedule.shifts.morning")) return "row-morning";
+            if (record.ca === t("schedule.shifts.afternoon")) return "row-afternoon";
+            if (record.ca === t("schedule.shifts.evening")) return "row-evening";
             return "";
           }}
           footer={() => (
             <div className="text-sm text-gray-600 flex flex-row gap-3 items-center">
-              <b>Ghi chú:</b>
+              <b>{t("schedule.note")}</b>
               <div>
-                <span className="inline-block w-3 h-3 bg-[#f14f3f] border mx-1"></span>Đã đặt
+                <span className="inline-block w-3 h-3 bg-[#f14f3f] border mx-1"></span>
+                {t("schedule.booked")}
               </div>
               <div>
-                <span className="inline-block w-3 h-3 bg-[#d4ffe4] border mx-1"></span>Trống
+                <span className="inline-block w-3 h-3 bg-[#d4ffe4] border mx-1"></span>
+                {t("schedule.empty")}
               </div>
             </div>
           )}
@@ -364,7 +367,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
 
       {/* Modal hiển thị chi tiết appointment */}
       <Modal
-        title="Thông tin chi tiết appointment"
+        title={t("schedule.appointmentDetails")}
         open={modalVisible}
         onCancel={() => {
           setModalVisible(false);
@@ -372,7 +375,7 @@ const WeeklyScheduleWithModal: React.FC = () => {
         }}
         footer={[
           <Button key="close" onClick={() => setModalVisible(false)}>
-            Đóng
+            {t("schedule.close")}
           </Button>,
           selectedAppointment &&
             (selectedAppointment.status === AppointmentStatus.PENDING ||
@@ -383,42 +386,51 @@ const WeeklyScheduleWithModal: React.FC = () => {
                 icon={<CloseCircleOutlined />}
                 onClick={() => setCancelModalVisible(true)}
               >
-                Hủy lịch
+                {t("schedule.cancelAppointment")}
               </Button>
             ),
         ]}
       >
         {selectedAppointment && (
           <Descriptions column={1} bordered size="small">
-            <Descriptions.Item label="Mã appointment">
+            <Descriptions.Item label={t("schedule.appointmentCode")}>
               {selectedAppointment.appointment_code}
             </Descriptions.Item>
-            <Descriptions.Item label="Trạng thái">
+            <Descriptions.Item label={t("schedule.status")}>
               {
                 AppointmentStatusLabel[
                   selectedAppointment.status as keyof typeof AppointmentStatusLabel
                 ]
               }
             </Descriptions.Item>
-            <Descriptions.Item label="Ghi chú">
-              {selectedAppointment.notes || "Không có"}
+            <Descriptions.Item label={t("schedule.notes")}>
+              {selectedAppointment.notes || t("schedule.none")}
             </Descriptions.Item>
-            <Descriptions.Item label="Thời gian slot">
+            <Descriptions.Item label={t("schedule.slotTime")}>
               {dayjs(selectedAppointment.time_slots[0].start_time).format("HH:mm")} -{" "}
               {dayjs(selectedAppointment.time_slots[0].end_time).format("HH:mm")}
             </Descriptions.Item>
-            <Descriptions.Item label="Bệnh nhân">
+            <Descriptions.Item label={t("schedule.patient")}>
               <div className="flex items-center gap-2">
                 <Avatar src={selectedAppointment.patient.image} />
                 <div>
                   <div>{selectedAppointment.patient.full_name}</div>
                   <div>
-                    Ngày sinh: {dayjs(selectedAppointment.patient.dob).format("DD/MM/YYYY")}
+                    {t("schedule.dob")}{" "}
+                    {dayjs(selectedAppointment.patient.dob).format("DD/MM/YYYY")}
                   </div>
-                  <div>Giới tính: {getGenderLabel(selectedAppointment.patient.gender)}</div>
-                  <div>Địa chỉ: {selectedAppointment.patient.address}</div>
-                  <div>Phone: {selectedAppointment.patient.phone}</div>
-                  <div>Email: {selectedAppointment.patient.email}</div>
+                  <div>
+                    {t("schedule.gender")} {getGenderLabel(selectedAppointment.patient.gender)}
+                  </div>
+                  <div>
+                    {t("schedule.address")} {selectedAppointment.patient.address}
+                  </div>
+                  <div>
+                    {t("schedule.phone")} {selectedAppointment.patient.phone}
+                  </div>
+                  <div>
+                    {t("schedule.email")} {selectedAppointment.patient.email}
+                  </div>
                 </div>
               </div>
             </Descriptions.Item>
@@ -428,17 +440,17 @@ const WeeklyScheduleWithModal: React.FC = () => {
 
       {/* Modal xác nhận hủy lịch */}
       <Modal
-        title="Xác nhận hủy lịch khám"
+        title={t("schedule.confirmCancel")}
         open={cancelModalVisible}
         onOk={handleCancelAppointment}
         onCancel={() => setCancelModalVisible(false)}
-        okText="Xác nhận hủy"
-        cancelText="Hủy"
+        okText={t("schedule.confirmCancelButton")}
+        cancelText={t("schedule.cancel")}
         okButtonProps={{ danger: true, loading: cancelAppointmentMutation.isPending }}
         centered
       >
         <p>
-          Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân{" "}
+          {t("schedule.confirmCancelMessage")}{" "}
           <strong>{selectedAppointment?.patient?.full_name}</strong>?
         </p>
       </Modal>

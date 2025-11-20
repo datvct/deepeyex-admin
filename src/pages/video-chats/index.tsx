@@ -4,6 +4,7 @@ import { Tabs, List, Avatar, Button, Card, message, Spin } from "antd";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import { db } from "../../shares/configs/firebase";
 import ChatHeader from "./components/VideoCallRoom";
 import ChatBox from "./components/Chatbox";
@@ -33,6 +34,7 @@ interface Conversation {
 }
 
 const Consultation = () => {
+  const { t } = useTranslation();
   const [isCheckingMic, setIsCheckingMic] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
   const [selectedChat, setSelectedChat] = useState<Conversation | null>(null); // dùng cho tab lịch sử tư vấn
@@ -77,7 +79,7 @@ const Consultation = () => {
     const isPatient = auth?.role === "patient";
     const other = isPatient ? item.doctorInfo : item.patientInfo;
 
-    message.success(`Đang mở chat với ${other.name}`);
+    message.success(t("videoChat.history.openingChat", { name: other.name }));
     setSelectedChat(item);
     setShowInfo(false);
   };
@@ -109,11 +111,11 @@ const Consultation = () => {
         stream.getTracks().forEach((track) => track.stop());
         audioContext.close();
         setIsCheckingMic(false);
-        toast.success("✅ Micro hoạt động bình thường!");
+        toast.success(t("videoChat.call.microphoneCheck.success"));
       }, 5000);
     } catch (err) {
       console.error("❌ Lỗi khi kiểm tra micro:", err);
-      message.error("Không thể truy cập micro. Hãy kiểm tra quyền trình duyệt!");
+      message.error(t("videoChat.call.microphoneCheck.error"));
     }
   };
 
@@ -130,7 +132,7 @@ const Consultation = () => {
           items={[
             {
               key: "online",
-              label: "🎥 Phòng tư vấn trực tuyến",
+              label: t("videoChat.tabs.online"),
               children: (
                 <div className="flex flex-col gap-5">
                   {/** Gọi API lấy danh sách lịch tư vấn online */}
@@ -146,7 +148,7 @@ const Consultation = () => {
                     if (isError || !data?.data?.length) {
                       return (
                         <div className="text-center text-gray-400 mt-6">
-                          Không có lịch tư vấn trực tuyến nào.
+                          {t("videoChat.online.noAppointments")}
                         </div>
                       );
                     }
@@ -179,10 +181,10 @@ const Consultation = () => {
                                 </span>
                                 <span className="mt-1 px-2 py-1 w-max rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                   {appointment.status === "PENDING_ONLINE"
-                                    ? "Đang chờ"
+                                    ? t("videoChat.online.status.pending")
                                     : appointment.status === "CONFIRMED_ONLINE"
-                                    ? "Đã xác nhận"
-                                    : "Hoàn tất"}
+                                    ? t("videoChat.online.status.confirmed")
+                                    : t("videoChat.online.status.completed")}
                                 </span>
                               </div>
                             </div>
@@ -202,12 +204,14 @@ const Consultation = () => {
 
             {
               key: "history",
-              label: "💬 Lịch sử tư vấn",
+              label: t("videoChat.tabs.history"),
               children: (
                 <div className="flex h-[30vh] md:h-[75vh] xl:h-[60vh]">
                   {/* Sidebar hội thoại */}
                   <div className="w-1/4 border-r bg-white flex flex-col">
-                    <div className="p-4 text-lg font-semibold border-b">Danh sách hội thoại</div>
+                    <div className="p-4 text-lg font-semibold border-b">
+                      {t("videoChat.history.conversationList")}
+                    </div>
                     {loading ? (
                       <div className="flex-1 flex justify-center items-center">
                         <Spin size="large" />
@@ -243,7 +247,9 @@ const Consultation = () => {
                                   item.lastMessage ? (
                                     item.lastMessage
                                   ) : (
-                                    <span className="text-gray-400 italic">Chưa có tin nhắn</span>
+                                    <span className="text-gray-400 italic">
+                                      {t("videoChat.history.noMessage")}
+                                    </span>
                                   )
                                 }
                               />
@@ -253,7 +259,7 @@ const Consultation = () => {
                       />
                     ) : (
                       <div className="text-center text-gray-400 mt-10">
-                        Không có cuộc hội thoại nào.
+                        {t("videoChat.history.noConversations")}
                       </div>
                     )}
                   </div>
@@ -286,7 +292,9 @@ const Consultation = () => {
                                     ? selectedChat.doctorInfo.name
                                     : selectedChat.patientInfo.name}
                                 </p>
-                                <p className="text-xs text-green-600">Đang hoạt động</p>
+                                <p className="text-xs text-green-600">
+                                  {t("videoChat.history.active")}
+                                </p>
                               </div>
                             </div>
 
@@ -313,7 +321,9 @@ const Consultation = () => {
                         {/* Khu vực thông tin bên phải */}
                         {showInfo && (
                           <div className="w-1/3 bg-white p-4 flex flex-col border-l shadow-inner">
-                            <h3 className="text-lg font-semibold mb-4">Thông tin hội thoại</h3>
+                            <h3 className="text-lg font-semibold mb-4">
+                              {t("videoChat.history.conversationInfo")}
+                            </h3>
 
                             <div className="flex items-center gap-3 mb-4">
                               <Avatar
@@ -338,18 +348,24 @@ const Consultation = () => {
 
                             <div className="space-y-2 text-sm text-gray-600">
                               <p>
-                                <span className="font-medium">Ngày tạo: </span>
+                                <span className="font-medium">
+                                  {t("videoChat.history.createdAt")}{" "}
+                                </span>
                                 {selectedChat.createdAt
                                   ? new Date(selectedChat.createdAt.seconds * 1000).toLocaleString()
-                                  : "Không rõ"}
+                                  : t("videoChat.history.unknown")}
                               </p>
                               <p>
-                                <span className="font-medium">Mã cuộc hẹn cuối: </span>
-                                {selectedChat.lastAppointmentId || "Không có"}
+                                <span className="font-medium">
+                                  {t("videoChat.history.lastAppointmentId")}{" "}
+                                </span>
+                                {selectedChat.lastAppointmentId || t("videoChat.history.none")}
                               </p>
                               <p>
-                                <span className="font-medium">Tin nhắn cuối: </span>
-                                {selectedChat.lastMessage || "Không có"}
+                                <span className="font-medium">
+                                  {t("videoChat.history.lastMessage")}{" "}
+                                </span>
+                                {selectedChat.lastMessage || t("videoChat.history.none")}
                               </p>
                             </div>
                           </div>
@@ -357,7 +373,7 @@ const Consultation = () => {
                       </>
                     ) : (
                       <div className="flex flex-col justify-center items-center w-full text-gray-400 text-lg">
-                        💬 Hãy chọn một cuộc hội thoại để bắt đầu
+                        💬 {t("videoChat.history.selectConversation")}
                       </div>
                     )}
                   </div>

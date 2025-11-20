@@ -39,6 +39,7 @@ import { useGetMedicalRecordsQuery } from "../../modules/medical-records/hooks/q
 import dayjs from "dayjs";
 import { useNavigate } from "react-router-dom";
 import { Appointment } from "../../modules/appointments/types/appointment";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -51,6 +52,7 @@ import {
 } from "recharts";
 
 const DoctorDashboard: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { doctor } = useSelector((state: RootState) => state.auth);
   const doctorId = doctor?.doctor_id || "";
@@ -143,9 +145,9 @@ const DoctorDashboard: React.FC = () => {
 
     // Status breakdown data for pie chart
     const statusData = [
-      { name: "Hoàn thành", value: completed, color: "#52c41a" },
-      { name: "Đã xác nhận", value: confirmed, color: "#1890ff" },
-      { name: "Đang chờ", value: pending, color: "#fa8c16" },
+      { name: t("dashboard.doctorDashboard.completed"), value: completed, color: "#52c41a" },
+      { name: t("dashboard.doctorDashboard.confirmed"), value: confirmed, color: "#1890ff" },
+      { name: t("dashboard.doctorDashboard.pending"), value: pending, color: "#fa8c16" },
     ];
 
     return {
@@ -187,10 +189,10 @@ const DoctorDashboard: React.FC = () => {
 
   const getStatusText = (status: string) => {
     const texts: Record<string, string> = {
-      PENDING: "Đang chờ",
-      CONFIRMED: "Đã xác nhận",
-      COMPLETED: "Hoàn thành",
-      CANCELED: "Đã hủy",
+      PENDING: t("dashboard.doctorDashboard.pending"),
+      CONFIRMED: t("dashboard.doctorDashboard.confirmed"),
+      COMPLETED: t("dashboard.doctorDashboard.completed"),
+      CANCELED: t("dashboard.doctorDashboard.canceled"),
     };
     return texts[status] || status;
   };
@@ -207,17 +209,19 @@ const DoctorDashboard: React.FC = () => {
               </Badge>
               <div>
                 <h1 className="text-2xl font-bold text-gray-800 mb-1">
-                  Chào mừng, Bác sĩ {doctor?.full_name}
+                  {t("dashboard.doctorDashboard.welcome")} {doctor?.full_name}
                 </h1>
                 <p className="text-gray-600">
-                  Chuyên khoa:{" "}
+                  {t("dashboard.doctorDashboard.specialty")}{" "}
                   <Tag color="blue">
-                    {doctor?.specialty === "ophthalmology" ? "Nhãn khoa" : doctor?.specialty}
+                    {doctor?.specialty === "ophthalmology"
+                      ? t("dashboard.doctorDashboard.ophthalmology")
+                      : doctor?.specialty}
                   </Tag>
                 </p>
                 <Space size="small" className="mt-2">
                   <Tag color="success" icon={<CheckCircleOutlined />}>
-                    Đang trực
+                    {t("dashboard.doctorDashboard.onDuty")}
                   </Tag>
                   <span className="text-gray-500 text-sm">
                     {dayjs().format("dddd, DD/MM/YYYY")}
@@ -227,7 +231,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
             <div className="text-right">
               <Button type="primary" onClick={() => navigate("/doctors")}>
-                Chỉnh sửa hồ sơ
+                {t("dashboard.doctorDashboard.editProfile")}
               </Button>
             </div>
           </div>
@@ -239,7 +243,7 @@ const DoctorDashboard: React.FC = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="!h-full shadow-sm hover:shadow-md transition-shadow">
             <Statistic
-              title="Lịch khám hôm nay"
+              title={t("dashboard.doctorDashboard.todayAppointments")}
               value={stats.today.total}
               prefix={<CalendarOutlined className="text-blue-600" />}
               valueStyle={{ color: "#1890ff" }}
@@ -248,17 +252,19 @@ const DoctorDashboard: React.FC = () => {
               percent={stats.today.completionRate}
               size="small"
               status="active"
-              format={(percent) => `${percent?.toFixed(0)}% hoàn thành`}
+              format={(percent) =>
+                `${percent?.toFixed(0)}${t("dashboard.doctorDashboard.completionRate")}`
+              }
             />
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card className="!h-full shadow-sm hover:shadow-md transition-shadow">
             <Statistic
-              title="Tổng bệnh nhân"
+              title={t("dashboard.doctorDashboard.totalPatients")}
               value={stats.patients.total}
               prefix={<TeamOutlined className="text-cyan-600" />}
-              suffix="bệnh nhân"
+              suffix={t("dashboard.doctorDashboard.patients")}
               valueStyle={{ color: "#13c2c2" }}
             />
           </Card>
@@ -266,21 +272,21 @@ const DoctorDashboard: React.FC = () => {
         <Col xs={24} sm={12} lg={6}>
           <Card className="!h-full shadow-sm hover:shadow-md transition-shadow">
             <Statistic
-              title="Tuần này"
+              title={t("dashboard.doctorDashboard.thisWeek")}
               value={stats.week.total}
               prefix={<LineChartOutlined className="text-purple-600" />}
-              suffix="lịch khám"
+              suffix={t("dashboard.doctorDashboard.appointments")}
               valueStyle={{ color: "#722ed1" }}
             />
             <div className="text-sm text-gray-500 mt-2">
-              Trung bình {stats.week.perDay} lịch/ngày
+              {t("dashboard.doctorDashboard.averagePerDay", { perDay: stats.week.perDay })}
             </div>
           </Card>
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <Card className="!h-full shadow-sm hover:shadow-md transition-shadow">
             <Statistic
-              title="Hồ sơ bệnh án"
+              title={t("dashboard.doctorDashboard.medicalRecords")}
               value={stats.records.total}
               prefix={<FileTextOutlined className="text-orange-600" />}
               valueStyle={{ color: "#fa8c16" }}
@@ -296,12 +302,12 @@ const DoctorDashboard: React.FC = () => {
             title={
               <span>
                 <CalendarOutlined className="mr-2" />
-                Lịch khám hôm nay
+                {t("dashboard.doctorDashboard.todayAppointments")}
               </span>
             }
             extra={
               <Button type="link" onClick={() => navigate("/doctor-consultation")}>
-                Xem tất cả
+                {t("dashboard.doctorDashboard.viewAll")}
               </Button>
             }
             className="shadow-sm"
@@ -327,7 +333,8 @@ const DoctorDashboard: React.FC = () => {
                       title={
                         <div className="flex items-center justify-between">
                           <span className="font-medium">
-                            {appointment.patient?.full_name || "Không có tên"}
+                            {appointment.patient?.full_name ||
+                              t("dashboard.doctorDashboard.noName")}
                           </span>
                           <Tag color={getStatusColor(appointment.status)}>
                             {getStatusText(appointment.status)}
@@ -343,7 +350,8 @@ const DoctorDashboard: React.FC = () => {
                               : ""}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {appointment.service_name || "Khám tổng quát"}
+                            {appointment.service_name ||
+                              t("dashboard.doctorDashboard.generalCheckup")}
                           </div>
                         </div>
                       }
@@ -352,7 +360,7 @@ const DoctorDashboard: React.FC = () => {
                 )}
               />
             ) : (
-              <Empty description="Không có lịch khám hôm nay" />
+              <Empty description={t("dashboard.doctorDashboard.noAppointmentsToday")} />
             )}
           </Card>
         </Col>
@@ -363,12 +371,12 @@ const DoctorDashboard: React.FC = () => {
             title={
               <span>
                 <FileTextOutlined className="mr-2" />
-                Hồ sơ bệnh án gần đây
+                {t("dashboard.doctorDashboard.recentMedicalRecords")}
               </span>
             }
             extra={
               <Button type="link" onClick={() => navigate("/patients")}>
-                Xem tất cả
+                {t("dashboard.doctorDashboard.viewAll")}
               </Button>
             }
             className="shadow-sm"
@@ -390,7 +398,8 @@ const DoctorDashboard: React.FC = () => {
                       </div>
                       {record.prescriptions && record.prescriptions.length > 0 && (
                         <Tag color="green" className="mt-1">
-                          <MedicineBoxOutlined /> {record.prescriptions.length} toa thuốc
+                          <MedicineBoxOutlined /> {record.prescriptions.length}{" "}
+                          {t("dashboard.doctorDashboard.prescriptions")}
                         </Tag>
                       )}
                     </div>
@@ -398,7 +407,7 @@ const DoctorDashboard: React.FC = () => {
                 }))}
               />
             ) : (
-              <Empty description="Chưa có hồ sơ bệnh án" />
+              <Empty description={t("dashboard.doctorDashboard.noMedicalRecords")} />
             )}
           </Card>
         </Col>
@@ -409,7 +418,7 @@ const DoctorDashboard: React.FC = () => {
             title={
               <span>
                 <RiseOutlined className="mr-2" />
-                Thống kê trạng thái
+                {t("dashboard.doctorDashboard.statusStatistics")}
               </span>
             }
             className="shadow-sm"
@@ -417,7 +426,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-gray-600">Hoàn thành</span>
+                  <span className="text-gray-600">{t("dashboard.doctorDashboard.completed")}</span>
                   <span className="font-semibold text-green-600">{stats.today.completed}</span>
                 </div>
                 <Progress
@@ -430,7 +439,7 @@ const DoctorDashboard: React.FC = () => {
               </div>
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-gray-600">Đã xác nhận</span>
+                  <span className="text-gray-600">{t("dashboard.doctorDashboard.confirmed")}</span>
                   <span className="font-semibold text-blue-600">{stats.today.confirmed}</span>
                 </div>
                 <Progress
@@ -443,7 +452,7 @@ const DoctorDashboard: React.FC = () => {
               </div>
               <div>
                 <div className="flex justify-between mb-1">
-                  <span className="text-gray-600">Đang chờ</span>
+                  <span className="text-gray-600">{t("dashboard.doctorDashboard.pending")}</span>
                   <span className="font-semibold text-orange-600">{stats.today.pending}</span>
                 </div>
                 <Progress
@@ -464,7 +473,7 @@ const DoctorDashboard: React.FC = () => {
             title={
               <span>
                 <ClockCircleOutlined className="mr-2" />
-                Hoạt động gần đây
+                {t("dashboard.doctorDashboard.recentActivity")}
               </span>
             }
             className="shadow-sm"
@@ -475,7 +484,9 @@ const DoctorDashboard: React.FC = () => {
                   color: "green",
                   children: (
                     <div>
-                      <div className="text-sm font-medium">Đã hoàn thành lịch khám</div>
+                      <div className="text-sm font-medium">
+                        {t("dashboard.doctorDashboard.completedAppointment")}
+                      </div>
                       <div className="text-xs text-gray-500">{dayjs().format("HH:mm")}</div>
                     </div>
                   ),
@@ -484,7 +495,9 @@ const DoctorDashboard: React.FC = () => {
                   color: "blue",
                   children: (
                     <div>
-                      <div className="text-sm font-medium">Đã kê toa thuốc</div>
+                      <div className="text-sm font-medium">
+                        {t("dashboard.doctorDashboard.prescribedMedicine")}
+                      </div>
                       <div className="text-xs text-gray-500">
                         {dayjs().subtract(30, "minute").format("HH:mm")}
                       </div>
@@ -495,7 +508,9 @@ const DoctorDashboard: React.FC = () => {
                   color: "orange",
                   children: (
                     <div>
-                      <div className="text-sm font-medium">Cập nhật hồ sơ bệnh án</div>
+                      <div className="text-sm font-medium">
+                        {t("dashboard.doctorDashboard.updatedMedicalRecord")}
+                      </div>
                       <div className="text-xs text-gray-500">
                         {dayjs().subtract(1, "hour").format("HH:mm")}
                       </div>
@@ -514,7 +529,7 @@ const DoctorDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span>
                   <LineChartOutlined className="mr-2" />
-                  Thống kê lịch khám
+                  {t("dashboard.doctorDashboard.appointmentStatistics")}
                 </span>
                 <Radio.Group
                   value={timeRange}
@@ -522,9 +537,9 @@ const DoctorDashboard: React.FC = () => {
                   buttonStyle="solid"
                   size="small"
                 >
-                  <Radio.Button value="day">Ngày</Radio.Button>
-                  <Radio.Button value="week">Tuần</Radio.Button>
-                  <Radio.Button value="month">Tháng</Radio.Button>
+                  <Radio.Button value="day">{t("dashboard.doctorDashboard.day")}</Radio.Button>
+                  <Radio.Button value="week">{t("dashboard.doctorDashboard.week")}</Radio.Button>
+                  <Radio.Button value="month">{t("dashboard.doctorDashboard.month")}</Radio.Button>
                 </Radio.Group>
               </div>
             }
@@ -541,7 +556,7 @@ const DoctorDashboard: React.FC = () => {
                   type="monotone"
                   dataKey="count"
                   stroke="#1890ff"
-                  name="Số lịch khám"
+                  name={t("dashboard.doctorDashboard.appointmentCount")}
                   strokeWidth={2}
                 />
               </LineChart>

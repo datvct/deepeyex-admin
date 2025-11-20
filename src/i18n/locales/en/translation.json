@@ -49,6 +49,42 @@
       "twoHoursAgo": "2 hours ago",
       "yesterday": "Yesterday",
       "threeDaysAgo": "3 days ago"
+    },
+    "doctorDashboard": {
+      "welcome": "Welcome, Dr.",
+      "specialty": "Specialty:",
+      "ophthalmology": "Ophthalmology",
+      "onDuty": "On Duty",
+      "editProfile": "Edit Profile",
+      "todayAppointments": "Today's Appointments",
+      "totalPatients": "Total Patients",
+      "patients": "patients",
+      "thisWeek": "This Week",
+      "appointments": "appointments",
+      "averagePerDay": "Average {perDay} appointments/day",
+      "medicalRecords": "Medical Records",
+      "viewAll": "View All",
+      "noName": "No name",
+      "generalCheckup": "General Checkup",
+      "noAppointmentsToday": "No appointments today",
+      "recentMedicalRecords": "Recent Medical Records",
+      "noMedicalRecords": "No medical records yet",
+      "prescriptions": "prescriptions",
+      "statusStatistics": "Status Statistics",
+      "completed": "Completed",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "canceled": "Canceled",
+      "recentActivity": "Recent Activity",
+      "completedAppointment": "Completed appointment",
+      "prescribedMedicine": "Prescribed medicine",
+      "updatedMedicalRecord": "Updated medical record",
+      "appointmentStatistics": "Appointment Statistics",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "appointmentCount": "Appointment Count",
+      "completionRate": "% completed"
     }
   },
   "sidebar": {
@@ -70,7 +106,8 @@
     "services": "Services",
     "doctorConsultation": "Doctor Consultation",
     "aiDiagnosis": "AI Eye Diagnosis",
-    "eyeDiagnosis": "Image Diagnosis"
+    "eyeDiagnosis": "Image Diagnosis",
+    "createFollowUp": "Create Follow Up"
   },
   "header": {
     "profile": "Profile",
@@ -91,6 +128,16 @@
     "deleteCancel": "Cancel",
     "searchPlaceholder": "Search..."
   },
+  "advancedFilter": {
+    "search": "Search",
+    "reset": "Clear Filter",
+    "enter": "Enter",
+    "select": "Select",
+    "dateRange": {
+      "from": "From Date",
+      "to": "To Date"
+    }
+  },
   "search": {
     "placeholder": "Search...",
     "button": "Search"
@@ -107,6 +154,9 @@
       "phone": "Phone",
       "email": "Email",
       "image": "Hospital Image",
+      "url_map": "Map URL",
+      "city": "City",
+      "ward": "Ward",
       "latitude": "Latitude",
       "longitude": "Longitude",
       "placeholder": {
@@ -114,6 +164,9 @@
         "address": "Enter hospital address",
         "phone": "Enter phone number",
         "email": "Enter email",
+        "url_map": "Enter map URL",
+        "city": "City",
+        "ward": "Ward",
         "image": "Upload Image",
         "latitude": "Enter latitude",
         "longitude": "Enter longitude"
@@ -128,6 +181,19 @@
       "updateError": "Failed to update hospital",
       "loadErrorTitle": "Loading error",
       "loadErrorDescription": "Unable to load hospitals. Please try again later."
+    },
+    "columns": {
+      "id": "ID"
+    },
+    "filter": {
+      "name": "Hospital Name",
+      "namePlaceholder": "Search by hospital name...",
+      "address": "Address",
+      "addressPlaceholder": "Search by address...",
+      "city": "City",
+      "cityPlaceholder": "Select city",
+      "ward": "Ward",
+      "wardPlaceholder": "Enter ward"
     }
   },
   "doctor": {
@@ -205,7 +271,8 @@
         "address": "Enter address",
         "phone": "Enter phone number",
         "email": "Enter email",
-        "user": "Select user"
+        "user": "Select user",
+        "upload": "Upload"
       }
     },
     "gender": {
@@ -221,6 +288,12 @@
       "delete_success": "Patient deleted successfully",
       "delete_error": "Failed to delete patient",
       "load_error": "Cannot fetch patient list. Please try again later."
+    },
+    "filter": {
+      "fullNamePlaceholder": "Enter patient name",
+      "genderPlaceholder": "Select gender",
+      "birthDate": "Birth Month/Year",
+      "birthDatePlaceholder": "Select birth month/year"
     }
   },
   "drug": {
@@ -272,7 +345,85 @@
       "loadTitle": "Data Load Error",
       "loadDescription": "Unable to fetch the drug list. Please try again later."
     },
-    "upload": "Upload Image"
+    "upload": "Upload Image",
+    "filter": {
+      "minPrice": "Min Price",
+      "minPricePlaceholder": "Enter min price",
+      "maxPrice": "Max Price",
+      "maxPricePlaceholder": "Enter max price",
+      "minStock": "Min Stock",
+      "minStockPlaceholder": "Enter quantity",
+      "maxStock": "Max Stock",
+      "maxStockPlaceholder": "Enter quantity"
+    }
+  },
+  "service": {
+    "title": "Service Management",
+    "subtitle": "Medical Service List",
+    "add": "Add Service",
+    "edit": "Edit Service",
+    "deleteSuccess": "Service deleted successfully",
+    "deleteError": "Failed to delete service",
+    "createSuccess": "Service added successfully",
+    "createError": "Failed to add service",
+    "updateSuccess": "Service updated successfully",
+    "updateError": "Failed to update service",
+    "assignSuccess": "Service assigned to doctor successfully",
+    "assignError": "Failed to assign service",
+    "removeSuccess": "Service removed from doctor successfully",
+    "removeError": "Failed to remove service from doctor",
+    "form": {
+      "name": "Service Name",
+      "duration": "Duration (minutes)",
+      "price": "Price (VND)",
+      "placeholder": {
+        "name": "Enter service name (e.g., General Eye Exam)",
+        "duration": "Enter examination duration (minutes)",
+        "price": "Enter service price"
+      },
+      "validation": {
+        "name": "Please enter service name",
+        "duration": "Please enter duration",
+        "price": "Please enter price"
+      }
+    },
+    "columns": {
+      "id": "ID",
+      "name": "Service Name",
+      "duration": "Duration",
+      "price": "Price",
+      "createdAt": "Created At",
+      "updatedAt": "Updated"
+    },
+    "error": {
+      "loadTitle": "Data Load Error",
+      "loadDescription": "Unable to fetch service list. Please try again later."
+    },
+    "filter": {
+      "namePlaceholder": "Enter service name",
+      "durationPlaceholder": "Enter duration (minutes)"
+    },
+    "assign": {
+      "title": "Assign Service to Doctor",
+      "button": "Assign Service to Doctor",
+      "okText": "Assign",
+      "cancelText": "Cancel",
+      "selectDoctor": "Select Doctor",
+      "selectDoctorPlaceholder": "Select doctor",
+      "selectDoctorRequired": "Please select a doctor",
+      "selectService": "Select Service",
+      "selectServicePlaceholder": "Select service",
+      "selectServiceRequired": "Please select a service"
+    },
+    "modal": {
+      "update": "Update",
+      "add": "Add",
+      "cancel": "Cancel"
+    },
+    "common": {
+      "loading": "Loading data...",
+      "minutes": "minutes"
+    }
   },
   "order": {
     "title": "Orders",
@@ -282,7 +433,13 @@
       "index": "No.",
       "patient": "Customer Info",
       "order_items": "Drug Info",
-      "status": "Status"
+      "status": "Status",
+      "orderDate": "Order Date"
+    },
+    "filter": {
+      "orderDate": "Order Date",
+      "orderDatePlaceholder": "Select order date",
+      "statusPlaceholder": "Select status"
     },
     "form": {
       "order_id": "Order ID",
@@ -333,6 +490,52 @@
       "update_error": "Failed to update schedule",
       "delete_success": "Schedule deleted successfully",
       "delete_error": "Failed to delete schedule"
+    },
+    "generate": {
+      "manualTab": "Manual Schedule Creation",
+      "importTab": "Import Day Off",
+      "selectDoctor": "Select Doctor:",
+      "selectDoctorPlaceholder": "Select doctor",
+      "timeRange": "Time Range:",
+      "selectAll": "Select All",
+      "createScheduleButton": "Create Schedule for Doctor",
+      "selectExcelFile": "Select Excel File",
+      "importButton": "Import",
+      "instructions": {
+        "title": "Usage Instructions",
+        "step1": "Download the Excel template file using the \"Download Template\" button below.",
+        "step2": "Fill in the doctor's day off information in the template file.",
+        "step3": "Click the \"Import\" button to upload the file.",
+        "step4": "After successful import, the data will be updated.",
+        "downloadTemplate": "Download Excel Template"
+      },
+      "weekdays": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      },
+      "shifts": {
+        "morning": "Morning (08:00 - 12:00)",
+        "afternoon": "Afternoon (13:00 - 17:00)",
+        "evening": "Evening (18:00 - 21:00)"
+      },
+      "messages": {
+        "createSuccess": "Schedule created successfully for doctor",
+        "createError": "Failed to create schedule for doctor",
+        "importSuccess": "Day off imported successfully",
+        "importError": "Failed to import day off",
+        "doctorRequired": "Please select a doctor",
+        "dateRangeRequired": "Please select time range to apply",
+        "noShiftsSelected": "No shifts selected for this date range",
+        "createScheduleError": "Error creating schedule",
+        "fileRequired": "Please select Excel file before importing",
+        "importFileSuccess": "File imported successfully",
+        "importFileError": "Error importing file"
+      }
     }
   },
   "appointment": {
@@ -363,15 +566,88 @@
     "messages": {
       "load_error": "Unable to fetch appointments. Please try again later.",
       "update_success": "Status updated successfully",
-      "update_error": "Failed to update status"
+      "update_error": "Failed to update status",
+      "updateByReceptionistSuccess": "Appointment updated successfully",
+      "updateByReceptionistError": "An error occurred while updating appointment",
+      "createSuccess": "Appointment created successfully",
+      "createError": "An error occurred while creating appointment",
+      "cannotUpdateCompleted": "Cannot update completed appointment",
+      "cannotUpdateCanceled": "Cannot update canceled appointment"
     },
     "modal": {
-      "title": "Update Appointment Status"
+      "title": "Update Appointment Status",
+      "updateTitle": "Update Appointment",
+      "createTitle": "Create New Appointment"
     },
     "doctor": "Doctor",
     "hospital": "Hospital",
     "time": "Time",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "addButton": "Create New Appointment",
+    "filter": {
+      "patientName": "Enter patient name",
+      "statusPlaceholder": "Select status",
+      "doctorPlaceholder": "Select doctor"
+    },
+    "receptionist": {
+      "patientInfo": "Patient Information",
+      "patientName": "Patient Name",
+      "patientNameRequired": "Please enter patient name",
+      "patientNamePlaceholder": "Enter patient name",
+      "phone": "Phone",
+      "phoneRequired": "Please enter phone number",
+      "phonePlaceholder": "Enter phone number",
+      "email": "Email",
+      "emailInvalid": "Invalid email",
+      "emailPlaceholder": "Enter email (optional)",
+      "reschedule": "Reschedule Appointment",
+      "doctor": "Doctor",
+      "doctorRequired": "Please select doctor",
+      "doctorPlaceholder": "Select doctor",
+      "appointmentDate": "Appointment Date",
+      "appointmentDateTooltip": "Select date to filter time slots (optional, leave empty to see all)",
+      "appointmentDatePlaceholder": "Select date to filter (optional)",
+      "timeSlot": "Time Slot",
+      "timeSlotRequired": "Please select time slot",
+      "timeSlotPlaceholder": "Select time slot",
+      "timeSlotTooltip": "Select new time slot to reschedule appointment",
+      "statusAndNotes": "Status and Notes",
+      "appointmentStatus": "Appointment Status",
+      "statusRequired": "Please select status",
+      "statusPlaceholder": "Select status",
+      "generalNotes": "General Notes",
+      "generalNotesTooltip": "General notes about appointment (patient can see)",
+      "generalNotesPlaceholder": "Example: Patient wants to see doctor X"
+    },
+    "create": {
+      "basicInfo": "Basic Information",
+      "patient": "Patient",
+      "patientRequired": "Please select patient",
+      "patientPlaceholder": "Select patient",
+      "doctor": "Doctor",
+      "doctorRequired": "Please select doctor",
+      "doctorPlaceholder": "Select doctor",
+      "hospital": "Hospital",
+      "hospitalRequired": "Please select hospital",
+      "hospitalPlaceholder": "Select hospital",
+      "appointmentTime": "Appointment Time",
+      "appointmentDate": "Appointment Date",
+      "appointmentDatePlaceholder": "Select date",
+      "timeSlot": "Time Slot",
+      "timeSlotRequired": "Please select time slot",
+      "timeSlotPlaceholder": "Select time slot",
+      "serviceAndPayment": "Service and Payment",
+      "service": "Service",
+      "serviceTooltip": "Select doctor's service (displayed after selecting doctor)",
+      "servicePlaceholder": "Select service (optional)",
+      "order": "Order",
+      "noOrder": "No order yet",
+      "quantity": "Quantity:",
+      "paymentStatus": "Payment Status",
+      "paymentStatusPlaceholder": "Select payment status",
+      "notes": "Notes",
+      "notesPlaceholder": "Notes about appointment (optional)"
+    }
   },
   "user": {
     "title": "User Management",
@@ -393,7 +669,8 @@
       "admin": "Admin",
       "doctor": "Doctor",
       "patient": "Patient",
-      "hospital": "Hospital"
+      "hospital": "Hospital",
+      "receptionist": "Receptionist"
     },
     "messages": {
       "load_error": "Unable to fetch user list. Please try again later.",
@@ -434,11 +711,516 @@
       "confirmPassword_placeholder": "Re-enter password",
       "confirmPassword_required": "Please confirm your password",
       "confirmPassword_mismatch": "Passwords do not match!"
+    },
+    "filter": {
+      "search": "Search",
+      "searchPlaceholder": "Search by username",
+      "role": "Role"
+    },
+    "error": {
+      "title": "Error"
     }
+  },
+  "videoChat": {
+    "tabs": {
+      "online": "🎥 Online Consultation Room",
+      "history": "💬 Consultation History"
+    },
+    "online": {
+      "noAppointments": "No online consultation appointments.",
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed"
+      }
+    },
+    "history": {
+      "conversationList": "Conversation List",
+      "noConversations": "No conversations.",
+      "noMessage": "No messages yet",
+      "selectConversation": "Please select a conversation to start",
+      "active": "Active",
+      "conversationInfo": "Conversation Information",
+      "createdAt": "Created At:",
+      "lastAppointmentId": "Last Appointment ID:",
+      "lastMessage": "Last Message:",
+      "unknown": "Unknown",
+      "none": "None",
+      "openingChat": "Opening chat with {{name}}"
+    },
+    "call": {
+      "joinVideoCall": "Join Video Call",
+      "videoCall": "Video Call",
+      "microphoneCheck": {
+        "success": "✅ Microphone is working normally!",
+        "error": "Cannot access microphone. Please check browser permissions!"
+      }
+    },
+    "chat": {
+      "messagePlaceholder": "Type a message...",
+      "downloadFile": "Download File",
+      "upload": {
+        "success": "File uploaded successfully!",
+        "error": "File upload failed!",
+        "sendError": "Failed to send file!"
+      }
+    }
+  },
+  "schedule": {
+    "title": "Weekly Schedule",
+    "weekRange": "Week from",
+    "weekRangeTo": "to",
+    "current": "Current",
+    "print": "Print Schedule",
+    "loading": "Loading schedule...",
+    "shift": "Shift",
+    "shifts": {
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening"
+    },
+    "noSchedule": "No schedule",
+    "unknown": "Unknown",
+    "service": "Service:",
+    "generalCheckup": "General Checkup",
+    "empty": "Empty",
+    "viewDetails": "View Details",
+    "note": "Note:",
+    "booked": "Booked",
+    "appointmentDetails": "Appointment Details",
+    "close": "Close",
+    "cancelAppointment": "Cancel Appointment",
+    "appointmentCode": "Appointment Code",
+    "status": "Status",
+    "notes": "Notes",
+    "slotTime": "Slot Time",
+    "patient": "Patient",
+    "dob": "Date of Birth:",
+    "gender": "Gender:",
+    "address": "Address:",
+    "phone": "Phone:",
+    "email": "Email:",
+    "confirmCancel": "Confirm Cancel Appointment",
+    "confirmCancelButton": "Confirm Cancel",
+    "cancel": "Cancel",
+    "confirmCancelMessage": "Are you sure you want to cancel the appointment for patient",
+    "cancelSuccess": "Appointment cancelled successfully!",
+    "cancelSuccessDescription": "The appointment has been cancelled successfully.",
+    "cancelError": "An error occurred",
+    "cancelErrorMessage": "Unable to cancel appointment. Please try again later.",
+    "none": "None"
+  },
+  "doctorConsultation": {
+    "title": "Consultation List",
+    "subtitle": "Today's appointment list",
+    "loading": "Loading data...",
+    "errorTitle": "Data loading error",
+    "errorDescription": "Unable to load today's appointment list. Please try again later.",
+    "noAppointments": "No appointments in progress",
+    "noAppointmentsDescription": "Currently no patients are being examined",
+    "appointmentCode": "Appointment Code:",
+    "service": "Service",
+    "patient": "Patient",
+    "status": "Status",
+    "examinationTime": "Examination Time",
+    "address": "Address",
+    "email": "Email",
+    "notes": "Notes",
+    "createProfile": "Create Profile",
+    "viewOldRecord": "View Old Record",
+    "cancelAppointment": "Cancel Appointment",
+    "statusLabels": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "COMPLETED": "Completed"
+    },
+    "createProfileSuccess": "Profile created successfully!",
+    "createFollowUp": "Yes, create follow-up appointment",
+    "cancelFollowUp": "No, close",
+    "followUpQuestion": "Do you want to create a follow-up appointment for the patient?",
+    "confirmCancelTitle": "Confirm Cancel Appointment",
+    "confirmCancelButton": "Confirm Cancel",
+    "cancelButton": "Cancel",
+    "confirmCancelMessage": "Are you sure you want to cancel the appointment for patient",
+    "cancelReasonLabel": "Cancel reason (optional):",
+    "cancelReasonPlaceholder": "Example: Urgent case, doctor on leave...",
+    "cancelSuccess": "Appointment cancelled successfully and automatically transferred to replacement doctor!",
+    "cancelError": "An error occurred while cancelling the appointment!",
+    "noReplacementDoctor": "No replacement doctor available! Please contact admin for support.",
+    "updateStatusSuccess": "Status updated successfully!",
+    "updateStatusError": "Unable to update status!",
+    "none": "None",
+    "noInfo": "No information",
+    "generalCheckup": "General Checkup"
+  },
+  "medicalRecord": {
+    "viewModal": {
+      "title": "Medical Record",
+      "loading": "Loading record...",
+      "errorTitle": "Data loading error",
+      "errorDescription": "Unable to load medical record. Please try again later.",
+      "noRecords": "This patient has no medical records yet",
+      "recordNumber": "Record #",
+      "recordId": "Record ID",
+      "createdAt": "Created At",
+      "diagnosis": "Diagnosis",
+      "notes": "Notes",
+      "attachments": "Attachments",
+      "viewFile": "View File",
+      "prescriptions": "Prescriptions",
+      "prescriptionNumber": "Prescription #",
+      "status": {
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "PENDING": "Pending"
+      },
+      "source": {
+        "AI": "AI",
+        "DOCTOR": "Doctor"
+      },
+      "noPrescriptionItems": "No medications in this prescription",
+      "aiDiagnosis": "AI Diagnosis",
+      "diseaseCode": "Disease Code",
+      "confidence": "Confidence:",
+      "drugList": "Drug List:",
+      "dosage": "Dosage:",
+      "frequency": "Frequency:",
+      "duration": "Duration:",
+      "days": "days",
+      "fromDate": "From Date:",
+      "itemNotes": "Notes:"
+    },
+    "prescriptionTab": {
+      "existingTitle": "Existing Prescriptions",
+      "addNewTitle": "Add New Prescription",
+      "drugName": "Drug Name",
+      "drugNamePlaceholder": "Enter drug name",
+      "drugNameRequired": "Please enter drug name",
+      "dosage": "Dosage",
+      "dosagePlaceholder": "Example: 500mg",
+      "dosageRequired": "Please enter dosage",
+      "frequency": "Frequency (times/day)",
+      "frequencyPlaceholder": "Example: 3",
+      "frequencyRequired": "Please enter frequency",
+      "frequencyInvalid": "Please enter a positive integer",
+      "duration": "Duration (days)",
+      "durationPlaceholder": "Example: 7",
+      "durationRequired": "Please enter duration",
+      "notes": "Notes",
+      "notesPlaceholder": "Additional notes (optional)",
+      "medicationTimes": "Medication Times (patient reminder)",
+      "addTime": "Add Time",
+      "timesPerDay": "Medication times",
+      "timesPerDaySuffix": "times/day",
+      "selectTime": "Select time",
+      "autoSetupHint": "Enter frequency to automatically set medication times",
+      "autoSetupExample": "1 time: 08:00 | 2 times: 08:00, 18:00 | 3 times: 08:00, 12:00, 18:00",
+      "addPrescription": "Add Prescription",
+      "prescriptionList": "Prescription List",
+      "remove": "Remove",
+      "times": "Medication Times:",
+      "createdAt": "Created at:"
+    },
+    "patientProfileModal": {
+      "title": "Patient Profile",
+      "hasRecord": "(Has Record)",
+      "close": "Close",
+      "updateRecord": "Update Record",
+      "saveConsultation": "Save Consultation",
+      "checkingRecord": "Checking medical record...",
+      "tabs": {
+        "patientInfo": "Patient Information",
+        "prescription": "Prescription",
+        "aiDiagnosis": "AI Diagnosis"
+      },
+      "createSuccess": "Medical record created successfully!",
+      "createError": "Error creating record:",
+      "updateSuccess": "Medical record updated successfully!",
+      "updateError": "Error updating record:",
+      "addPrescriptionSuccess": "Prescription added",
+      "removePrescriptionSuccess": "Prescription removed",
+      "validationError": "Please fill in all diagnosis information"
+    },
+    "patientInfoTab": {
+      "fullName": "Full Name",
+      "gender": "Gender",
+      "dob": "Date of Birth",
+      "phone": "Phone",
+      "address": "Address",
+      "appointmentInfo": "Appointment Information",
+      "doctor": "Doctor",
+      "specialty": "Specialty",
+      "examinationTime": "Examination Time",
+      "status": "Status:",
+      "diagnosis": "Diagnosis",
+      "updatingRecord": "Updating existing record",
+      "diagnosisLabel": "Diagnosis",
+      "diagnosisRequired": "*",
+      "diagnosisPlaceholder": "Enter patient diagnosis...",
+      "diagnosisRequiredMessage": "Please enter diagnosis",
+      "addNewAttachment": "Add New Attachment",
+      "attachFile": "Attach File (images, documents)",
+      "upload": "Upload",
+      "maxFiles": "Maximum 5 files (images, PDF, Word, etc.)",
+      "additionalNotes": "Additional Notes",
+      "additionalNotesPlaceholder": "Enter additional notes (if any)..."
+    },
+    "followUpModal": {
+      "title": "Follow-up Appointment",
+      "cancel": "Cancel",
+      "confirm": "Confirm Follow-up",
+      "followUpDate": "Follow-up Date",
+      "followUpDateRequired": "Please select follow-up date",
+      "followUpDatePlaceholder": "Select follow-up date",
+      "timeSlot": "Time Slot",
+      "timeSlotRequired": "Please select time slot",
+      "timeSlotPlaceholder": "Select time slot",
+      "loading": "Loading...",
+      "noSlotsAvailable": "No available time slots",
+      "service": "Service",
+      "serviceLoading": "Loading service...",
+      "reason": "Follow-up Reason",
+      "reasonRequired": "Please enter follow-up reason",
+      "reasonPlaceholder": "Enter follow-up reason...",
+      "additionalNotes": "Additional Notes",
+      "additionalNotesPlaceholder": "Additional notes (optional)...",
+      "success": "Follow-up appointment scheduled successfully!",
+      "error": "Error scheduling follow-up:"
+    },
+    "existingAttachments": {
+      "title": "Existing Attachments",
+      "file": "File",
+      "viewFile": "View File",
+      "fileTypes": {
+        "image": "Image",
+        "pdf": "PDF",
+        "file": "File"
+      }
+    },
+    "aiDiagnosisTab": {
+      "title": "AI Diagnosis #",
+      "status": {
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "PENDING": "Pending"
+      },
+      "disease": "Diagnosed Disease",
+      "confidence": "Confidence",
+      "eyePosition": "Eye Position",
+      "eyeTypes": {
+        "LEFT": "Left Eye",
+        "RIGHT": "Right Eye",
+        "BOTH": "Both Eyes"
+      },
+      "diagnosisTime": "Diagnosis Time",
+      "diagnosisImage": "Diagnosis Image",
+      "notes": "Notes"
+    }
+  },
+  "aiDiagnosis": {
+    "title": "AI Diagnosis - Ophthalmology",
+    "subtitle": "List of AI eye disease diagnoses requiring confirmation ({{count}})",
+    "loading": "Loading diagnosis list...",
+    "error": "Error: {{message}}",
+    "noDiagnosis": "No AI diagnoses",
+    "noDiagnosisDescription": "Currently there are no AI eye disease diagnoses requiring confirmation",
+    "viewDetails": "View Details",
+    "patientId": "ID: {{id}}...",
+    "code": "Code: {{code}}...",
+    "hasImage": "Has eye image",
+    "aiDiagnosisLabel": "AI Diagnosis:",
+    "notes": "Notes:",
+    "confidence": "Confidence",
+    "status": "Status",
+    "time": "Time",
+    "statusLabels": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Incorrect"
+    },
+    "verifySuccess": "Diagnosis confirmed successfully",
+    "verifyError": "Verification failed: {{message}}",
+    "doctorNotFound": "Doctor information not found",
+    "defaultNotes": {
+      "approved": "Approved",
+      "rejected": "Incorrect"
+    },
+    "detailModal": {
+      "title": "AI Diagnosis - Patient ID: {{id}}...",
+      "patientId": "Patient ID: {{id}}...",
+      "bothEyes": "Both Eyes",
+      "aiDiagnosis": "AI Diagnosis",
+      "notes": "Notes:",
+      "eyeImageTab": "Eye Image",
+      "eyeImage": "Eye Image",
+      "noEyeImage": "No eye image",
+      "doctorNotes": "Doctor Notes",
+      "doctorNotesRequired": "*",
+      "doctorNotesRequiredHint": "(Required when marking as incorrect)",
+      "doctorNotesPlaceholder": "Enter your notes about this diagnosis...",
+      "signature": "Confirmation Signature",
+      "signatureRequired": "*",
+      "removeSignature": "Remove Signature",
+      "signed": "Signed",
+      "signatureAlt": "Signature",
+      "clickToSign": "Click to sign",
+      "close": "Close",
+      "reject": "Incorrect",
+      "confirm": "Confirm Correct",
+      "notesRequiredWarning": "Please enter notes when marking diagnosis as incorrect",
+      "signatureRequiredWarning": "Please sign before submitting",
+      "signatureSaved": "Signature saved",
+      "signatureRemoved": "Signature removed"
+    },
+    "signaturePad": {
+      "instruction": "Draw your signature in the box above",
+      "clear": "Clear",
+      "save": "Save Signature"
+    },
+    "diseaseLabels": {
+      "conjunctivitis": "Conjunctivitis",
+      "eyelidedema": "Eyelid Edema",
+      "healthy_eye": "Healthy Eye",
+      "hordeolum": "Hordeolum",
+      "keratitiswithulcer": "Keratitis with Ulcer",
+      "subconjunctival_hemorrhage": "Subconjunctival Hemorrhage"
+    }
+  },
+  "eyeDiagnosis": {
+    "title": "AI Diagnosis by Image",
+    "subtitle": "Upload eye image to receive AI diagnosis",
+    "uploadCard": {
+      "title": "Upload Eye Image",
+      "uploadButton": "Upload Image",
+      "instructions": {
+        "singleImage": "• Upload only 1 eye image",
+        "formats": "• Formats: JPG, PNG, JPEG",
+        "maxSize": "• Maximum size: 5MB"
+      },
+      "diagnoseButton": "AI Diagnosis",
+      "diagnosing": "Diagnosing...",
+      "resetButton": "Reset"
+    },
+    "resultCard": {
+      "title": "Diagnosis Result",
+      "analyzing": "Analyzing image...",
+      "processing": "AI is processing and diagnosing",
+      "diagnosisLabel": "Diagnosis",
+      "confidence": "Confidence",
+      "severity": "Severity Level",
+      "alternativeDiagnoses": "Alternative Diagnoses:",
+      "note": "Note:",
+      "noteText": "AI diagnosis results are for support and reference purposes only. Please combine with clinical experience and additional tests to make the final accurate diagnosis.",
+      "emptyDescription": "Upload an image and click 'AI Diagnosis' to get results"
+    },
+    "messages": {
+      "success": "Diagnosis completed!",
+      "error": "Diagnosis failed. Please try again!",
+      "imageOnly": "Only image files are allowed!",
+      "maxSize": "Image must be smaller than 5MB!",
+      "noImage": "Please upload at least 1 eye image",
+      "invalidFile": "Invalid file"
+    },
+    "severity": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "diseaseLabels": {
+      "amd": "Age-related Macular Degeneration (AMD)",
+      "cataract": "Cataract",
+      "diabetic_retinopathy_mild": "Mild Diabetic Retinopathy",
+      "diabetic_retinopathy_moderate": "Moderate Diabetic Retinopathy",
+      "diabetic_retinopathy_proliferate": "Proliferative Diabetic Retinopathy",
+      "diabetic_retinopathy_severe": "Severe Diabetic Retinopathy",
+      "glaucoma": "Glaucoma",
+      "healthy_eye": "Healthy Eye",
+      "conjunctivitis": "Conjunctivitis",
+      "eyelidedema": "Eyelid Edema",
+      "hordeolum": "Hordeolum",
+      "keratitiswithulcer": "Keratitis with Ulcer",
+      "subconjunctival_hemorrhage": "Subconjunctival Hemorrhage",
+      "normal": "Healthy Eye"
+    }
+  },
+  "createFollowUp": {
+    "title": "Create Follow-up Appointment",
+    "subtitle": "Schedule a follow-up appointment for patient",
+    "steps": {
+      "selectInfo": "Select Information",
+      "confirm": "Confirm",
+      "complete": "Complete"
+    },
+    "form": {
+      "patient": "Patient",
+      "patientPlaceholder": "Select patient...",
+      "patientRequired": "Please select a patient!",
+      "doctor": "Doctor",
+      "doctorPlaceholder": "Select doctor...",
+      "doctorRequired": "Please select a doctor!",
+      "service": "Service",
+      "servicePlaceholder": "Select service...",
+      "serviceRequired": "Please select a service!",
+      "followUpDate": "Follow-up Date",
+      "followUpDatePlaceholder": "Select follow-up date",
+      "followUpDateRequired": "Please select follow-up date",
+      "timeSlot": "Time Slot",
+      "timeSlotPlaceholder": "Select time slot",
+      "timeSlotRequired": "Please select time slot",
+      "timeSlotAtLeastOne": "Please select at least one time slot",
+      "timeSlotValid": "Please select valid time slot",
+      "reason": "Follow-up Reason",
+      "reasonPlaceholder": "Enter follow-up reason...",
+      "reasonRequired": "Please enter follow-up reason",
+      "notes": "Additional Notes",
+      "notesPlaceholder": "Additional notes (optional)...",
+      "relatedRecordId": "Related Record ID",
+      "relatedRecordIdPlaceholder": "ID of related medical record (if any)"
+    },
+    "confirm": {
+      "patient": "Patient",
+      "doctor": "Doctor",
+      "service": "Service",
+      "date": "Appointment Date",
+      "timeSlot": "Time Slot",
+      "reason": "Follow-up Reason",
+      "notes": "Notes",
+      "notSelected": "Not selected",
+      "none": "None"
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "confirm": "Confirm Create Appointment",
+      "createNew": "Create New Appointment",
+      "backToConsultation": "Back to Consultation Page"
+    },
+    "messages": {
+      "success": "Follow-up appointment created successfully!",
+      "error": "Unable to create follow-up appointment. Please try again!",
+      "validationError": "Please fill in all required information!",
+      "loading": "Loading...",
+      "noSlotsAvailable": "No available time slots"
+    },
+    "complete": {
+      "title": "Follow-up appointment created successfully!"
+    },
+    "defaultValues": {
+      "serviceName": "Follow-up",
+      "notesLabel": "Notes:"
+    }
+  },
+  "websocket": {
+    "newAppointment": "🔔 New appointment from {patientName}",
+    "updateAppointment": "📝 Appointment {appointmentCode} has been updated",
+    "cancelAppointment": "❌ Appointment {appointmentCode} has been canceled",
+    "patient": "patient"
   }
-
-
-
-
-
 }
+   
+
+
+
+
+
+

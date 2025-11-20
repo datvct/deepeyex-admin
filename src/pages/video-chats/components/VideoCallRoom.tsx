@@ -3,11 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import { ImPhoneHangUp } from "react-icons/im";
 import { FaVolumeMute } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../../shares/stores";
 import { callEventEmitter } from "../../../shares/utils/callEvents";
 import { hangupCall, makeVideoCall, muteCall } from "../../../shares/utils/stringee";
 import { Button } from "antd";
 import { VideoCameraOutlined } from "@ant-design/icons";
+import React from "react";
 
 interface ChatHeaderProps {
   userId?: string;
@@ -21,6 +23,7 @@ interface IncomingCall {
 }
 
 const ChatHeader = ({ userId }: ChatHeaderProps) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -81,7 +84,7 @@ const ChatHeader = ({ userId }: ChatHeaderProps) => {
             onClick={() => handleCall(true)}
             icon={<VideoCameraOutlined size={20} color="white" className="!text-white" />}
           >
-            Tham gia cuộc gọi video
+            {t("videoChat.call.joinVideoCall")}
           </Button>
         </div>
       </div>
@@ -89,7 +92,7 @@ const ChatHeader = ({ userId }: ChatHeaderProps) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-[#1a1a1a] p-6 rounded-lg w-[600px]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-white text-lg font-semibold">Video Call</h2>
+              <h2 className="text-white text-lg font-semibold">{t("videoChat.call.videoCall")}</h2>
               <button onClick={handleCancel} className="text-white text-2xl hover:text-red-500">
                 ×
               </button>

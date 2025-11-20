@@ -45,19 +45,19 @@ export default function HospitalScheduleManager() {
   });
 
   const weekdays = [
-    { key: "mon", label: "Thứ 2" },
-    { key: "tue", label: "Thứ 3" },
-    { key: "wed", label: "Thứ 4" },
-    { key: "thu", label: "Thứ 5" },
-    { key: "fri", label: "Thứ 6" },
-    { key: "sat", label: "Thứ 7" },
-    { key: "sun", label: "Chủ nhật" },
+    { key: "mon", label: t("timeSlots.generate.weekdays.mon") },
+    { key: "tue", label: t("timeSlots.generate.weekdays.tue") },
+    { key: "wed", label: t("timeSlots.generate.weekdays.wed") },
+    { key: "thu", label: t("timeSlots.generate.weekdays.thu") },
+    { key: "fri", label: t("timeSlots.generate.weekdays.fri") },
+    { key: "sat", label: t("timeSlots.generate.weekdays.sat") },
+    { key: "sun", label: t("timeSlots.generate.weekdays.sun") },
   ];
 
   const shifts = [
-    { key: "morning", label: "Sáng (08:00 - 12:00)" },
-    { key: "afternoon", label: "Chiều (13:00 - 17:00)" },
-    { key: "evening", label: "Tối (18:00 - 21:00)" },
+    { key: "morning", label: t("timeSlots.generate.shifts.morning") },
+    { key: "afternoon", label: t("timeSlots.generate.shifts.afternoon") },
+    { key: "evening", label: t("timeSlots.generate.shifts.evening") },
   ];
 
   // Tick từng ca trong tuần
@@ -116,33 +116,33 @@ export default function HospitalScheduleManager() {
   //--- Mutation: Create
   const createMultiShiftTimeSlot = useCreateMultiTimeSlotMutation({
     onSuccess: () => {
-      toast.success(t("Tạo lịch cho bác sĩ thành công"));
+      toast.success(t("timeSlots.generate.messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.TimeSlot] });
     },
-    onError: () => toast.error(t("Tạo lịch cho bác sĩ thất bại")),
+    onError: () => toast.error(t("timeSlots.generate.messages.createError")),
   });
 
   // --- Mutation: Import
   const importDayOffTimeSlot = useImportDayOffMutation({
     onSuccess: () => {
-      toast.success(t("Import ngày nghỉ thành công"));
+      toast.success(t("timeSlots.generate.messages.importSuccess"));
     },
-    onError: () => toast.error(t("Import ngày nghỉ thất bại")),
+    onError: () => toast.error(t("timeSlots.generate.messages.importError")),
   });
 
   const handleGenerateDoctorSchedule = async () => {
     if (!doctorId) {
-      toast.error("Vui lòng chọn bác sĩ");
+      toast.error(t("timeSlots.generate.messages.doctorRequired"));
       return;
     }
     if (!dateRange) {
-      toast.error("Vui lòng chọn khoảng thời gian áp dụng");
+      toast.error(t("timeSlots.generate.messages.dateRangeRequired"));
       return;
     }
 
     const body = buildScheduleBody();
     if (!body || body.shifts.length === 0) {
-      toast.error("Chưa chọn ca nào trong khoảng ngày này");
+      toast.error(t("timeSlots.generate.messages.noShiftsSelected"));
       return;
     }
 
@@ -154,24 +154,24 @@ export default function HospitalScheduleManager() {
       setDateRange(null);
       setWeekTemplate({});
     } catch (err: any) {
-      toast.error("Lỗi khi tạo lịch");
+      toast.error(t("timeSlots.generate.messages.createScheduleError"));
     }
   };
 
   const handleImportSubmit = async () => {
     if (fileList.length === 0) {
-      toast.error("Vui lòng chọn file Excel trước khi import");
+      toast.error(t("timeSlots.generate.messages.fileRequired"));
       return;
     }
 
     try {
       const res = await importDayOffTimeSlot.mutateAsync(fileList[0] as any);
-      toast.success(res.message || "Đã import file thành công");
+      toast.success(res.message || t("timeSlots.generate.messages.importFileSuccess"));
 
       // ✅ clear luôn fileList => Upload UI sẽ biến mất file
       setFileList([]);
     } catch (err) {
-      toast.error("Lỗi import file");
+      toast.error(t("timeSlots.generate.messages.importFileError"));
     }
   };
 
@@ -190,7 +190,7 @@ export default function HospitalScheduleManager() {
               tab={
                 <span>
                   <UserOutlined />
-                  Tạo lịch thủ công
+                  {t("timeSlots.generate.manualTab")}
                 </span>
               }
               key="1"
@@ -198,11 +198,11 @@ export default function HospitalScheduleManager() {
               {/* chọn bác sĩ + khoảng ngày */}
               <div className="flex flex-row gap-4">
                 <div className="flex items-center gap-4 mb-6">
-                  <span>Chọn bác sĩ:</span>
+                  <span>{t("timeSlots.generate.selectDoctor")}</span>
 
                   <Select
                     style={{ width: 300 }}
-                    placeholder="Chọn bác sĩ"
+                    placeholder={t("timeSlots.generate.selectDoctorPlaceholder")}
                     value={doctorId}
                     onChange={(val) => setDoctorId(val)}
                     showSearch
@@ -223,7 +223,7 @@ export default function HospitalScheduleManager() {
                   </Select>
                 </div>
                 <div className="flex items-center gap-4 mb-6">
-                  <span>Thời gian:</span>
+                  <span>{t("timeSlots.generate.timeRange")}</span>
                   <RangePicker
                     value={dateRange}
                     onChange={(val) => setDateRange(val as [Dayjs, Dayjs])}
@@ -245,7 +245,7 @@ export default function HospitalScheduleManager() {
                           Object.keys(weekTemplate[d.key]).length === shifts.length
                         }
                       >
-                        Chọn tất cả
+                        {t("timeSlots.generate.selectAll")}
                       </Checkbox>
                     </div>
                     <div className="flex flex-col gap-2">
@@ -265,7 +265,7 @@ export default function HospitalScheduleManager() {
 
               <div className="mt-6 flex justify-end">
                 <Button type="primary" size="large" onClick={handleGenerateDoctorSchedule}>
-                  Tạo lịch cho bác sĩ
+                  {t("timeSlots.generate.createScheduleButton")}
                 </Button>
               </div>
             </TabPane>
@@ -274,7 +274,7 @@ export default function HospitalScheduleManager() {
             <TabPane
               tab={
                 <span>
-                  <CalendarOutlined /> Import lịch nghỉ
+                  <CalendarOutlined /> {t("timeSlots.generate.importTab")}
                 </span>
               }
               className="flex flex-col gap-4"
@@ -291,7 +291,7 @@ export default function HospitalScheduleManager() {
                   className="w-1/3"
                 >
                   <Button icon={<UploadOutlined />} className="w-[300px]">
-                    Chọn file Excel
+                    {t("timeSlots.generate.selectExcelFile")}
                   </Button>
                 </Upload>
 
@@ -301,25 +301,25 @@ export default function HospitalScheduleManager() {
                   loading={importDayOffTimeSlot.isPending}
                   disabled={fileList.length === 0}
                 >
-                  Import
+                  {t("timeSlots.generate.importButton")}
                 </Button>
               </div>
 
               {/* Hướng dẫn người dùng */}
               <Card className="mb-4 p-4 bg-gray-50">
-                <h3 className="font-semibold mb-2">Hướng dẫn sử dụng</h3>
+                <h3 className="font-semibold mb-2">{t("timeSlots.generate.instructions.title")}</h3>
                 <ol className="list-decimal list-inside space-y-1">
-                  <li>Tải file Excel mẫu bằng nút "Tải file mẫu" bên dưới.</li>
-                  <li>Điền thông tin ngày nghỉ của bác sĩ vào file mẫu.</li>
-                  <li>Bấm nút "Import" để upload file.</li>
-                  <li>Sau khi import thành công, dữ liệu sẽ được cập nhật.</li>
+                  <li>{t("timeSlots.generate.instructions.step1")}</li>
+                  <li>{t("timeSlots.generate.instructions.step2")}</li>
+                  <li>{t("timeSlots.generate.instructions.step3")}</li>
+                  <li>{t("timeSlots.generate.instructions.step4")}</li>
                 </ol>
                 <a
                   href="/mau_ngay_nghi.xlsx" // <-- link tới file mẫu trên server/public
                   download
                   className="inline-block mt-2 text-blue-600 underline"
                 >
-                  Tải file Excel mẫu
+                  {t("timeSlots.generate.instructions.downloadTemplate")}
                 </a>
               </Card>
             </TabPane>

@@ -1,5 +1,6 @@
 // src/pages/doctor-consultation/components/ExistingAttachments.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Image, Tag } from "antd";
 import { FileImageOutlined, FilePdfOutlined, FileOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -10,6 +11,7 @@ interface ExistingAttachmentsProps {
 }
 
 const ExistingAttachments: React.FC<ExistingAttachmentsProps> = ({ attachments }) => {
+  const { t } = useTranslation();
   if (!attachments || attachments.length === 0) {
     return null;
   }
@@ -21,14 +23,14 @@ const ExistingAttachments: React.FC<ExistingAttachmentsProps> = ({ attachments }
   };
 
   const getFileTypeName = (fileType: string) => {
-    if (fileType.includes("image")) return "Hình ảnh";
-    if (fileType.includes("pdf")) return "PDF";
-    return "File";
+    if (fileType.includes("image")) return t("medicalRecord.existingAttachments.fileTypes.image");
+    if (fileType.includes("pdf")) return t("medicalRecord.existingAttachments.fileTypes.pdf");
+    return t("medicalRecord.existingAttachments.fileTypes.file");
   };
 
   return (
     <Card
-      title="File đính kèm hiện có"
+      title={t("medicalRecord.existingAttachments.title")}
       className="mb-4 border-l-4 border-l-indigo-500"
       size="small"
     >
@@ -37,7 +39,9 @@ const ExistingAttachments: React.FC<ExistingAttachmentsProps> = ({ attachments }
           <div key={att.id} className="border rounded-lg p-3 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-2 mb-2">
               {getFileIcon(att.file_type)}
-              <span className="text-sm font-medium text-gray-700">File {index + 1}</span>
+              <span className="text-sm font-medium text-gray-700">
+                {t("medicalRecord.existingAttachments.file")} {index + 1}
+              </span>
             </div>
             {att.file_type.includes("image") ? (
               <Image
@@ -53,7 +57,7 @@ const ExistingAttachments: React.FC<ExistingAttachmentsProps> = ({ attachments }
                 rel="noopener noreferrer"
                 className="text-blue-600 hover:text-blue-800 text-sm"
               >
-                Xem file
+                {t("medicalRecord.existingAttachments.viewFile")}
               </a>
             )}
             <div className="mt-2">
