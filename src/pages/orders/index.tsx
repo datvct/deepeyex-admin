@@ -93,7 +93,7 @@ export default function OrdersPage() {
       name: "status",
       label: t("order.columns.status"),
       type: "select",
-      placeholder: "Chọn trạng thái",
+      placeholder: t("order.filter.statusPlaceholder"),
       options: Object.entries(OrderStatusLabel).map(([key, label]) => ({
         label: t(`order.status.${key}`),
         value: key,
@@ -102,9 +102,9 @@ export default function OrdersPage() {
     },
     {
       name: "order_date",
-      label: "Ngày đặt",
+      label: t("order.filter.orderDate"),
       type: "date",
-      placeholder: "Chọn ngày đặt",
+      placeholder: t("order.filter.orderDatePlaceholder"),
       width: 200,
     },
   ];
@@ -201,14 +201,16 @@ export default function OrdersPage() {
       ),
     },
     {
-      title: "Ngày đặt",
+      title: t("order.columns.orderDate"),
       dataIndex: "created_at",
       key: "created_at",
       width: "12%",
       render: (created_at: string) => (
         <div>
-          <p>{dayjs(created_at).format("DD/MM/YYYY")}</p>
-          <p className="text-gray-500 text-sm">{dayjs(created_at).format("HH:mm:ss")}</p>
+          <p>
+            {dayjs(created_at).format("HH:mm:ss")} - {dayjs(created_at).format("DD/MM/YYYY")}
+          </p>
+          {/* <p className="text-gray-500 text-sm">{dayjs(created_at).format("HH:mm:ss")}</p> */}
         </div>
       ),
     },

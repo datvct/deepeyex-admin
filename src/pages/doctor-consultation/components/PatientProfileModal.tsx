@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal, Form, Button, Tabs, Spin } from "antd";
 import { UserOutlined, ExperimentOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -39,6 +40,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
   onClose,
   onSaveSuccess,
 }) => {
+  const { t } = useTranslation();
   const [prescriptionForm] = Form.useForm<PrescriptionForm>();
   const [diagnosisForm] = Form.useForm();
   const [prescriptions, setPrescriptions] = useState<PrescriptionForm[]>([]);
@@ -62,7 +64,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
   // Mutation: Create Full Record
   const createFullRecordMutation = useCreateFullRecordMutation({
     onSuccess: (response) => {
-      toast.success("Tạo hồ sơ bệnh án thành công!");
+      toast.success(t("medicalRecord.patientProfileModal.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.MedicalRecord] });
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
 
@@ -74,14 +76,14 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
       onSaveSuccess?.(recordId, appointment);
     },
     onError: (error) => {
-      toast.error("Lỗi tạo hồ sơ: " + error.message);
+      toast.error(t("medicalRecord.patientProfileModal.createError") + " " + error.message);
     },
   });
 
   // Mutation: Complete Record (Update)
   const completeRecordMutation = useCompleteRecordMutation({
     onSuccess: (response) => {
-      toast.success("Cập nhật hồ sơ bệnh án thành công!");
+      toast.success(t("medicalRecord.patientProfileModal.updateSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.MedicalRecord] });
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
 
@@ -93,7 +95,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
       onSaveSuccess?.(recordId, appointment);
     },
     onError: (error) => {
-      toast.error("Lỗi cập nhật hồ sơ: " + error.message);
+      toast.error(t("medicalRecord.patientProfileModal.updateError") + " " + error.message);
     },
   });
 
@@ -141,13 +143,13 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
   const handleAddPrescription = (values: PrescriptionForm) => {
     setPrescriptions([...prescriptions, values]);
     prescriptionForm.resetFields();
-    toast.success("Đã thêm toa thuốc");
+    toast.success(t("medicalRecord.patientProfileModal.addPrescriptionSuccess"));
   };
 
   const handleRemovePrescription = (index: number) => {
     const newPrescriptions = prescriptions.filter((_, i) => i !== index);
     setPrescriptions(newPrescriptions);
-    toast.success("Đã xóa toa thuốc");
+    toast.success(t("medicalRecord.patientProfileModal.removePrescriptionSuccess"));
   };
 
   const handleSaveConsultation = async () => {
@@ -169,7 +171,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
           ? {
               patient_id: appointment.patient_id,
               source: "DOCTOR",
-              description: "Toa thuốc từ bác sĩ",
+              description: t("medicalRecord.prescriptionTab.addNewTitle"),
               items: prescriptions.map((p) => ({
                 drug_name: p.drug_name,
                 dosage: p.dosage,
@@ -206,7 +208,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
       }
     } catch (error) {
       console.error("Validation failed:", error);
-      toast.error("Vui lòng điền đầy đủ thông tin chẩn đoán");
+      toast.error(t("medicalRecord.patientProfileModal.validationError"));
     }
   };
 
@@ -219,9 +221,13 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <UserOutlined className="text-blue-600" />
-          <span>Hồ sơ bệnh nhân - {appointment.patient.full_name}</span>
+          <span>
+            {t("medicalRecord.patientProfileModal.title")} - {appointment.patient.full_name}
+          </span>
           {medicalRecordAction === "update" && existingRecord && (
-            <span className="text-sm text-green-600 ml-2">(Đã có hồ sơ)</span>
+            <span className="text-sm text-green-600 ml-2">
+              ({t("medicalRecord.patientProfileModal.hasRecord")})
+            </span>
           )}
         </div>
       }
@@ -234,7 +240,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
           onClick={onClose}
           disabled={createFullRecordMutation.isPending || completeRecordMutation.isPending}
         >
-          Đóng
+          {t("medicalRecord.patientProfileModal.close")}
         </Button>,
         <Button
           key="save"
@@ -246,17 +252,19 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
             completeRecordMutation.isPending
           }
         >
-          {medicalRecordAction === "update" ? "Cập nhật hồ sơ" : "Lưu thông tin khám bệnh"}
+          {medicalRecordAction === "update"
+            ? t("medicalRecord.patientProfileModal.updateRecord")
+            : t("medicalRecord.patientProfileModal.saveConsultation")}
         </Button>,
       ]}
     >
       {isCheckingRecord ? (
         <div className="flex justify-center items-center py-12">
-          <Spin size="large" tip="Đang kiểm tra hồ sơ bệnh án..." />
+          <Spin size="large" tip={t("medicalRecord.patientProfileModal.checkingRecord")} />
         </div>
       ) : (
         <Tabs activeKey={activeTab} onChange={setActiveTab}>
-          <TabPane tab="Thông tin bệnh nhân" key="profile">
+          <TabPane tab={t("medicalRecord.patientProfileModal.tabs.patientInfo")} key="profile">
             <PatientInfoTab
               appointment={appointment}
               diagnosisForm={diagnosisForm}
@@ -267,7 +275,10 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
             />
           </TabPane>
 
-          <TabPane tab="Toa thuốc" key="prescription">
+          <TabPane
+            tab={t("medicalRecord.patientProfileModal.tabs.prescription")}
+            key="prescription"
+          >
             <PrescriptionTab
               form={prescriptionForm}
               prescriptions={prescriptions}
@@ -283,7 +294,7 @@ const PatientProfileModal: React.FC<PatientProfileModalProps> = ({
               <TabPane
                 tab={
                   <span>
-                    <ExperimentOutlined /> Chẩn đoán AI
+                    <ExperimentOutlined /> {t("medicalRecord.patientProfileModal.tabs.aiDiagnosis")}
                   </span>
                 }
                 key="ai-diagnosis"

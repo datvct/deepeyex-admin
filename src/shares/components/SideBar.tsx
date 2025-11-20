@@ -144,7 +144,7 @@ const Sidebar: React.FC = () => {
     },
     {
       key: "create-follow-up",
-      label: "Tạo lịch tái khám",
+      label: t("sidebar.createFollowUp"),
       icon: <FaCalendarDay className="w-5 h-5" />,
       url: "/appointments/create-follow-up",
     },

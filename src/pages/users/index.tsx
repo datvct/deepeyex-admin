@@ -35,6 +35,7 @@ export default function UserPage() {
     [Role.Doctor]: "blue",
     [Role.Admin]: "red",
     [Role.Hospital]: "purple",
+    [Role.Receptionist]: "orange",
   };
 
   // ---- Mutation: Delete
@@ -80,14 +81,14 @@ export default function UserPage() {
   const userFilterFields: FilterField[] = [
     {
       name: "search",
-      label: "Tìm kiếm",
+      label: t("user.filter.search"),
       type: "text",
-      placeholder: "Tìm theo username",
+      placeholder: t("user.filter.searchPlaceholder"),
       width: "100%",
     },
     {
       name: "role",
-      label: "Vai trò",
+      label: t("user.filter.role"),
       type: "select",
       width: "100%",
       options: [
@@ -186,7 +187,7 @@ export default function UserPage() {
     <>
       {isError && (
         <Alert
-          message="Error"
+          message={t("user.error.title")}
           description={t("user.messages.load_error")}
           type="error"
           showIcon

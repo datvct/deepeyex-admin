@@ -49,6 +49,42 @@
       "twoHoursAgo": "2 giờ trước",
       "yesterday": "Hôm qua",
       "threeDaysAgo": "3 ngày trước"
+    },
+    "doctorDashboard": {
+      "welcome": "Chào mừng, Bác sĩ",
+      "specialty": "Chuyên khoa:",
+      "ophthalmology": "Nhãn khoa",
+      "onDuty": "Đang trực",
+      "editProfile": "Chỉnh sửa hồ sơ",
+      "todayAppointments": "Lịch khám hôm nay",
+      "totalPatients": "Tổng bệnh nhân",
+      "patients": "bệnh nhân",
+      "thisWeek": "Tuần này",
+      "appointments": "lịch khám",
+      "averagePerDay": "Trung bình {perDay} lịch/ngày",
+      "medicalRecords": "Hồ sơ bệnh án",
+      "viewAll": "Xem tất cả",
+      "noName": "Không có tên",
+      "generalCheckup": "Khám tổng quát",
+      "noAppointmentsToday": "Không có lịch khám hôm nay",
+      "recentMedicalRecords": "Hồ sơ bệnh án gần đây",
+      "noMedicalRecords": "Chưa có hồ sơ bệnh án",
+      "prescriptions": "toa thuốc",
+      "statusStatistics": "Thống kê trạng thái",
+      "completed": "Hoàn thành",
+      "confirmed": "Đã xác nhận",
+      "pending": "Đang chờ",
+      "canceled": "Đã hủy",
+      "recentActivity": "Hoạt động gần đây",
+      "completedAppointment": "Đã hoàn thành lịch khám",
+      "prescribedMedicine": "Đã kê toa thuốc",
+      "updatedMedicalRecord": "Cập nhật hồ sơ bệnh án",
+      "appointmentStatistics": "Thống kê lịch khám",
+      "day": "Ngày",
+      "week": "Tuần",
+      "month": "Tháng",
+      "appointmentCount": "Số lịch khám",
+      "completionRate": "% hoàn thành"
     }
   },
   "sidebar": {
@@ -70,7 +106,8 @@
     "services": "Dịch vụ",
     "doctorConsultation": "Khám bệnh",
     "aiDiagnosis": "Chẩn đoán AI Nhãn khoa",
-    "eyeDiagnosis": "Chẩn đoán bằng hình ảnh"
+    "eyeDiagnosis": "Chẩn đoán bằng hình ảnh",
+    "createFollowUp": "Tạo lịch tái khám"
   },
   "header": {
     "profile": "Thông tin tài khoản",
@@ -90,6 +127,16 @@
     "deleteOk": "Xóa",
     "deleteCancel": "Hủy",
     "searchPlaceholder": "Tìm kiếm..."
+  },
+  "advancedFilter": {
+    "search": "Tìm kiếm",
+    "reset": "Xóa bộ lọc",
+    "enter": "Nhập",
+    "select": "Chọn",
+    "dateRange": {
+      "from": "Từ ngày",
+      "to": "Đến ngày"
+    }
   },
    "search": {
     "placeholder": "Tìm kiếm...",
@@ -134,6 +181,19 @@
       "updateError": "Cập nhật bệnh viện thất bại",
       "loadErrorTitle": "Lỗi tải dữ liệu",
       "loadErrorDescription": "Không thể lấy danh sách bệnh viện. Vui lòng thử lại sau."
+    },
+    "columns": {
+      "id": "ID"
+    },
+    "filter": {
+      "name": "Tên bệnh viện",
+      "namePlaceholder": "Tìm theo tên bệnh viện...",
+      "address": "Địa chỉ",
+      "addressPlaceholder": "Tìm theo địa chỉ...",
+      "city": "Thành phố",
+      "cityPlaceholder": "Chọn thành phố",
+      "ward": "Phường/Xã",
+      "wardPlaceholder": "Nhập phường/xã"
     }
   },
   "doctor": {
@@ -211,7 +271,8 @@
         "address": "Nhập địa chỉ",
         "phone": "Nhập số điện thoại",
         "email": "Nhập email",
-        "user": "Chọn user"
+        "user": "Chọn user",
+        "upload": "Tải ảnh"
       }
     },
     "gender": {
@@ -227,6 +288,12 @@
       "delete_success": "Xóa bệnh nhân thành công",
       "delete_error": "Xóa bệnh nhân thất bại",
       "load_error": "Không thể lấy danh sách bệnh nhân. Vui lòng thử lại sau."
+    },
+    "filter": {
+      "fullNamePlaceholder": "Nhập tên bệnh nhân",
+      "genderPlaceholder": "Chọn giới tính",
+      "birthDate": "Tháng/Năm sinh",
+      "birthDatePlaceholder": "Chọn tháng/năm sinh"
     }
   },
   "service": {
@@ -270,6 +337,31 @@
     "error": {
       "loadTitle": "Lỗi tải dữ liệu",
       "loadDescription": "Không thể lấy danh sách dịch vụ. Vui lòng thử lại sau."
+    },
+    "filter": {
+      "namePlaceholder": "Nhập tên dịch vụ",
+      "durationPlaceholder": "Nhập thời gian (phút)"
+    },
+    "assign": {
+      "title": "Gán dịch vụ cho bác sĩ",
+      "button": "Gán dịch vụ cho bác sĩ",
+      "okText": "Gán",
+      "cancelText": "Hủy",
+      "selectDoctor": "Chọn bác sĩ",
+      "selectDoctorPlaceholder": "Chọn bác sĩ",
+      "selectDoctorRequired": "Vui lòng chọn bác sĩ",
+      "selectService": "Chọn dịch vụ",
+      "selectServicePlaceholder": "Chọn dịch vụ",
+      "selectServiceRequired": "Vui lòng chọn dịch vụ"
+    },
+    "modal": {
+      "update": "Cập nhật",
+      "add": "Thêm",
+      "cancel": "Hủy"
+    },
+    "common": {
+      "loading": "Đang tải dữ liệu...",
+      "minutes": "phút"
     }
   },
   "drug": {
@@ -320,7 +412,17 @@
       "loadTitle": "Lỗi tải dữ liệu",
       "loadDescription": "Không thể lấy danh sách thuốc. Vui lòng thử lại sau."
     },
-    "upload": "Tải Ảnh"
+    "upload": "Tải Ảnh",
+    "filter": {
+      "minPrice": "Giá tối thiểu",
+      "minPricePlaceholder": "Nhập giá tối thiểu",
+      "maxPrice": "Giá tối đa",
+      "maxPricePlaceholder": "Nhập giá tối đa",
+      "minStock": "Tồn kho tối thiểu",
+      "minStockPlaceholder": "Nhập số lượng",
+      "maxStock": "Tồn kho tối đa",
+      "maxStockPlaceholder": "Nhập số lượng"
+    }
   },
   "order": {
     "title": "Đơn đặt thuốc",
@@ -330,7 +432,13 @@
       "index": "STT",
       "patient": "Thông tin khách hàng",
       "order_items": "Thông tin thuốc",
-      "status": "Trạng thái"
+      "status": "Trạng thái",
+      "orderDate": "Ngày đặt"
+    },
+    "filter": {
+      "orderDate": "Ngày đặt",
+      "orderDatePlaceholder": "Chọn ngày đặt",
+      "statusPlaceholder": "Chọn trạng thái"
     },
     "form": {
       "order_id": "Mã đơn hàng",
@@ -381,6 +489,52 @@
       "update_error": "Cập nhật lịch trình thất bại",
       "delete_success": "Xóa lịch trình thành công",
       "delete_error": "Xóa lịch trình thất bại"
+    },
+    "generate": {
+      "manualTab": "Tạo lịch thủ công",
+      "importTab": "Import lịch nghỉ",
+      "selectDoctor": "Chọn bác sĩ:",
+      "selectDoctorPlaceholder": "Chọn bác sĩ",
+      "timeRange": "Thời gian:",
+      "selectAll": "Chọn tất cả",
+      "createScheduleButton": "Tạo lịch cho bác sĩ",
+      "selectExcelFile": "Chọn file Excel",
+      "importButton": "Import",
+      "instructions": {
+        "title": "Hướng dẫn sử dụng",
+        "step1": "Tải file Excel mẫu bằng nút \"Tải file mẫu\" bên dưới.",
+        "step2": "Điền thông tin ngày nghỉ của bác sĩ vào file mẫu.",
+        "step3": "Bấm nút \"Import\" để upload file.",
+        "step4": "Sau khi import thành công, dữ liệu sẽ được cập nhật.",
+        "downloadTemplate": "Tải file Excel mẫu"
+      },
+      "weekdays": {
+        "mon": "Thứ 2",
+        "tue": "Thứ 3",
+        "wed": "Thứ 4",
+        "thu": "Thứ 5",
+        "fri": "Thứ 6",
+        "sat": "Thứ 7",
+        "sun": "Chủ nhật"
+      },
+      "shifts": {
+        "morning": "Sáng (08:00 - 12:00)",
+        "afternoon": "Chiều (13:00 - 17:00)",
+        "evening": "Tối (18:00 - 21:00)"
+      },
+      "messages": {
+        "createSuccess": "Tạo lịch cho bác sĩ thành công",
+        "createError": "Tạo lịch cho bác sĩ thất bại",
+        "importSuccess": "Import ngày nghỉ thành công",
+        "importError": "Import ngày nghỉ thất bại",
+        "doctorRequired": "Vui lòng chọn bác sĩ",
+        "dateRangeRequired": "Vui lòng chọn khoảng thời gian áp dụng",
+        "noShiftsSelected": "Chưa chọn ca nào trong khoảng ngày này",
+        "createScheduleError": "Lỗi khi tạo lịch",
+        "fileRequired": "Vui lòng chọn file Excel trước khi import",
+        "importFileSuccess": "Đã import file thành công",
+        "importFileError": "Lỗi import file"
+      }
     }
   },
   "appointment": {
@@ -411,15 +565,88 @@
     "messages": {
       "load_error": "Không thể lấy danh sách lịch hẹn. Vui lòng thử lại sau.",
       "update_success": "Cập nhật trạng thái thành công",
-      "update_error": "Cập nhật trạng thái thất bại"
+      "update_error": "Cập nhật trạng thái thất bại",
+      "updateByReceptionistSuccess": "Cập nhật lịch hẹn thành công",
+      "updateByReceptionistError": "Có lỗi xảy ra khi cập nhật lịch hẹn",
+      "createSuccess": "Tạo lịch hẹn thành công",
+      "createError": "Có lỗi xảy ra khi tạo lịch hẹn",
+      "cannotUpdateCompleted": "Không thể cập nhật lịch hẹn đã hoàn thành",
+      "cannotUpdateCanceled": "Không thể cập nhật lịch hẹn đã hủy"
     },
     "modal": {
-      "title": "Cập nhật trạng thái lịch hẹn"
+      "title": "Cập nhật trạng thái lịch hẹn",
+      "updateTitle": "Cập nhật lịch hẹn",
+      "createTitle": "Tạo lịch hẹn mới"
     },
     "doctor": "Bác sĩ",
     "hospital": "Bệnh viện",
     "time": "Thời gian",
-    "quantity": "Số lượng"
+    "quantity": "Số lượng",
+    "addButton": "Tạo lịch hẹn mới",
+    "filter": {
+      "patientName": "Nhập tên bệnh nhân",
+      "statusPlaceholder": "Chọn trạng thái",
+      "doctorPlaceholder": "Chọn bác sĩ"
+    },
+    "receptionist": {
+      "patientInfo": "Thông tin bệnh nhân",
+      "patientName": "Tên bệnh nhân",
+      "patientNameRequired": "Vui lòng nhập tên bệnh nhân",
+      "patientNamePlaceholder": "Nhập tên bệnh nhân",
+      "phone": "Số điện thoại",
+      "phoneRequired": "Vui lòng nhập số điện thoại",
+      "phonePlaceholder": "Nhập số điện thoại",
+      "email": "Email",
+      "emailInvalid": "Email không hợp lệ",
+      "emailPlaceholder": "Nhập email (tùy chọn)",
+      "reschedule": "Dời lịch hẹn",
+      "doctor": "Bác sĩ",
+      "doctorRequired": "Vui lòng chọn bác sĩ",
+      "doctorPlaceholder": "Chọn bác sĩ",
+      "appointmentDate": "Ngày hẹn",
+      "appointmentDateTooltip": "Chọn ngày để lọc ca khám (tùy chọn, có thể để trống để xem tất cả)",
+      "appointmentDatePlaceholder": "Chọn ngày để lọc (tùy chọn)",
+      "timeSlot": "Ca khám",
+      "timeSlotRequired": "Vui lòng chọn ca khám",
+      "timeSlotPlaceholder": "Chọn ca khám",
+      "timeSlotTooltip": "Chọn ca khám mới để dời lịch hẹn",
+      "statusAndNotes": "Trạng thái và ghi chú",
+      "appointmentStatus": "Trạng thái lịch hẹn",
+      "statusRequired": "Vui lòng chọn trạng thái",
+      "statusPlaceholder": "Chọn trạng thái",
+      "generalNotes": "Ghi chú chung",
+      "generalNotesTooltip": "Ghi chú chung về lịch hẹn (bệnh nhân có thể thấy)",
+      "generalNotesPlaceholder": "Ví dụ: Bệnh nhân muốn gặp bác sĩ X"
+    },
+    "create": {
+      "basicInfo": "Thông tin cơ bản",
+      "patient": "Bệnh nhân",
+      "patientRequired": "Vui lòng chọn bệnh nhân",
+      "patientPlaceholder": "Chọn bệnh nhân",
+      "doctor": "Bác sĩ",
+      "doctorRequired": "Vui lòng chọn bác sĩ",
+      "doctorPlaceholder": "Chọn bác sĩ",
+      "hospital": "Bệnh viện",
+      "hospitalRequired": "Vui lòng chọn bệnh viện",
+      "hospitalPlaceholder": "Chọn bệnh viện",
+      "appointmentTime": "Thời gian hẹn",
+      "appointmentDate": "Ngày hẹn",
+      "appointmentDatePlaceholder": "Chọn ngày",
+      "timeSlot": "Ca khám",
+      "timeSlotRequired": "Vui lòng chọn ca khám",
+      "timeSlotPlaceholder": "Chọn ca khám",
+      "serviceAndPayment": "Dịch vụ và thanh toán",
+      "service": "Dịch vụ",
+      "serviceTooltip": "Chọn dịch vụ của bác sĩ (hiển thị sau khi chọn bác sĩ)",
+      "servicePlaceholder": "Chọn dịch vụ (tùy chọn)",
+      "order": "Đơn hàng",
+      "noOrder": "Chưa có đơn hàng nào",
+      "quantity": "Số lượng:",
+      "paymentStatus": "Trạng thái thanh toán",
+      "paymentStatusPlaceholder": "Chọn trạng thái thanh toán",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Ghi chú về lịch hẹn (tùy chọn)"
+    }
   },
   "user": {
     "title": "Quản lý người dùng",
@@ -441,7 +668,8 @@
       "admin": "Quản trị viên",
       "doctor": "Bác sĩ",
       "patient": "Bệnh nhân",
-      "hospital": "Bệnh viện"
+      "hospital": "Bệnh viện",
+      "receptionist": "Lễ tân"
     },
     "messages": {
       "load_error": "Không thể lấy danh sách tài khoản. Vui lòng thử lại sau.",
@@ -482,11 +710,515 @@
       "confirmPassword_placeholder": "Nhập lại mật khẩu",
       "confirmPassword_required": "Vui lòng nhập lại mật khẩu",
       "confirmPassword_mismatch": "Mật khẩu nhập lại không khớp!"
+    },
+    "filter": {
+      "search": "Tìm kiếm",
+      "searchPlaceholder": "Tìm theo username",
+      "role": "Vai trò"
+    },
+    "error": {
+      "title": "Lỗi"
     }
+  },
+  "videoChat": {
+    "tabs": {
+      "online": "🎥 Phòng tư vấn trực tuyến",
+      "history": "💬 Lịch sử tư vấn"
+    },
+    "online": {
+      "noAppointments": "Không có lịch tư vấn trực tuyến nào.",
+      "status": {
+        "pending": "Đang chờ",
+        "confirmed": "Đã xác nhận",
+        "completed": "Hoàn tất"
+      }
+    },
+    "history": {
+      "conversationList": "Danh sách hội thoại",
+      "noConversations": "Không có cuộc hội thoại nào.",
+      "noMessage": "Chưa có tin nhắn",
+      "selectConversation": "Hãy chọn một cuộc hội thoại để bắt đầu",
+      "active": "Đang hoạt động",
+      "conversationInfo": "Thông tin hội thoại",
+      "createdAt": "Ngày tạo:",
+      "lastAppointmentId": "Mã cuộc hẹn cuối:",
+      "lastMessage": "Tin nhắn cuối:",
+      "unknown": "Không rõ",
+      "none": "Không có",
+      "openingChat": "Đang mở chat với {{name}}"
+    },
+    "call": {
+      "joinVideoCall": "Tham gia cuộc gọi video",
+      "videoCall": "Video Call",
+      "microphoneCheck": {
+        "success": "✅ Micro hoạt động bình thường!",
+        "error": "Không thể truy cập micro. Hãy kiểm tra quyền trình duyệt!"
+      }
+    },
+    "chat": {
+      "messagePlaceholder": "Nhập tin nhắn...",
+      "downloadFile": "Tải file",
+      "upload": {
+        "success": "Tải file thành công!",
+        "error": "Tải file thất bại!",
+        "sendError": "Gửi file thất bại!"
+      }
+    }
+  },
+  "schedule": {
+    "title": "Lịch khám bệnh (Tuần)",
+    "weekRange": "Tuần từ",
+    "weekRangeTo": "đến",
+    "current": "Hiện tại",
+    "print": "In Lịch",
+    "loading": "Đang tải lịch khám...",
+    "shift": "Ca Khám",
+    "shifts": {
+      "morning": "Sáng",
+      "afternoon": "Chiều",
+      "evening": "Tối"
+    },
+    "noSchedule": "Không có lịch",
+    "unknown": "Chưa rõ",
+    "service": "DV:",
+    "generalCheckup": "Khám tổng quát",
+    "empty": "Trống",
+    "viewDetails": "Xem chi tiết",
+    "note": "Ghi chú:",
+    "booked": "Đã đặt",
+    "appointmentDetails": "Thông tin chi tiết appointment",
+    "close": "Đóng",
+    "cancelAppointment": "Hủy lịch",
+    "appointmentCode": "Mã appointment",
+    "status": "Trạng thái",
+    "notes": "Ghi chú",
+    "slotTime": "Thời gian slot",
+    "patient": "Bệnh nhân",
+    "dob": "Ngày sinh:",
+    "gender": "Giới tính:",
+    "address": "Địa chỉ:",
+    "phone": "Phone:",
+    "email": "Email:",
+    "confirmCancel": "Xác nhận hủy lịch khám",
+    "confirmCancelButton": "Xác nhận hủy",
+    "cancel": "Hủy",
+    "confirmCancelMessage": "Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân",
+    "cancelSuccess": "Hủy lịch khám thành công!",
+    "cancelSuccessDescription": "Lịch khám đã được hủy thành công.",
+    "cancelError": "Có lỗi xảy ra",
+    "cancelErrorMessage": "Không thể hủy lịch khám. Vui lòng thử lại sau.",
+    "none": "Không có"
+  },
+  "doctorConsultation": {
+    "title": "Danh sách khám bệnh",
+    "subtitle": "Danh sách lịch khám hôm nay",
+    "loading": "Đang tải dữ liệu...",
+    "errorTitle": "Lỗi tải dữ liệu",
+    "errorDescription": "Không thể tải danh sách lịch khám hôm nay. Vui lòng thử lại sau.",
+    "noAppointments": "Không có lịch khám nào đang diễn ra",
+    "noAppointmentsDescription": "Hiện tại không có bệnh nhân nào đang được khám",
+    "appointmentCode": "Mã lịch:",
+    "service": "Dịch vụ",
+    "patient": "Bệnh nhân",
+    "status": "Trạng thái",
+    "examinationTime": "Thời gian khám",
+    "address": "Địa chỉ",
+    "email": "Email",
+    "notes": "Ghi chú",
+    "createProfile": "Tạo hồ sơ",
+    "viewOldRecord": "Xem hồ sơ cũ",
+    "cancelAppointment": "Hủy lịch",
+    "statusLabels": {
+      "PENDING": "Chờ xác nhận",
+      "CONFIRMED": "Đã xác nhận",
+      "COMPLETED": "Hoàn thành"
+    },
+    "createProfileSuccess": "Tạo hồ sơ thành công!",
+    "createFollowUp": "Có, tạo lịch tái khám",
+    "cancelFollowUp": "Không, đóng lại",
+    "followUpQuestion": "Bạn có muốn tạo lịch hẹn tái khám cho bệnh nhân không?",
+    "confirmCancelTitle": "Xác nhận hủy lịch khám",
+    "confirmCancelButton": "Xác nhận hủy",
+    "cancelButton": "Hủy",
+    "confirmCancelMessage": "Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân",
+    "cancelReasonLabel": "Lý do hủy (tùy chọn):",
+    "cancelReasonPlaceholder": "Ví dụ: Có ca khám gấp, bác sĩ nghỉ phép...",
+    "cancelSuccess": "Hủy lịch khám thành công và tự động chuyển đến bác sĩ thay thế!",
+    "cancelError": "Có lỗi xảy ra khi hủy lịch khám!",
+    "noReplacementDoctor": "Không có bác sĩ nào thay thế! Vui lòng liên hệ với admin để được hỗ trợ.",
+    "updateStatusSuccess": "Cập nhật trạng thái thành công!",
+    "updateStatusError": "Không thể cập nhật trạng thái!",
+    "none": "Không có",
+    "noInfo": "Không có thông tin",
+    "generalCheckup": "Khám tổng quát"
+  },
+  "medicalRecord": {
+    "viewModal": {
+      "title": "Hồ sơ bệnh án",
+      "loading": "Đang tải hồ sơ...",
+      "errorTitle": "Lỗi tải dữ liệu",
+      "errorDescription": "Không thể tải hồ sơ bệnh án. Vui lòng thử lại sau.",
+      "noRecords": "Bệnh nhân này chưa có hồ sơ bệnh án nào",
+      "recordNumber": "Hồ sơ #",
+      "recordId": "Mã hồ sơ",
+      "createdAt": "Ngày tạo",
+      "diagnosis": "Chẩn đoán",
+      "notes": "Ghi chú",
+      "attachments": "File đính kèm",
+      "viewFile": "Xem file",
+      "prescriptions": "Toa thuốc",
+      "prescriptionNumber": "Toa thuốc #",
+      "status": {
+        "APPROVED": "Đã duyệt",
+        "REJECTED": "Đã từ chối",
+        "PENDING": "Chờ duyệt"
+      },
+      "source": {
+        "AI": "AI",
+        "DOCTOR": "Bác sĩ"
+      },
+      "noPrescriptionItems": "Không có thuốc trong toa này",
+      "aiDiagnosis": "Chẩn đoán AI",
+      "diseaseCode": "Mã bệnh",
+      "confidence": "Độ tin cậy:",
+      "drugList": "Danh sách thuốc:",
+      "dosage": "Liều lượng:",
+      "frequency": "Tần suất:",
+      "duration": "Thời gian:",
+      "days": "ngày",
+      "fromDate": "Từ ngày:",
+      "itemNotes": "Ghi chú:"
+    },
+    "prescriptionTab": {
+      "existingTitle": "Toa thuốc đã có",
+      "addNewTitle": "Thêm toa thuốc mới",
+      "drugName": "Tên thuốc",
+      "drugNamePlaceholder": "Nhập tên thuốc",
+      "drugNameRequired": "Vui lòng nhập tên thuốc",
+      "dosage": "Liều lượng",
+      "dosagePlaceholder": "Ví dụ: 500mg",
+      "dosageRequired": "Vui lòng nhập liều lượng",
+      "frequency": "Tần suất (số lần/ngày)",
+      "frequencyPlaceholder": "Ví dụ: 3",
+      "frequencyRequired": "Vui lòng nhập tần suất",
+      "frequencyInvalid": "Vui lòng nhập số nguyên dương",
+      "duration": "Thời gian dùng (số ngày)",
+      "durationPlaceholder": "Ví dụ: 7",
+      "durationRequired": "Vui lòng nhập thời gian dùng",
+      "notes": "Ghi chú",
+      "notesPlaceholder": "Ghi chú thêm (tùy chọn)",
+      "medicationTimes": "Giờ uống thuốc (nhắc nhở bệnh nhân)",
+      "addTime": "Thêm giờ uống",
+      "timesPerDay": "Thời gian uống thuốc",
+      "timesPerDaySuffix": "lần/ngày",
+      "selectTime": "Chọn giờ",
+      "autoSetupHint": "Nhập tần suất để tự động thiết lập giờ uống",
+      "autoSetupExample": "1 lần: 08:00 | 2 lần: 08:00, 18:00 | 3 lần: 08:00, 12:00, 18:00",
+      "addPrescription": "Thêm toa thuốc",
+      "prescriptionList": "Danh sách toa thuốc",
+      "remove": "Xóa",
+      "times": "Giờ uống:",
+      "createdAt": "Tạo lúc:"
+    },
+    "patientProfileModal": {
+      "title": "Hồ sơ bệnh nhân",
+      "hasRecord": "(Đã có hồ sơ)",
+      "close": "Đóng",
+      "updateRecord": "Cập nhật hồ sơ",
+      "saveConsultation": "Lưu thông tin khám bệnh",
+      "checkingRecord": "Đang kiểm tra hồ sơ bệnh án...",
+      "tabs": {
+        "patientInfo": "Thông tin bệnh nhân",
+        "prescription": "Toa thuốc",
+        "aiDiagnosis": "Chẩn đoán AI"
+      },
+      "createSuccess": "Tạo hồ sơ bệnh án thành công!",
+      "createError": "Lỗi tạo hồ sơ:",
+      "updateSuccess": "Cập nhật hồ sơ bệnh án thành công!",
+      "updateError": "Lỗi cập nhật hồ sơ:",
+      "addPrescriptionSuccess": "Đã thêm toa thuốc",
+      "removePrescriptionSuccess": "Đã xóa toa thuốc",
+      "validationError": "Vui lòng điền đầy đủ thông tin chẩn đoán"
+    },
+    "patientInfoTab": {
+      "fullName": "Họ và tên",
+      "gender": "Giới tính",
+      "dob": "Ngày sinh",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "appointmentInfo": "Thông tin lịch khám",
+      "doctor": "Bác sĩ",
+      "specialty": "Chuyên khoa",
+      "examinationTime": "Thời gian khám",
+      "status": "Trạng thái:",
+      "diagnosis": "Chẩn đoán",
+      "updatingRecord": "Đang cập nhật hồ sơ có sẵn",
+      "diagnosisLabel": "Chẩn đoán",
+      "diagnosisRequired": "*",
+      "diagnosisPlaceholder": "Nhập chẩn đoán của bệnh nhân...",
+      "diagnosisRequiredMessage": "Vui lòng nhập chẩn đoán",
+      "addNewAttachment": "Thêm file đính kèm mới",
+      "attachFile": "Đính kèm file (ảnh, tài liệu)",
+      "upload": "Upload",
+      "maxFiles": "Tối đa 5 file (ảnh, PDF, Word, v.v.)",
+      "additionalNotes": "Ghi chú thêm",
+      "additionalNotesPlaceholder": "Nhập ghi chú bổ sung (nếu có)..."
+    },
+    "followUpModal": {
+      "title": "Hẹn tái khám",
+      "cancel": "Hủy",
+      "confirm": "Xác nhận hẹn tái khám",
+      "followUpDate": "Ngày tái khám",
+      "followUpDateRequired": "Vui lòng chọn ngày tái khám",
+      "followUpDatePlaceholder": "Chọn ngày tái khám",
+      "timeSlot": "Khung giờ khám",
+      "timeSlotRequired": "Vui lòng chọn khung giờ",
+      "timeSlotPlaceholder": "Chọn khung giờ khám",
+      "loading": "Đang tải...",
+      "noSlotsAvailable": "Không có khung giờ khả dụng",
+      "service": "Dịch vụ khám",
+      "serviceLoading": "Đang tải dịch vụ...",
+      "reason": "Lý do tái khám",
+      "reasonRequired": "Vui lòng nhập lý do tái khám",
+      "reasonPlaceholder": "Nhập lý do tái khám...",
+      "additionalNotes": "Ghi chú thêm",
+      "additionalNotesPlaceholder": "Ghi chú thêm (tùy chọn)...",
+      "success": "Đã hẹn tái khám thành công!",
+      "error": "Lỗi hẹn tái khám:"
+    },
+    "existingAttachments": {
+      "title": "File đính kèm hiện có",
+      "file": "File",
+      "viewFile": "Xem file",
+      "fileTypes": {
+        "image": "Hình ảnh",
+        "pdf": "PDF",
+        "file": "File"
+      }
+    },
+    "aiDiagnosisTab": {
+      "title": "Chẩn đoán AI #",
+      "status": {
+        "APPROVED": "Đã xác nhận",
+        "REJECTED": "Đã từ chối",
+        "PENDING": "Chờ xác nhận"
+      },
+      "disease": "Bệnh chẩn đoán",
+      "confidence": "Độ tin cậy",
+      "eyePosition": "Vị trí mắt",
+      "eyeTypes": {
+        "LEFT": "Mắt trái",
+        "RIGHT": "Mắt phải",
+        "BOTH": "Cả hai mắt"
+      },
+      "diagnosisTime": "Thời gian chẩn đoán",
+      "diagnosisImage": "Hình ảnh chẩn đoán",
+      "notes": "Ghi chú"
+    }
+  },
+  "aiDiagnosis": {
+    "title": "Chẩn đoán AI - Nhãn khoa",
+    "subtitle": "Danh sách các chẩn đoán bệnh mắt do AI thực hiện cần xác nhận ({{count}})",
+    "loading": "Đang tải danh sách chẩn đoán...",
+    "error": "Lỗi: {{message}}",
+    "noDiagnosis": "Không có chẩn đoán AI nào",
+    "noDiagnosisDescription": "Hiện tại không có chẩn đoán bệnh mắt AI nào cần xác nhận",
+    "viewDetails": "Xem chi tiết",
+    "patientId": "ID: {{id}}...",
+    "code": "Mã: {{code}}...",
+    "hasImage": "Có ảnh mắt",
+    "aiDiagnosisLabel": "Chẩn đoán AI:",
+    "notes": "Ghi chú:",
+    "confidence": "Độ tin cậy",
+    "status": "Trạng thái",
+    "time": "Thời gian",
+    "statusLabels": {
+      "PENDING": "Chờ xác nhận",
+      "APPROVED": "Đã xác nhận",
+      "REJECTED": "Không chính xác"
+    },
+    "verifySuccess": "Đã xác nhận chẩn đoán thành công",
+    "verifyError": "Xác nhận thất bại: {{message}}",
+    "doctorNotFound": "Không tìm thấy thông tin bác sĩ",
+    "defaultNotes": {
+      "approved": "Đã xác nhận",
+      "rejected": "Không chính xác"
+    },
+    "detailModal": {
+      "title": "Chẩn đoán AI - Patient ID: {{id}}...",
+      "patientId": "Patient ID: {{id}}...",
+      "bothEyes": "Cả 2 mắt",
+      "aiDiagnosis": "Chẩn đoán AI",
+      "notes": "Ghi chú:",
+      "eyeImageTab": "Ảnh mắt",
+      "eyeImage": "Ảnh mắt",
+      "noEyeImage": "Không có ảnh mắt",
+      "doctorNotes": "Ghi chú của bác sĩ",
+      "doctorNotesRequired": "*",
+      "doctorNotesRequiredHint": "(Bắt buộc khi đánh dấu không chính xác)",
+      "doctorNotesPlaceholder": "Nhập ghi chú của bạn về chẩn đoán này...",
+      "signature": "Chữ ký xác nhận",
+      "signatureRequired": "*",
+      "removeSignature": "Xóa chữ ký",
+      "signed": "Đã ký xác nhận",
+      "signatureAlt": "Chữ ký",
+      "clickToSign": "Click để ký xác nhận",
+      "close": "Đóng",
+      "reject": "Không chính xác",
+      "confirm": "Xác nhận đúng",
+      "notesRequiredWarning": "Vui lòng nhập ghi chú khi đánh dấu chẩn đoán không chính xác",
+      "signatureRequiredWarning": "Vui lòng ký xác nhận trước khi gửi",
+      "signatureSaved": "Đã lưu chữ ký",
+      "signatureRemoved": "Đã xóa chữ ký"
+    },
+    "signaturePad": {
+      "instruction": "Vẽ chữ ký của bạn trong khung trên",
+      "clear": "Xóa",
+      "save": "Lưu chữ ký"
+    },
+    "diseaseLabels": {
+      "conjunctivitis": "Viêm kết mạc",
+      "eyelidedema": "Phù mi mắt",
+      "healthy_eye": "Mắt khỏe mạnh",
+      "hordeolum": "Lẹo mắt",
+      "keratitiswithulcer": "Viêm giác mạc có loét",
+      "subconjunctival_hemorrhage": "Xuất huyết dưới kết mạc"
+    }
+  },
+  "eyeDiagnosis": {
+    "title": "Chẩn đoán AI bằng hình ảnh",
+    "subtitle": "Upload ảnh mắt để nhận chẩn đoán từ AI",
+    "uploadCard": {
+      "title": "Upload ảnh mắt",
+      "uploadButton": "Upload ảnh",
+      "instructions": {
+        "singleImage": "• Chỉ upload 1 ảnh mắt",
+        "formats": "• Định dạng: JPG, PNG, JPEG",
+        "maxSize": "• Kích thước tối đa: 5MB"
+      },
+      "diagnoseButton": "Chẩn đoán AI",
+      "diagnosing": "Đang chẩn đoán...",
+      "resetButton": "Làm mới"
+    },
+    "resultCard": {
+      "title": "Kết quả chẩn đoán",
+      "analyzing": "Đang phân tích ảnh...",
+      "processing": "AI đang xử lý và chẩn đoán",
+      "diagnosisLabel": "Chẩn đoán",
+      "confidence": "Độ tin cậy",
+      "severity": "Mức độ nghiêm trọng",
+      "alternativeDiagnoses": "Chẩn đoán thay thế:",
+      "note": "Lưu ý:",
+      "noteText": "Kết quả chẩn đoán AI mang tính chất hỗ trợ và tham khảo. Vui lòng kết hợp với kinh nghiệm lâm sàng và các xét nghiệm bổ sung để đưa ra chẩn đoán chính xác cuối cùng.",
+      "emptyDescription": "Upload ảnh và nhấn 'Chẩn đoán AI' để nhận kết quả"
+    },
+    "messages": {
+      "success": "Chẩn đoán hoàn tất!",
+      "error": "Chẩn đoán thất bại. Vui lòng thử lại!",
+      "imageOnly": "Chỉ được upload file ảnh!",
+      "maxSize": "Ảnh phải nhỏ hơn 5MB!",
+      "noImage": "Vui lòng upload ít nhất 1 ảnh mắt",
+      "invalidFile": "File không hợp lệ"
+    },
+    "severity": {
+      "high": "Cao",
+      "medium": "Trung bình",
+      "low": "Thấp"
+    },
+    "diseaseLabels": {
+      "amd": "Thoái hóa hoàng điểm (AMD)",
+      "cataract": "Đục thủy tinh thể",
+      "diabetic_retinopathy_mild": "Bệnh võng mạc tiểu đường nhẹ",
+      "diabetic_retinopathy_moderate": "Bệnh võng mạc tiểu đường trung bình",
+      "diabetic_retinopathy_proliferate": "Bệnh võng mạc tiểu đường tăng sinh",
+      "diabetic_retinopathy_severe": "Bệnh võng mạc tiểu đường nặng",
+      "glaucoma": "Tăng nhãn áp (Glaucoma)",
+      "healthy_eye": "Mắt khỏe mạnh",
+      "conjunctivitis": "Viêm kết mạc",
+      "eyelidedema": "Phù mi mắt",
+      "hordeolum": "Lẹo mắt",
+      "keratitiswithulcer": "Viêm giác mạc có loét",
+      "subconjunctival_hemorrhage": "Xuất huyết dưới kết mạc",
+      "normal": "Mắt khỏe mạnh"
+    }
+  },
+  "createFollowUp": {
+    "title": "Tạo lịch tái khám",
+    "subtitle": "Đặt lịch hẹn tái khám cho bệnh nhân",
+    "steps": {
+      "selectInfo": "Chọn thông tin",
+      "confirm": "Xác nhận",
+      "complete": "Hoàn thành"
+    },
+    "form": {
+      "patient": "Bệnh nhân",
+      "patientPlaceholder": "Chọn bệnh nhân...",
+      "patientRequired": "Vui lòng chọn bệnh nhân!",
+      "doctor": "Bác sĩ khám",
+      "doctorPlaceholder": "Chọn bác sĩ...",
+      "doctorRequired": "Vui lòng chọn bác sĩ!",
+      "service": "Dịch vụ",
+      "servicePlaceholder": "Chọn dịch vụ...",
+      "serviceRequired": "Vui lòng chọn dịch vụ!",
+      "followUpDate": "Ngày tái khám",
+      "followUpDatePlaceholder": "Chọn ngày tái khám",
+      "followUpDateRequired": "Vui lòng chọn ngày tái khám",
+      "timeSlot": "Khung giờ khám",
+      "timeSlotPlaceholder": "Chọn khung giờ khám",
+      "timeSlotRequired": "Vui lòng chọn khung giờ",
+      "timeSlotAtLeastOne": "Vui lòng chọn ít nhất một khung giờ",
+      "timeSlotValid": "Vui lòng chọn khung giờ hợp lệ",
+      "reason": "Lý do tái khám",
+      "reasonPlaceholder": "Nhập lý do tái khám...",
+      "reasonRequired": "Vui lòng nhập lý do tái khám",
+      "notes": "Ghi chú thêm",
+      "notesPlaceholder": "Ghi chú thêm (tùy chọn)...",
+      "relatedRecordId": "ID Hồ sơ liên quan",
+      "relatedRecordIdPlaceholder": "ID của medical record liên quan (nếu có)"
+    },
+    "confirm": {
+      "patient": "Bệnh nhân",
+      "doctor": "Bác sĩ",
+      "service": "Dịch vụ",
+      "date": "Ngày khám",
+      "timeSlot": "Khung giờ",
+      "reason": "Lý do tái khám",
+      "notes": "Ghi chú",
+      "notSelected": "Chưa chọn",
+      "none": "Không có"
+    },
+    "buttons": {
+      "next": "Tiếp theo",
+      "back": "Quay lại",
+      "confirm": "Xác nhận tạo lịch",
+      "createNew": "Tạo lịch mới",
+      "backToConsultation": "Quay về trang khám"
+    },
+    "messages": {
+      "success": "Tạo lịch tái khám thành công!",
+      "error": "Không thể tạo lịch tái khám. Vui lòng thử lại!",
+      "validationError": "Vui lòng điền đầy đủ thông tin bắt buộc!",
+      "loading": "Đang tải...",
+      "noSlotsAvailable": "Không có khung giờ khả dụng"
+    },
+    "complete": {
+      "title": "Tạo lịch tái khám thành công!"
+    },
+    "defaultValues": {
+      "serviceName": "Tái khám",
+      "notesLabel": "Ghi chú:"
+    }
+  },
+  "websocket": {
+    "newAppointment": "🔔 Có lịch hẹn mới từ {patientName}",
+    "updateAppointment": "📝 Lịch hẹn {appointmentCode} được cập nhật",
+    "cancelAppointment": "❌ Lịch hẹn {appointmentCode} bị hủy",
+    "patient": "bệnh nhân"
   }
-
-
-
-
-
 }
+
+
+
+
+
+

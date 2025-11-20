@@ -146,7 +146,7 @@ export default function AppointmentsPage() {
   // ---- Mutation: Update by Receptionist ----
   const updateByReceptionistMutation = useUpdateAppointmentByReceptionistMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Cập nhật lịch hẹn thành công");
+      toast.success(data.message || t("appointment.messages.updateByReceptionistSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
       setIsModalOpen(false);
       form.resetFields();
@@ -154,21 +154,21 @@ export default function AppointmentsPage() {
       setSelectedDate(null);
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi cập nhật lịch hẹn");
+      toast.error(error.message || t("appointment.messages.updateByReceptionistError"));
     },
   });
 
   // ---- Mutation: Create Booking ----
   const createBookingMutation = useCreateBookingMutation({
     onSuccess: (data) => {
-      toast.success(data.message || "Tạo lịch hẹn thành công");
+      toast.success(data.message || t("appointment.messages.createSuccess"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
       setIsCreateModalOpen(false);
       createForm.resetFields();
       setCreateDate(null);
     },
     onError: (error: any) => {
-      toast.error(error.message || "Có lỗi xảy ra khi tạo lịch hẹn");
+      toast.error(error.message || t("appointment.messages.createError"));
     },
   });
 
@@ -191,7 +191,11 @@ export default function AppointmentsPage() {
       const isCanceled = appointment.status === AppointmentStatus.CANCELED;
 
       if (isCompleted || isCanceled) {
-        toast.warning(`Không thể cập nhật lịch hẹn đã ${isCompleted ? "hoàn thành" : "hủy"}`);
+        toast.warning(
+          isCompleted
+            ? t("appointment.messages.cannotUpdateCompleted")
+            : t("appointment.messages.cannotUpdateCanceled"),
+        );
         return;
       }
     }
@@ -461,14 +465,14 @@ export default function AppointmentsPage() {
       name: "patient_name",
       label: t("appointment.columns.patient"),
       type: "text",
-      placeholder: "Nhập tên bệnh nhân",
+      placeholder: t("appointment.filter.patientName"),
       width: 200,
     },
     {
       name: "status",
       label: t("appointment.columns.status"),
       type: "select",
-      placeholder: "Chọn trạng thái",
+      placeholder: t("appointment.filter.statusPlaceholder"),
       options: Object.entries(AppointmentStatus).map(([key, value]) => ({
         label: t(`appointment.status.${key.toLowerCase()}`),
         value: key,
@@ -479,7 +483,7 @@ export default function AppointmentsPage() {
       name: "doctor_id",
       label: t("appointment.doctor"),
       type: "select",
-      placeholder: "Chọn bác sĩ",
+      placeholder: t("appointment.filter.doctorPlaceholder"),
       options:
         doctorData?.data?.map((doctor) => ({
           label: doctor.full_name,
@@ -580,7 +584,7 @@ export default function AppointmentsPage() {
     <>
       {isError && (
         <Alert
-          message="Error"
+          message={t("appointment.messages.load_error")}
           description={t("appointment.messages.load_error")}
           type="error"
           showIcon
@@ -596,7 +600,7 @@ export default function AppointmentsPage() {
           columns={appointmentColumns}
           dataSource={appointments}
           onAdd={isReceptionist ? handleAdd : undefined}
-          addButtonText="Tạo lịch hẹn mới"
+          addButtonText={t("appointment.addButton")}
           onEdit={handleEditStatus}
           onDelete={handleDelete}
           useAdvancedFilter={true}
@@ -607,7 +611,7 @@ export default function AppointmentsPage() {
       </Spin>
 
       <Modal
-        title={isReceptionist ? "Cập nhật lịch hẹn" : t("appointment.modal.title")}
+        title={isReceptionist ? t("appointment.modal.updateTitle") : t("appointment.modal.title")}
         open={isModalOpen}
         onOk={handleSubmit}
         onCancel={() => {
@@ -630,40 +634,47 @@ export default function AppointmentsPage() {
             <>
               {/* Thông tin bệnh nhân */}
               <div>
-                <h4 className="font-semibold mb-3">Thông tin bệnh nhân</h4>
+                <h4 className="font-semibold mb-3">{t("appointment.receptionist.patientInfo")}</h4>
                 <Form.Item
-                  label="Tên bệnh nhân"
+                  label={t("appointment.receptionist.patientName")}
                   name="patient_full_name"
-                  rules={[{ required: true, message: "Vui lòng nhập tên bệnh nhân" }]}
+                  rules={[
+                    { required: true, message: t("appointment.receptionist.patientNameRequired") },
+                  ]}
                 >
-                  <Input placeholder="Nhập tên bệnh nhân" />
+                  <Input placeholder={t("appointment.receptionist.patientNamePlaceholder")} />
                 </Form.Item>
                 <Form.Item
-                  label="Số điện thoại"
+                  label={t("appointment.receptionist.phone")}
                   name="patient_phone"
-                  rules={[{ required: true, message: "Vui lòng nhập số điện thoại" }]}
+                  rules={[{ required: true, message: t("appointment.receptionist.phoneRequired") }]}
                 >
-                  <Input placeholder="Nhập số điện thoại" />
+                  <Input placeholder={t("appointment.receptionist.phonePlaceholder")} />
                 </Form.Item>
                 <Form.Item
-                  label="Email"
+                  label={t("appointment.receptionist.email")}
                   name="patient_email"
-                  rules={[{ type: "email", message: "Email không hợp lệ" }, { required: false }]}
+                  rules={[
+                    { type: "email", message: t("appointment.receptionist.emailInvalid") },
+                    { required: false },
+                  ]}
                 >
-                  <Input placeholder="Nhập email (tùy chọn)" />
+                  <Input placeholder={t("appointment.receptionist.emailPlaceholder")} />
                 </Form.Item>
               </div>
 
               {/* Thời gian hẹn */}
               <div>
-                <h4 className="font-semibold mb-3">Dời lịch hẹn</h4>
+                <h4 className="font-semibold mb-3">{t("appointment.receptionist.reschedule")}</h4>
                 <Form.Item
-                  label="Bác sĩ"
+                  label={t("appointment.receptionist.doctor")}
                   name="doctor_id"
-                  rules={[{ required: true, message: "Vui lòng chọn bác sĩ" }]}
+                  rules={[
+                    { required: true, message: t("appointment.receptionist.doctorRequired") },
+                  ]}
                 >
                   <Select
-                    placeholder="Chọn bác sĩ"
+                    placeholder={t("appointment.receptionist.doctorPlaceholder")}
                     onChange={handleDoctorChange}
                     showSearch
                     optionFilterProp="children"
@@ -677,28 +688,30 @@ export default function AppointmentsPage() {
                   />
                 </Form.Item>
                 <Form.Item
-                  label="Ngày hẹn"
+                  label={t("appointment.receptionist.appointmentDate")}
                   name="date"
-                  tooltip="Chọn ngày để lọc ca khám (tùy chọn, có thể để trống để xem tất cả)"
+                  tooltip={t("appointment.receptionist.appointmentDateTooltip")}
                 >
                   <DatePicker
                     style={{ width: "100%" }}
                     format="DD/MM/YYYY"
                     value={selectedDate}
                     onChange={handleDateChange}
-                    placeholder="Chọn ngày để lọc (tùy chọn)"
+                    placeholder={t("appointment.receptionist.appointmentDatePlaceholder")}
                     allowClear
                     disabledDate={(current) => current && current < dayjs().startOf("day")}
                   />
                 </Form.Item>
                 <Form.Item
-                  label="Ca khám"
+                  label={t("appointment.receptionist.timeSlot")}
                   name="new_slot_id"
-                  rules={[{ required: true, message: "Vui lòng chọn ca khám" }]}
-                  tooltip="Chọn ca khám mới để dời lịch hẹn"
+                  rules={[
+                    { required: true, message: t("appointment.receptionist.timeSlotRequired") },
+                  ]}
+                  tooltip={t("appointment.receptionist.timeSlotTooltip")}
                 >
                   <Select
-                    placeholder="Chọn ca khám"
+                    placeholder={t("appointment.receptionist.timeSlotPlaceholder")}
                     disabled={!selectedDoctorId}
                     showSearch
                     optionFilterProp="children"
@@ -723,13 +736,17 @@ export default function AppointmentsPage() {
 
               {/* Trạng thái và ghi chú */}
               <div>
-                <h4 className="font-semibold mb-3">Trạng thái và ghi chú</h4>
+                <h4 className="font-semibold mb-3">
+                  {t("appointment.receptionist.statusAndNotes")}
+                </h4>
                 <Form.Item
-                  label="Trạng thái lịch hẹn"
+                  label={t("appointment.receptionist.appointmentStatus")}
                   name="status"
-                  rules={[{ required: true, message: "Vui lòng chọn trạng thái" }]}
+                  rules={[
+                    { required: true, message: t("appointment.receptionist.statusRequired") },
+                  ]}
                 >
-                  <Select placeholder="Chọn trạng thái">
+                  <Select placeholder={t("appointment.receptionist.statusPlaceholder")}>
                     {Object.entries(AppointmentStatus)
                       .filter(
                         ([key]) =>
@@ -743,11 +760,14 @@ export default function AppointmentsPage() {
                   </Select>
                 </Form.Item>
                 <Form.Item
-                  label="Ghi chú chung"
+                  label={t("appointment.receptionist.generalNotes")}
                   name="notes"
-                  tooltip="Ghi chú chung về lịch hẹn (bệnh nhân có thể thấy)"
+                  tooltip={t("appointment.receptionist.generalNotesTooltip")}
                 >
-                  <Input.TextArea rows={2} placeholder="Ví dụ: Bệnh nhân muốn gặp bác sĩ X" />
+                  <Input.TextArea
+                    rows={2}
+                    placeholder={t("appointment.receptionist.generalNotesPlaceholder")}
+                  />
                 </Form.Item>
                 {/* <Form.Item
                   label="Ghi chú nội bộ"
@@ -786,7 +806,7 @@ export default function AppointmentsPage() {
 
       {/* Modal tạo appointment mới */}
       <Modal
-        title="Tạo lịch hẹn mới"
+        title={t("appointment.modal.createTitle")}
         open={isCreateModalOpen}
         onOk={handleCreateSubmit}
         onCancel={() => {
@@ -802,14 +822,14 @@ export default function AppointmentsPage() {
         <Form form={createForm} layout="vertical">
           {/* Thông tin cơ bản */}
           <div>
-            <h4 className="font-semibold mb-3">Thông tin cơ bản</h4>
+            <h4 className="font-semibold mb-3">{t("appointment.create.basicInfo")}</h4>
             <Form.Item
-              label="Bệnh nhân"
+              label={t("appointment.create.patient")}
               name="patient_id"
-              rules={[{ required: true, message: "Vui lòng chọn bệnh nhân" }]}
+              rules={[{ required: true, message: t("appointment.create.patientRequired") }]}
             >
               <Select
-                placeholder="Chọn bệnh nhân"
+                placeholder={t("appointment.create.patientPlaceholder")}
                 showSearch
                 optionFilterProp="children"
                 filterOption={(input, option) =>
@@ -822,12 +842,12 @@ export default function AppointmentsPage() {
               />
             </Form.Item>
             <Form.Item
-              label="Bác sĩ"
+              label={t("appointment.create.doctor")}
               name="doctor_id"
-              rules={[{ required: true, message: "Vui lòng chọn bác sĩ" }]}
+              rules={[{ required: true, message: t("appointment.create.doctorRequired") }]}
             >
               <Select
-                placeholder="Chọn bác sĩ"
+                placeholder={t("appointment.create.doctorPlaceholder")}
                 onChange={handleCreateDoctorChange}
                 showSearch
                 optionFilterProp="children"
@@ -842,12 +862,12 @@ export default function AppointmentsPage() {
             </Form.Item>
             {role === "admin" && (
               <Form.Item
-                label="Bệnh viện"
+                label={t("appointment.create.hospital")}
                 name="hospital_id"
-                rules={[{ required: true, message: "Vui lòng chọn bệnh viện" }]}
+                rules={[{ required: true, message: t("appointment.create.hospitalRequired") }]}
               >
                 <Select
-                  placeholder="Chọn bệnh viện"
+                  placeholder={t("appointment.create.hospitalPlaceholder")}
                   showSearch
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -872,25 +892,25 @@ export default function AppointmentsPage() {
 
           {/* Thời gian hẹn */}
           <div className="mt-4">
-            <h4 className="font-semibold mb-3">Thời gian hẹn</h4>
-            <Form.Item label="Ngày hẹn" name="date">
+            <h4 className="font-semibold mb-3">{t("appointment.create.appointmentTime")}</h4>
+            <Form.Item label={t("appointment.create.appointmentDate")} name="date">
               <DatePicker
                 style={{ width: "100%" }}
                 format="DD/MM/YYYY"
                 value={createDate}
                 onChange={handleCreateDateChange}
-                placeholder="Chọn ngày"
+                placeholder={t("appointment.create.appointmentDatePlaceholder")}
                 allowClear
                 disabledDate={(current) => current && current < dayjs().startOf("day")}
               />
             </Form.Item>
             <Form.Item
-              label="Ca khám"
+              label={t("appointment.create.timeSlot")}
               name="slot_id"
-              rules={[{ required: true, message: "Vui lòng chọn ca khám" }]}
+              rules={[{ required: true, message: t("appointment.create.timeSlotRequired") }]}
             >
               <Select
-                placeholder="Chọn ca khám"
+                placeholder={t("appointment.create.timeSlotPlaceholder")}
                 disabled={!createDoctorId}
                 showSearch
                 optionFilterProp="children"
@@ -914,14 +934,14 @@ export default function AppointmentsPage() {
 
           {/* Dịch vụ và thanh toán */}
           <div className="mt-4">
-            <h4 className="font-semibold mb-3">Dịch vụ và thanh toán</h4>
+            <h4 className="font-semibold mb-3">{t("appointment.create.serviceAndPayment")}</h4>
             <Form.Item
-              label="Dịch vụ"
+              label={t("appointment.create.service")}
               name="service_id"
-              tooltip="Chọn dịch vụ của bác sĩ (hiển thị sau khi chọn bác sĩ)"
+              tooltip={t("appointment.create.serviceTooltip")}
             >
               <Select
-                placeholder="Chọn dịch vụ (tùy chọn)"
+                placeholder={t("appointment.create.servicePlaceholder")}
                 disabled={!createDoctorId}
                 allowClear
                 onChange={handleServiceChange}
@@ -942,7 +962,7 @@ export default function AppointmentsPage() {
             </Form.Item>
             {/* Hiển thị order_items đã chọn */}
             <Form.Item
-              label="Đơn hàng"
+              label={t("appointment.create.order")}
               shouldUpdate={(prevValues, curValues) =>
                 prevValues.order_items !== curValues.order_items
               }
@@ -950,7 +970,9 @@ export default function AppointmentsPage() {
               {() => {
                 const orderItems = createForm.getFieldValue("order_items") || [];
                 if (orderItems.length === 0) {
-                  return <div className="text-gray-400 text-sm">Chưa có đơn hàng nào</div>;
+                  return (
+                    <div className="text-gray-400 text-sm">{t("appointment.create.noOrder")}</div>
+                  );
                 }
                 return (
                   <div className="space-y-2">
@@ -962,8 +984,9 @@ export default function AppointmentsPage() {
                         <div className="flex-1">
                           <p className="font-medium">{item.item_name}</p>
                           <p className="text-sm text-gray-500">
-                            Số lượng: {item.quantity} x {item.price?.toLocaleString("vi-VN") || 0}{" "}
-                            VNĐ = {(item.quantity * item.price)?.toLocaleString("vi-VN") || 0} VNĐ
+                            {t("appointment.create.quantity")} {item.quantity} x{" "}
+                            {item.price?.toLocaleString("vi-VN") || 0} VNĐ ={" "}
+                            {(item.quantity * item.price)?.toLocaleString("vi-VN") || 0} VNĐ
                           </p>
                         </div>
                         <Button
@@ -986,11 +1009,11 @@ export default function AppointmentsPage() {
               }}
             </Form.Item>
             <Form.Item
-              label="Trạng thái thanh toán"
+              label={t("appointment.create.paymentStatus")}
               name="payment_status"
               initialValue={PaymentStatus.PENDING}
             >
-              <Select placeholder="Chọn trạng thái thanh toán">
+              <Select placeholder={t("appointment.create.paymentStatusPlaceholder")}>
                 {Object.entries(PaymentStatus).map(([key, value]) => (
                   <Select.Option key={key} value={value}>
                     {PaymentStatusLabel[value]}
@@ -998,8 +1021,8 @@ export default function AppointmentsPage() {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="Ghi chú" name="notes">
-              <Input.TextArea rows={2} placeholder="Ghi chú về lịch hẹn (tùy chọn)" />
+            <Form.Item label={t("appointment.create.notes")} name="notes">
+              <Input.TextArea rows={2} placeholder={t("appointment.create.notesPlaceholder")} />
             </Form.Item>
           </div>
         </Form>

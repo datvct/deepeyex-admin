@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Form, Input, Select, DatePicker, InputNumber, Card, Space, Row, Col } from "antd";
 import { SearchOutlined, ClearOutlined, FilterOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import type { RangePickerProps } from "antd/es/date-picker";
 
 const { RangePicker } = DatePicker;
@@ -42,11 +43,15 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
   onFilter,
   onReset,
   layout = "inline",
-  submitText = "Tìm kiếm",
-  resetText = "Xóa bộ lọc",
+  submitText,
+  resetText,
   className = "",
 }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const defaultSubmitText = submitText || t("advancedFilter.search");
+  const defaultResetText = resetText || t("advancedFilter.reset");
 
   const handleFinish = (values: Record<string, any>) => {
     // Xử lý giá trị trước khi gửi
@@ -96,7 +101,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       case "text":
         return (
           <Input
-            placeholder={field.placeholder || `Nhập ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.enter")} ${field.label.toLowerCase()}`
+            }
             allowClear={field.allowClear !== false}
             style={fieldStyle}
           />
@@ -105,7 +112,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       case "select":
         return (
           <Select
-            placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.select")} ${field.label.toLowerCase()}`
+            }
             options={field.options}
             allowClear={field.allowClear !== false}
             style={fieldStyle}
@@ -116,7 +125,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
         return (
           <Select
             mode="multiple"
-            placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.select")} ${field.label.toLowerCase()}`
+            }
             options={field.options}
             allowClear={field.allowClear !== false}
             style={fieldStyle}
@@ -126,7 +137,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       case "number":
         return (
           <InputNumber
-            placeholder={field.placeholder || `Nhập ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.enter")} ${field.label.toLowerCase()}`
+            }
             min={field.min}
             max={field.max}
             style={fieldStyle}
@@ -136,7 +149,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       case "date":
         return (
           <DatePicker
-            placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.select")} ${field.label.toLowerCase()}`
+            }
             format="DD/MM/YYYY"
             style={fieldStyle}
           />
@@ -146,7 +161,9 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
         return (
           <DatePicker
             picker="month"
-            placeholder={field.placeholder || `Chọn ${field.label.toLowerCase()}`}
+            placeholder={
+              field.placeholder || `${t("advancedFilter.select")} ${field.label.toLowerCase()}`
+            }
             format="MM/YYYY"
             style={fieldStyle}
           />
@@ -155,7 +172,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       case "date-range":
         return (
           <RangePicker
-            placeholder={["Từ ngày", "Đến ngày"]}
+            placeholder={[t("advancedFilter.dateRange.from"), t("advancedFilter.dateRange.to")]}
             format="DD/MM/YYYY"
             style={fieldStyle}
           />
@@ -180,10 +197,10 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
           <Form.Item className="mb-0">
             <Space>
               <Button type="primary" htmlType="submit" icon={<SearchOutlined />}>
-                {submitText}
+                {defaultSubmitText}
               </Button>
               <Button onClick={handleReset} icon={<ClearOutlined />}>
-                {resetText}
+                {defaultResetText}
               </Button>
             </Space>
           </Form.Item>

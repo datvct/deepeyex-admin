@@ -138,14 +138,14 @@ export default function PatientsPage() {
       name: "full_name",
       label: t("patient.columns.full_name"),
       type: "text",
-      placeholder: "Nhập tên bệnh nhân",
+      placeholder: t("patient.filter.fullNamePlaceholder"),
       width: 200,
     },
     {
       name: "gender",
       label: t("patient.columns.gender"),
       type: "select",
-      placeholder: "Chọn giới tính",
+      placeholder: t("patient.filter.genderPlaceholder"),
       options: [
         { label: t("patient.gender.male"), value: "male" },
         { label: t("patient.gender.female"), value: "female" },
@@ -155,9 +155,9 @@ export default function PatientsPage() {
     },
     {
       name: "birth_date",
-      label: "Tháng/Năm sinh",
+      label: t("patient.filter.birthDate"),
       type: "month",
-      placeholder: "Chọn tháng/năm sinh",
+      placeholder: t("patient.filter.birthDatePlaceholder"),
       width: 200,
     },
   ];
@@ -307,7 +307,7 @@ export default function PatientsPage() {
                 <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
                   <div>
                     <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
+                    <div style={{ marginTop: 8 }}>{t("patient.form.placeholder.upload")}</div>
                   </div>
                 </Upload>
               </Form.Item>

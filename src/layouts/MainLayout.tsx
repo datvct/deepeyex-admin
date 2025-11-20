@@ -9,8 +9,10 @@ import { QueryKeyEnum } from "../shares/enums/queryKey";
 import { useSelector } from "react-redux";
 import { RootState } from "../shares/stores";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 export default function MainLayout() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { doctor } = useSelector((state: RootState) => state.auth);
 
@@ -22,10 +24,15 @@ export default function MainLayout() {
       // console.log("📨 WebSocket NEW APPOINTMENT received:", message);
 
       // Hiển thị toast notification
-      toast.success(`🔔 Có lịch hẹn mới từ ${newAppointment.patient?.full_name || "bệnh nhân"}`, {
-        autoClose: 8000,
-        position: "top-right",
-      });
+      toast.success(
+        t("websocket.newAppointment", {
+          patientName: newAppointment.patient?.full_name || t("websocket.patient"),
+        }),
+        {
+          autoClose: 8000,
+          position: "top-right",
+        },
+      );
 
       // Invalidate queries để refetch data
       // Chỉ invalidate data của doctor hiện tại
@@ -41,10 +48,15 @@ export default function MainLayout() {
 
       // console.log("📨 WebSocket UPDATE APPOINTMENT received:", message);
 
-      toast.info(`📝 Lịch hẹn ${updatedAppointment.appointment_code} được cập nhật`, {
-        autoClose: 5000,
-        position: "top-right",
-      });
+      toast.info(
+        t("websocket.updateAppointment", {
+          appointmentCode: updatedAppointment.appointment_code,
+        }),
+        {
+          autoClose: 5000,
+          position: "top-right",
+        },
+      );
 
       queryClient.invalidateQueries({
         queryKey: [QueryKeyEnum.Appointment, "doctor", doctor?.doctor_id],
@@ -56,10 +68,15 @@ export default function MainLayout() {
     onCancelAppointment: (message) => {
       const cancelledAppointment = message.payload.appointment;
 
-      toast.warning(`❌ Lịch hẹn ${cancelledAppointment.appointment_code} bị hủy`, {
-        autoClose: 5000,
-        position: "top-right",
-      });
+      toast.warning(
+        t("websocket.cancelAppointment", {
+          appointmentCode: cancelledAppointment.appointment_code,
+        }),
+        {
+          autoClose: 5000,
+          position: "top-right",
+        },
+      );
 
       queryClient.invalidateQueries({
         queryKey: [QueryKeyEnum.Appointment, "doctor", doctor?.doctor_id],

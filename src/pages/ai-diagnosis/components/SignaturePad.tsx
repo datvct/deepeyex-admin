@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Button } from "antd";
 import { ClearOutlined, CheckOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 interface SignaturePadProps {
   onSave: (signatureFile: File) => void;
@@ -9,6 +10,7 @@ interface SignaturePadProps {
 }
 
 const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, width = 400, height = 150 }) => {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -138,13 +140,13 @@ const SignaturePad: React.FC<SignaturePadProps> = ({ onSave, width = 400, height
         />
       </div>
       <div className="flex justify-between items-center">
-        <p className="text-sm text-gray-500">Vẽ chữ ký của bạn trong khung trên</p>
+        <p className="text-sm text-gray-500">{t("aiDiagnosis.signaturePad.instruction")}</p>
         <div className="flex gap-2">
           <Button icon={<ClearOutlined />} onClick={handleClear}>
-            Xóa
+            {t("aiDiagnosis.signaturePad.clear")}
           </Button>
           <Button type="primary" icon={<CheckOutlined />} onClick={handleSave} disabled={isEmpty}>
-            Lưu chữ ký
+            {t("aiDiagnosis.signaturePad.save")}
           </Button>
         </div>
       </div>

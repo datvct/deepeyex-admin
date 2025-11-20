@@ -82,7 +82,7 @@ export default function HospitalsPage() {
       setHospitals(data.data);
     }
   }, [data]);
-  3;
+
   // ---- Thêm mới ----
   const handleAdd = () => {
     setEditingHospital(null);
@@ -171,25 +171,25 @@ export default function HospitalsPage() {
   const hospitalFilterFields: FilterField[] = [
     {
       name: "name",
-      label: "Tên bệnh viện",
+      label: t("hospital.filter.name"),
       type: "text",
-      placeholder: "Tìm theo tên bệnh viện...",
+      placeholder: t("hospital.filter.namePlaceholder"),
       span: 6,
       width: 300,
     },
     {
       name: "address",
-      label: "Địa chỉ",
+      label: t("hospital.filter.address"),
       type: "text",
-      placeholder: "Tìm theo địa chỉ...",
+      placeholder: t("hospital.filter.addressPlaceholder"),
       span: 6,
       width: 300,
     },
     {
       name: "city",
-      label: "Thành phố",
+      label: t("hospital.filter.city"),
       type: "select",
-      placeholder: "Chọn thành phố",
+      placeholder: t("hospital.filter.cityPlaceholder"),
       span: 4,
       width: 200,
       options: cities.map((city) => ({
@@ -199,9 +199,9 @@ export default function HospitalsPage() {
     },
     {
       name: "ward",
-      label: "Phường/Xã",
+      label: t("hospital.filter.ward"),
       type: "text",
-      placeholder: "Nhập phường/xã",
+      placeholder: t("hospital.filter.wardPlaceholder"),
       span: 4,
       width: 200,
     },
@@ -219,7 +219,7 @@ export default function HospitalsPage() {
 
   // ---- Cấu hình cột bảng ----
   const hospitalColumns = [
-    { title: "ID", dataIndex: "hospital_id", key: "hospital_id", width: "10%" },
+    { title: t("hospital.columns.id"), dataIndex: "hospital_id", key: "hospital_id", width: "10%" },
     {
       title: t("hospital.form.image"),
       dataIndex: "image",

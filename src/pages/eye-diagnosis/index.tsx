@@ -20,6 +20,7 @@ import {
   DeleteOutlined,
   ReloadOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import type { UploadFile, UploadProps } from "antd";
 import { usePredictMutation } from "../../modules/predict/hooks/mutations/use-predict.mutation";
 import type { DiagnosisResponse } from "../../modules/predict/types/predict";
@@ -31,35 +32,19 @@ interface DiagnosisResult {
   alternative_diagnoses: Array<{ label: string; probability: number }>;
 }
 
-// Mapping disease labels to Vietnamese
-const diseaseLabels: Record<string, string> = {
-  amd: "Thoái hóa hoàng điểm (AMD)",
-  cataract: "Đục thủy tinh thể",
-  diabetic_retinopathy_mild: "Bệnh võng mạc tiểu đường nhẹ",
-  diabetic_retinopathy_moderate: "Bệnh võng mạc tiểu đường trung bình",
-  diabetic_retinopathy_proliferate: "Bệnh võng mạc tiểu đường tăng sinh",
-  diabetic_retinopathy_severe: "Bệnh võng mạc tiểu đường nặng",
-  glaucoma: "Tăng nhãn áp (Glaucoma)",
-  healthy_eye: "Mắt khỏe mạnh",
-  conjunctivitis: "Viêm kết mạc",
-  eyelidedema: "Phù mi mắt",
-  hordeolum: "Lẹo mắt",
-  keratitiswithulcer: "Viêm giác mạc có loét",
-  subconjunctival_hemorrhage: "Xuất huyết dưới kết mạc",
-  normal: "Mắt khỏe mạnh",
-};
-
-// Get severity based on probability
-const getSeverity = (probability: number): string => {
-  if (probability >= 0.8) return "Cao";
-  if (probability >= 0.5) return "Trung bình";
-  return "Thấp";
-};
-
 // Map API response to DiagnosisResult
-const mapApiResponseToResult = (data: DiagnosisResponse): DiagnosisResult => {
+const mapApiResponseToResult = (data: DiagnosisResponse, t: any): DiagnosisResult => {
   const topPrediction = data.top1;
-  const diseaseName = diseaseLabels[topPrediction.label] || topPrediction.label;
+  const diseaseName = t(`eyeDiagnosis.diseaseLabels.${topPrediction.label}`, {
+    defaultValue: topPrediction.label,
+  });
+
+  // Get severity based on probability
+  const getSeverity = (probability: number): string => {
+    if (probability >= 0.8) return t("eyeDiagnosis.severity.high");
+    if (probability >= 0.5) return t("eyeDiagnosis.severity.medium");
+    return t("eyeDiagnosis.severity.low");
+  };
 
   return {
     disease: diseaseName,
@@ -68,25 +53,26 @@ const mapApiResponseToResult = (data: DiagnosisResponse): DiagnosisResult => {
     alternative_diagnoses: data.predictions
       .filter((p) => p.label !== topPrediction.label)
       .map((p) => ({
-        label: diseaseLabels[p.label] || p.label,
+        label: t(`eyeDiagnosis.diseaseLabels.${p.label}`, { defaultValue: p.label }),
         probability: Math.round(p.probability * 100),
       })),
   };
 };
 
 const EyeDiagnosisPage: React.FC = () => {
+  const { t } = useTranslation();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
 
   const { mutate, isPending } = usePredictMutation({
     onSuccess: (data: DiagnosisResponse) => {
-      const result = mapApiResponseToResult(data);
+      const result = mapApiResponseToResult(data, t);
       setDiagnosisResult(result);
-      message.success("Chẩn đoán hoàn tất!");
+      message.success(t("eyeDiagnosis.messages.success"));
     },
     onError: (error) => {
       console.error("Chẩn đoán thất bại:", error.message);
-      message.error("Chẩn đoán thất bại. Vui lòng thử lại!");
+      message.error(t("eyeDiagnosis.messages.error"));
     },
   });
 
@@ -98,12 +84,12 @@ const EyeDiagnosisPage: React.FC = () => {
   const handleBeforeUpload = (file: File) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("Chỉ được upload file ảnh!");
+      message.error(t("eyeDiagnosis.messages.imageOnly"));
       return false;
     }
     const isLt5M = file.size / 1024 / 1024 < 5;
     if (!isLt5M) {
-      message.error("Ảnh phải nhỏ hơn 5MB!");
+      message.error(t("eyeDiagnosis.messages.maxSize"));
       return false;
     }
     return false; // Prevent auto upload
@@ -111,13 +97,13 @@ const EyeDiagnosisPage: React.FC = () => {
 
   const handleDiagnose = () => {
     if (fileList.length === 0) {
-      message.warning("Vui lòng upload ít nhất 1 ảnh mắt");
+      message.warning(t("eyeDiagnosis.messages.noImage"));
       return;
     }
 
     const firstFile = fileList[0];
     if (!firstFile.originFileObj) {
-      message.error("File không hợp lệ");
+      message.error(t("eyeDiagnosis.messages.invalidFile"));
       return;
     }
 
@@ -140,16 +126,10 @@ const EyeDiagnosisPage: React.FC = () => {
   };
 
   const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "Thấp":
-        return "green";
-      case "Trung bình":
-        return "orange";
-      case "Cao":
-        return "red";
-      default:
-        return "default";
-    }
+    if (severity === t("eyeDiagnosis.severity.low")) return "green";
+    if (severity === t("eyeDiagnosis.severity.medium")) return "orange";
+    if (severity === t("eyeDiagnosis.severity.high")) return "red";
+    return "default";
   };
 
   return (
@@ -157,15 +137,15 @@ const EyeDiagnosisPage: React.FC = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
           <EyeOutlined className="text-blue-600" />
-          Chẩn đoán AI bằng hình ảnh
+          {t("eyeDiagnosis.title")}
         </h1>
-        <p className="text-gray-600">Upload ảnh mắt để nhận chẩn đoán từ AI</p>
+        <p className="text-gray-600">{t("eyeDiagnosis.subtitle")}</p>
       </div>
 
       <Row gutter={16}>
         {/* Left side - Upload Section */}
         <Col xs={24} lg={12}>
-          <Card title="Upload ảnh mắt" className="mb-4">
+          <Card title={t("eyeDiagnosis.uploadCard.title")} className="mb-4">
             <Upload
               listType="picture-card"
               fileList={fileList}
@@ -177,15 +157,15 @@ const EyeDiagnosisPage: React.FC = () => {
               {fileList.length >= 1 ? null : (
                 <div>
                   <UploadOutlined className="text-2xl mb-2" />
-                  <div className="text-sm">Upload ảnh</div>
+                  <div className="text-sm">{t("eyeDiagnosis.uploadCard.uploadButton")}</div>
                 </div>
               )}
             </Upload>
 
             <div className="mt-4 text-sm text-gray-500">
-              <p>• Chỉ upload 1 ảnh mắt</p>
-              <p>• Định dạng: JPG, PNG, JPEG</p>
-              <p>• Kích thước tối đa: 5MB</p>
+              <p>{t("eyeDiagnosis.uploadCard.instructions.singleImage")}</p>
+              <p>{t("eyeDiagnosis.uploadCard.instructions.formats")}</p>
+              <p>{t("eyeDiagnosis.uploadCard.instructions.maxSize")}</p>
             </div>
 
             <Divider />
@@ -199,10 +179,12 @@ const EyeDiagnosisPage: React.FC = () => {
                 disabled={fileList.length === 0}
                 size="large"
               >
-                {isPending ? "Đang chẩn đoán..." : "Chẩn đoán AI"}
+                {isPending
+                  ? t("eyeDiagnosis.uploadCard.diagnosing")
+                  : t("eyeDiagnosis.uploadCard.diagnoseButton")}
               </Button>
               <Button icon={<ReloadOutlined />} onClick={handleReset} disabled={isPending}>
-                Làm mới
+                {t("eyeDiagnosis.uploadCard.resetButton")}
               </Button>
             </Space>
           </Card>
@@ -210,12 +192,14 @@ const EyeDiagnosisPage: React.FC = () => {
 
         {/* Right side - Result Section */}
         <Col xs={24} lg={12}>
-          <Card title="Kết quả chẩn đoán" className="mb-4">
+          <Card title={t("eyeDiagnosis.resultCard.title")} className="mb-4">
             {isPending ? (
               <div className="text-center py-8">
                 <RobotOutlined className="text-6xl text-blue-500 mb-4 animate-pulse" />
-                <h3 className="text-lg font-medium text-gray-700 mb-2">Đang phân tích ảnh...</h3>
-                <p className="text-gray-500">AI đang xử lý và chẩn đoán</p>
+                <h3 className="text-lg font-medium text-gray-700 mb-2">
+                  {t("eyeDiagnosis.resultCard.analyzing")}
+                </h3>
+                <p className="text-gray-500">{t("eyeDiagnosis.resultCard.processing")}</p>
                 <Progress percent={50} status="active" className="mt-4" />
               </div>
             ) : diagnosisResult ? (
@@ -224,7 +208,7 @@ const EyeDiagnosisPage: React.FC = () => {
                 <div>
                   <h3 className="text-lg font-semibold text-blue-800 mb-2 flex items-center gap-2">
                     <CheckCircleOutlined className="text-green-600" />
-                    Chẩn đoán
+                    {t("eyeDiagnosis.resultCard.diagnosisLabel")}
                   </h3>
                   <p className="text-xl font-bold text-gray-800">{diagnosisResult.disease}</p>
                 </div>
@@ -232,7 +216,9 @@ const EyeDiagnosisPage: React.FC = () => {
                 {/* Confidence & Severity */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Độ tin cậy</p>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {t("eyeDiagnosis.resultCard.confidence")}
+                    </p>
                     <div className="flex items-center gap-2">
                       <Progress
                         percent={diagnosisResult.confidence}
@@ -244,7 +230,9 @@ const EyeDiagnosisPage: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600 mb-1">Mức độ nghiêm trọng</p>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {t("eyeDiagnosis.resultCard.severity")}
+                    </p>
                     <Tag color={getSeverityColor(diagnosisResult.severity)} className="text-sm">
                       {diagnosisResult.severity}
                     </Tag>
@@ -255,7 +243,9 @@ const EyeDiagnosisPage: React.FC = () => {
 
                 {/* Alternative Diagnoses */}
                 <div>
-                  <h4 className="font-semibold text-gray-700 mb-2">Chẩn đoán thay thế:</h4>
+                  <h4 className="font-semibold text-gray-700 mb-2">
+                    {t("eyeDiagnosis.resultCard.alternativeDiagnoses")}
+                  </h4>
                   <div className="space-y-2">
                     {diagnosisResult.alternative_diagnoses.map((alt, index) => (
                       <div key={index} className="flex items-center justify-between text-sm">
@@ -270,16 +260,15 @@ const EyeDiagnosisPage: React.FC = () => {
 
                 <div className="bg-blue-50 border border-blue-200 rounded p-3">
                   <p className="text-sm text-blue-800">
-                    <strong>Lưu ý:</strong> Kết quả chẩn đoán AI mang tính chất hỗ trợ và tham khảo.
-                    Vui lòng kết hợp với kinh nghiệm lâm sàng và các xét nghiệm bổ sung để đưa ra
-                    chẩn đoán chính xác cuối cùng.
+                    <strong>{t("eyeDiagnosis.resultCard.note")}</strong>{" "}
+                    {t("eyeDiagnosis.resultCard.noteText")}
                   </p>
                 </div>
               </div>
             ) : (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="Upload ảnh và nhấn 'Chẩn đoán AI' để nhận kết quả"
+                description={t("eyeDiagnosis.resultCard.emptyDescription")}
               />
             )}
           </Card>

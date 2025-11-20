@@ -180,14 +180,14 @@ export default function ServicesPage() {
       name: "name",
       label: t("service.columns.name"),
       type: "text",
-      placeholder: "Nhập tên dịch vụ",
+      placeholder: t("service.filter.namePlaceholder"),
       width: 250,
     },
     {
       name: "duration",
       label: t("service.columns.duration"),
       type: "number",
-      placeholder: "Nhập thời gian (phút)",
+      placeholder: t("service.filter.durationPlaceholder"),
       min: 0,
       width: 200,
     },
@@ -207,7 +207,7 @@ export default function ServicesPage() {
       dataIndex: "duration",
       key: "duration",
       width: "15%",
-      render: (duration: number) => `${duration} phút`,
+      render: (duration: number) => `${duration} ${t("service.common.minutes")}`,
       sorter: (a: Service, b: Service) => a.duration - b.duration,
     },
     {
@@ -232,7 +232,7 @@ export default function ServicesPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Spin size="large" tip="Đang tải dữ liệu..." />
+        <Spin size="large" tip={t("service.common.loading")} />
       </div>
     );
   }
@@ -264,7 +264,7 @@ export default function ServicesPage() {
             size="large"
             className="bg-green-600 hover:bg-green-700"
           >
-            Gán dịch vụ cho bác sĩ
+            {t("service.assign.button")}
           </Button>
         )}
       </div>
@@ -293,8 +293,8 @@ export default function ServicesPage() {
           setIsModalOpen(false);
           form.resetFields();
         }}
-        okText={editingService ? "Cập nhật" : "Thêm"}
-        cancelText="Hủy"
+        okText={editingService ? t("service.modal.update") : t("service.modal.add")}
+        cancelText={t("service.modal.cancel")}
         confirmLoading={createServiceMutation.isPending || updateServiceMutation.isPending}
         width={600}
       >
@@ -318,7 +318,7 @@ export default function ServicesPage() {
               min={1}
               max={480}
               className="w-full"
-              addonAfter="phút"
+              addonAfter={t("service.common.minutes")}
             />
           </Form.Item>
 
@@ -345,26 +345,26 @@ export default function ServicesPage() {
 
       {/* Modal gán service cho doctor */}
       <Modal
-        title="Gán dịch vụ cho bác sĩ"
+        title={t("service.assign.title")}
         open={isAssignModalOpen}
         onOk={handleAssignSubmit}
         onCancel={() => {
           setIsAssignModalOpen(false);
           assignForm.resetFields();
         }}
-        okText="Gán"
-        cancelText="Hủy"
+        okText={t("service.assign.okText")}
+        cancelText={t("service.assign.cancelText")}
         confirmLoading={assignServiceMutation.isPending}
         width={500}
       >
         <Form form={assignForm} layout="vertical" className="mt-4">
           <Form.Item
-            label="Chọn bác sĩ"
+            label={t("service.assign.selectDoctor")}
             name="doctor_id"
-            rules={[{ required: true, message: "Vui lòng chọn bác sĩ" }]}
+            rules={[{ required: true, message: t("service.assign.selectDoctorRequired") }]}
           >
             <Select
-              placeholder="Chọn bác sĩ"
+              placeholder={t("service.assign.selectDoctorPlaceholder")}
               size="large"
               showSearch
               filterOption={(input, option) =>
@@ -380,12 +380,12 @@ export default function ServicesPage() {
           </Form.Item>
 
           <Form.Item
-            label="Chọn dịch vụ"
+            label={t("service.assign.selectService")}
             name="service_id"
-            rules={[{ required: true, message: "Vui lòng chọn dịch vụ" }]}
+            rules={[{ required: true, message: t("service.assign.selectServiceRequired") }]}
           >
             <Select
-              placeholder="Chọn dịch vụ"
+              placeholder={t("service.assign.selectServicePlaceholder")}
               size="large"
               showSearch
               filterOption={(input, option) =>
@@ -396,7 +396,7 @@ export default function ServicesPage() {
               options={services.map((service) => ({
                 label: `${service.name} - ${service.price.toLocaleString("vi-VN")} ₫ (${
                   service.duration
-                } phút)`,
+                } ${t("service.common.minutes")})`,
                 value: service.service_id,
               }))}
             />

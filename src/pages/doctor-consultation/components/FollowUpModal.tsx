@@ -1,5 +1,6 @@
 // src/pages/doctor-consultation/components/FollowUpModal.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal, Form, DatePicker, Select, Input, Button, Spin, Empty } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -39,6 +40,7 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
   bookUserId,
   relatedRecordId,
 }) => {
+  const { t } = useTranslation();
   const [form] = Form.useForm<FollowUpForm>();
   const [selectedDate, setSelectedDate] = useState<string>("");
   const queryClient = useQueryClient();
@@ -73,14 +75,14 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
   // Mutation: Create Follow-up Appointment
   const createFollowUpMutation = useCreateFollowUpMutation({
     onSuccess: () => {
-      toast.success("Đã hẹn tái khám thành công!");
+      toast.success(t("medicalRecord.followUpModal.success"));
       queryClient.invalidateQueries({ queryKey: [QueryKeyEnum.Appointment] });
       form.resetFields();
       setSelectedDate("");
       onClose();
     },
     onError: (error) => {
-      toast.error("Lỗi hẹn tái khám: " + error.message);
+      toast.error(t("medicalRecord.followUpModal.error") + " " + error.message);
     },
   });
 
@@ -100,7 +102,9 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
       hospital_id: hospitalId,
       book_user_id: bookUserId,
       service_name: values.service_name || "",
-      notes: values.reason + (values.notes ? `\n\nGhi chú: ${values.notes}` : ""),
+      notes:
+        values.reason +
+        (values.notes ? `\n\n${t("medicalRecord.viewModal.notes")}: ${values.notes}` : ""),
       slot_ids: Array.isArray(values.slot_ids) ? values.slot_ids : [values.slot_ids],
       related_record_id: relatedRecordId,
     });
@@ -126,7 +130,9 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
       title={
         <div className="flex items-center gap-2">
           <CalendarOutlined className="text-green-600" />
-          <span>Hẹn tái khám - {patientName}</span>
+          <span>
+            {t("medicalRecord.followUpModal.title")} - {patientName}
+          </span>
         </div>
       }
       open={isOpen}
@@ -134,7 +140,7 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
       width={700}
       footer={[
         <Button key="cancel" onClick={handleCancel}>
-          Hủy
+          {t("medicalRecord.followUpModal.cancel")}
         </Button>,
         <Button
           key="submit"
@@ -142,20 +148,22 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
           onClick={() => form.submit()}
           loading={createFollowUpMutation.isPending}
         >
-          Xác nhận hẹn tái khám
+          {t("medicalRecord.followUpModal.confirm")}
         </Button>,
       ]}
     >
       <Form form={form} onFinish={handleSubmit} layout="vertical">
         <Form.Item
           name="follow_up_date"
-          label="Ngày tái khám"
-          rules={[{ required: true, message: "Vui lòng chọn ngày tái khám" }]}
+          label={t("medicalRecord.followUpModal.followUpDate")}
+          rules={[
+            { required: true, message: t("medicalRecord.followUpModal.followUpDateRequired") },
+          ]}
         >
           <DatePicker
             style={{ width: "100%" }}
             format="DD/MM/YYYY"
-            placeholder="Chọn ngày tái khám"
+            placeholder={t("medicalRecord.followUpModal.followUpDatePlaceholder")}
             disabledDate={(current) => current && current < dayjs().startOf("day")}
             onChange={handleDateChange}
           />
@@ -163,23 +171,23 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
 
         <Form.Item
           name="slot_ids"
-          label="Khung giờ khám"
-          rules={[{ required: true, message: "Vui lòng chọn khung giờ" }]}
+          label={t("medicalRecord.followUpModal.timeSlot")}
+          rules={[{ required: true, message: t("medicalRecord.followUpModal.timeSlotRequired") }]}
         >
           <Select
-            placeholder="Chọn khung giờ khám"
+            placeholder={t("medicalRecord.followUpModal.timeSlotPlaceholder")}
             loading={isLoadingSlots}
             disabled={!selectedDate}
           >
             {isLoadingSlots ? (
               <Select.Option value="" disabled>
-                <Spin size="small" /> Đang tải...
+                <Spin size="small" /> {t("medicalRecord.followUpModal.loading")}
               </Select.Option>
             ) : availableSlots.length === 0 ? (
               <Select.Option value="" disabled>
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  description="Không có khung giờ khả dụng"
+                  description={t("medicalRecord.followUpModal.noSlotsAvailable")}
                 />
               </Select.Option>
             ) : (
@@ -200,9 +208,9 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item name="service_name" label="Dịch vụ khám">
+        <Form.Item name="service_name" label={t("medicalRecord.followUpModal.service")}>
           <Input
-            placeholder="Đang tải dịch vụ..."
+            placeholder={t("medicalRecord.followUpModal.serviceLoading")}
             disabled
             suffix={
               isLoadingService ? (
@@ -216,14 +224,20 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
 
         <Form.Item
           name="reason"
-          label="Lý do tái khám"
-          rules={[{ required: true, message: "Vui lòng nhập lý do tái khám" }]}
+          label={t("medicalRecord.followUpModal.reason")}
+          rules={[{ required: true, message: t("medicalRecord.followUpModal.reasonRequired") }]}
         >
-          <Input.TextArea rows={3} placeholder="Nhập lý do tái khám..." />
+          <Input.TextArea
+            rows={3}
+            placeholder={t("medicalRecord.followUpModal.reasonPlaceholder")}
+          />
         </Form.Item>
 
-        <Form.Item name="notes" label="Ghi chú thêm">
-          <Input.TextArea rows={2} placeholder="Ghi chú thêm (tùy chọn)..." />
+        <Form.Item name="notes" label={t("medicalRecord.followUpModal.additionalNotes")}>
+          <Input.TextArea
+            rows={2}
+            placeholder={t("medicalRecord.followUpModal.additionalNotesPlaceholder")}
+          />
         </Form.Item>
       </Form>
     </Modal>

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Input, Button, Upload, message as antdMessage, Image } from "antd";
 import { FaPaperPlane, FaFileAlt, FaImage, FaSmile } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import {
   collection,
@@ -36,6 +37,7 @@ interface ChatBoxProps {
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [showEmoji, setShowEmoji] = useState(false);
   const [input, setInput] = useState("");
@@ -45,10 +47,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
   const uploadMutation = useUploadFileMutation({
     onError: (err) => {
       console.error("❌ Upload error:", err);
-      antdMessage.error("Tải file thất bại!");
+      antdMessage.error(t("videoChat.chat.upload.error"));
     },
     onSuccess: () => {
-      antdMessage.success("Tải file thành công!");
+      antdMessage.success(t("videoChat.chat.upload.success"));
     },
   });
 
@@ -113,7 +115,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
       return false;
     } catch (error) {
       console.error("❌ Upload & send file error:", error);
-      antdMessage.error("Gửi file thất bại!");
+      antdMessage.error(t("videoChat.chat.upload.sendError"));
       return false;
     }
   };
@@ -141,7 +143,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
             rel="noopener noreferrer"
             className="flex items-center gap-1 text-blue-600 underline mt-1"
           >
-            <FaFileAlt /> Tải file
+            <FaFileAlt /> {t("videoChat.chat.downloadFile")}
           </a>
         );
       default:
@@ -214,7 +216,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversationId, otherUser }) => {
         <Input.TextArea
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Nhập tin nhắn..."
+          placeholder={t("videoChat.chat.messagePlaceholder")}
           autoSize={{ minRows: 1, maxRows: 4 }}
           onPressEnter={(e) => {
             if (!e.shiftKey) {
