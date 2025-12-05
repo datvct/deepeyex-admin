@@ -275,7 +275,7 @@ export default function UserPage() {
               { required: true, message: t("user.form.password_required") },
               { min: 6, message: t("user.form.password_min") },
               {
-                pattern: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/,
+                pattern: /^(?=.*[A-Za-z])(?=.*\d).{6,}$/,
                 message: t("user.form.password_pattern"),
               },
             ]}
