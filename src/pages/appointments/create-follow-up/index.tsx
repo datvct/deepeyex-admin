@@ -19,6 +19,7 @@ import {
   ClockCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../shares/stores";
@@ -35,6 +36,7 @@ const { Option } = Select;
 const { TextArea } = Input;
 
 const CreateFollowUpPage: React.FC = () => {
+  const { t } = useTranslation();
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -78,7 +80,7 @@ const CreateFollowUpPage: React.FC = () => {
 
   const createPendingFollowUpMutation = useCreatePendingFollowUpMutation({
     onSuccess: (data) => {
-      message.success("Tạo lịch tái khám thành công!");
+      message.success(t("createFollowUp.messages.success"));
       setAppointmentData(data.data);
       setCurrentStep(2);
       queryClient.invalidateQueries({
@@ -87,24 +89,22 @@ const CreateFollowUpPage: React.FC = () => {
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Không thể tạo lịch tái khám. Vui lòng thử lại!";
+        error?.response?.data?.message || error?.message || t("createFollowUp.messages.error");
       message.error(errorMessage);
     },
   });
 
   const steps = [
     {
-      title: "Chọn thông tin",
+      title: t("createFollowUp.steps.selectInfo"),
       icon: <UserOutlined />,
     },
     {
-      title: "Xác nhận",
+      title: t("createFollowUp.steps.confirm"),
       icon: <CalendarOutlined />,
     },
     {
-      title: "Hoàn thành",
+      title: t("createFollowUp.steps.complete"),
       icon: <CheckCircleOutlined />,
     },
   ];
@@ -159,10 +159,10 @@ const CreateFollowUpPage: React.FC = () => {
         hospital_id: selectedDoctor?.hospital_id || "",
         notes: values.reason
           ? values.notes
-            ? `${values.reason}\n\nGhi chú: ${values.notes}`
+            ? `${values.reason}\n\n${t("createFollowUp.defaultValues.notesLabel")} ${values.notes}`
             : values.reason
           : values.notes || "",
-        service_name: values.service_name || "Tái khám",
+        service_name: values.service_name || t("createFollowUp.defaultValues.serviceName"),
         slot_ids: slotIds,
       };
 
@@ -174,7 +174,7 @@ const CreateFollowUpPage: React.FC = () => {
       createPendingFollowUpMutation.mutate(payload);
     } catch (error) {
       console.error("Validation error:", error);
-      message.error("Vui lòng điền đầy đủ thông tin bắt buộc!");
+      message.error(t("createFollowUp.messages.validationError"));
     }
   };
 
@@ -182,8 +182,8 @@ const CreateFollowUpPage: React.FC = () => {
     <div>
       <Card className="shadow-md">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Tạo lịch tái khám</h1>
-          <p className="text-gray-600 text-lg">Đặt lịch hẹn tái khám cho bệnh nhân</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{t("createFollowUp.title")}</h1>
+          <p className="text-gray-600 text-lg">{t("createFollowUp.subtitle")}</p>
         </div>
 
         <Steps current={currentStep} items={steps} className="mb-10" />
@@ -201,11 +201,11 @@ const CreateFollowUpPage: React.FC = () => {
             <div className="space-y-6 max-w-2xl mx-auto">
               <Form.Item
                 name="patient_id"
-                label="Bệnh nhân"
-                rules={[{ required: true, message: "Vui lòng chọn bệnh nhân!" }]}
+                label={t("createFollowUp.form.patient")}
+                rules={[{ required: true, message: t("createFollowUp.form.patientRequired") }]}
               >
                 <Select
-                  placeholder="Chọn bệnh nhân..."
+                  placeholder={t("createFollowUp.form.patientPlaceholder")}
                   size="large"
                   loading={loadingPatients}
                   showSearch
@@ -228,11 +228,11 @@ const CreateFollowUpPage: React.FC = () => {
 
               <Form.Item
                 name="doctor_id"
-                label="Bác sĩ khám"
-                rules={[{ required: true, message: "Vui lòng chọn bác sĩ!" }]}
+                label={t("createFollowUp.form.doctor")}
+                rules={[{ required: true, message: t("createFollowUp.form.doctorRequired") }]}
               >
                 <Select
-                  placeholder="Chọn bác sĩ..."
+                  placeholder={t("createFollowUp.form.doctorPlaceholder")}
                   size="large"
                   loading={loadingDoctors}
                   onChange={setSelectedDoctorId}
@@ -258,11 +258,11 @@ const CreateFollowUpPage: React.FC = () => {
 
               <Form.Item
                 name="service_name"
-                label="Dịch vụ"
-                rules={[{ required: true, message: "Vui lòng chọn dịch vụ!" }]}
+                label={t("createFollowUp.form.service")}
+                rules={[{ required: true, message: t("createFollowUp.form.serviceRequired") }]}
               >
                 <Select
-                  placeholder="Chọn dịch vụ..."
+                  placeholder={t("createFollowUp.form.servicePlaceholder")}
                   size="large"
                   loading={loadingServices}
                   disabled={!selectedDoctorId}
@@ -276,13 +276,13 @@ const CreateFollowUpPage: React.FC = () => {
 
               <Form.Item
                 name="follow_up_date"
-                label="Ngày tái khám"
-                rules={[{ required: true, message: "Vui lòng chọn ngày tái khám" }]}
+                label={t("createFollowUp.form.followUpDate")}
+                rules={[{ required: true, message: t("createFollowUp.form.followUpDateRequired") }]}
               >
                 <DatePicker
                   style={{ width: "100%" }}
                   format="DD/MM/YYYY"
-                  placeholder="Chọn ngày tái khám"
+                  placeholder={t("createFollowUp.form.followUpDatePlaceholder")}
                   disabledDate={(current) => current && current < dayjs().startOf("day")}
                   onChange={handleDateChange}
                   size="large"
@@ -291,16 +291,18 @@ const CreateFollowUpPage: React.FC = () => {
 
               <Form.Item
                 name="slot_ids"
-                label="Khung giờ khám"
+                label={t("createFollowUp.form.timeSlot")}
                 rules={[
-                  { required: true, message: "Vui lòng chọn khung giờ" },
+                  { required: true, message: t("createFollowUp.form.timeSlotRequired") },
                   {
                     validator: (_, value) => {
                       if (!value || (Array.isArray(value) && value.length === 0)) {
-                        return Promise.reject(new Error("Vui lòng chọn ít nhất một khung giờ"));
+                        return Promise.reject(
+                          new Error(t("createFollowUp.form.timeSlotAtLeastOne")),
+                        );
                       }
                       if (Array.isArray(value) && value.includes(null)) {
-                        return Promise.reject(new Error("Vui lòng chọn khung giờ hợp lệ"));
+                        return Promise.reject(new Error(t("createFollowUp.form.timeSlotValid")));
                       }
                       return Promise.resolve();
                     },
@@ -309,18 +311,18 @@ const CreateFollowUpPage: React.FC = () => {
               >
                 <Select
                   mode="multiple"
-                  placeholder="Chọn khung giờ khám"
+                  placeholder={t("createFollowUp.form.timeSlotPlaceholder")}
                   loading={isLoadingSlots}
                   disabled={!selectedDate || !selectedDoctorId}
                   size="large"
                 >
                   {isLoadingSlots ? (
                     <Option value="loading" disabled>
-                      <Spin size="small" /> Đang tải...
+                      <Spin size="small" /> {t("createFollowUp.messages.loading")}
                     </Option>
                   ) : availableSlots.length === 0 ? (
                     <Option value="empty" disabled>
-                      Không có khung giờ khả dụng
+                      {t("createFollowUp.messages.noSlotsAvailable")}
                     </Option>
                   ) : (
                     availableSlots.map((slot) => (
@@ -342,23 +344,26 @@ const CreateFollowUpPage: React.FC = () => {
 
               <Form.Item
                 name="reason"
-                label="Lý do tái khám"
-                rules={[{ required: true, message: "Vui lòng nhập lý do tái khám" }]}
+                label={t("createFollowUp.form.reason")}
+                rules={[{ required: true, message: t("createFollowUp.form.reasonRequired") }]}
               >
-                <TextArea rows={3} placeholder="Nhập lý do tái khám..." />
+                <TextArea rows={3} placeholder={t("createFollowUp.form.reasonPlaceholder")} />
               </Form.Item>
 
-              <Form.Item name="notes" label="Ghi chú thêm">
-                <TextArea rows={2} placeholder="Ghi chú thêm (tùy chọn)..." />
+              <Form.Item name="notes" label={t("createFollowUp.form.notes")}>
+                <TextArea rows={2} placeholder={t("createFollowUp.form.notesPlaceholder")} />
               </Form.Item>
 
-              <Form.Item name="related_record_id" label="ID Hồ sơ liên quan">
-                <Input placeholder="ID của medical record liên quan (nếu có)" size="large" />
+              <Form.Item name="related_record_id" label={t("createFollowUp.form.relatedRecordId")}>
+                <Input
+                  placeholder={t("createFollowUp.form.relatedRecordIdPlaceholder")}
+                  size="large"
+                />
               </Form.Item>
 
               <div className="flex justify-end pt-4">
                 <Button type="primary" htmlType="submit" size="large" className="px-8">
-                  Tiếp theo
+                  {t("createFollowUp.buttons.next")}
                 </Button>
               </div>
             </div>
@@ -368,25 +373,26 @@ const CreateFollowUpPage: React.FC = () => {
           {currentStep === 1 && (
             <div className="space-y-6 max-w-3xl mx-auto mt-3">
               <Descriptions bordered column={1}>
-                <Descriptions.Item label="Bệnh nhân">
+                <Descriptions.Item label={t("createFollowUp.confirm.patient")}>
                   {patientsData?.data?.find(
                     (p) => p.patient_id === form.getFieldValue("patient_id"),
                   )?.full_name || form.getFieldValue("patient_id")}
                 </Descriptions.Item>
-                <Descriptions.Item label="Bác sĩ">
+                <Descriptions.Item label={t("createFollowUp.confirm.doctor")}>
                   {doctorsData?.data?.find((d) => d.doctor_id === selectedDoctorId)?.full_name}
                 </Descriptions.Item>
-                <Descriptions.Item label="Dịch vụ">
-                  {form.getFieldValue("service_name") || "Tái khám"}
+                <Descriptions.Item label={t("createFollowUp.confirm.service")}>
+                  {form.getFieldValue("service_name") ||
+                    t("createFollowUp.defaultValues.serviceName")}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ngày khám">
+                <Descriptions.Item label={t("createFollowUp.confirm.date")}>
                   {form.getFieldValue("follow_up_date")?.format("DD/MM/YYYY")}
                 </Descriptions.Item>
-                <Descriptions.Item label="Khung giờ">
+                <Descriptions.Item label={t("createFollowUp.confirm.timeSlot")}>
                   {(() => {
                     const slotIds = form.getFieldValue("slot_ids");
                     if (!slotIds || (Array.isArray(slotIds) && slotIds.length === 0)) {
-                      return "Chưa chọn";
+                      return t("createFollowUp.confirm.notSelected");
                     }
                     const selectedSlots = Array.isArray(slotIds)
                       ? slotIds
@@ -396,7 +402,7 @@ const CreateFollowUpPage: React.FC = () => {
                           (slot) => slot != null,
                         );
 
-                    if (selectedSlots.length === 0) return "Chưa chọn";
+                    if (selectedSlots.length === 0) return t("createFollowUp.confirm.notSelected");
 
                     return selectedSlots
                       .map(
@@ -412,17 +418,17 @@ const CreateFollowUpPage: React.FC = () => {
                       .join(", ");
                   })()}
                 </Descriptions.Item>
-                <Descriptions.Item label="Lý do tái khám">
-                  {form.getFieldValue("reason") || "Không có"}
+                <Descriptions.Item label={t("createFollowUp.confirm.reason")}>
+                  {form.getFieldValue("reason") || t("createFollowUp.confirm.none")}
                 </Descriptions.Item>
-                <Descriptions.Item label="Ghi chú">
-                  {form.getFieldValue("notes") || "Không có"}
+                <Descriptions.Item label={t("createFollowUp.confirm.notes")}>
+                  {form.getFieldValue("notes") || t("createFollowUp.confirm.none")}
                 </Descriptions.Item>
               </Descriptions>
 
               <div className="flex justify-between pt-6">
                 <Button onClick={() => setCurrentStep(0)} size="large" className="px-8">
-                  Quay lại
+                  {t("createFollowUp.buttons.back")}
                 </Button>
                 <Button
                   type="primary"
@@ -431,7 +437,7 @@ const CreateFollowUpPage: React.FC = () => {
                   size="large"
                   className="px-8"
                 >
-                  Xác nhận tạo lịch
+                  {t("createFollowUp.buttons.confirm")}
                 </Button>
               </div>
             </div>
@@ -441,11 +447,13 @@ const CreateFollowUpPage: React.FC = () => {
           {currentStep === 2 && appointmentData && (
             <div className="text-center space-y-8 py-8">
               <CheckCircleOutlined className="!text-green-600 text-6xl" />
-              <h2 className="text-2xl font-bold !text-green-600">Tạo lịch tái khám thành công!</h2>
+              <h2 className="text-2xl font-bold !text-green-600">
+                {t("createFollowUp.complete.title")}
+              </h2>
 
               <div className="flex justify-center gap-6 pt-4">
                 <Button size="large" onClick={() => window.location.reload()} className="px-8">
-                  Tạo lịch mới
+                  {t("createFollowUp.buttons.createNew")}
                 </Button>
                 <Button
                   type="primary"
@@ -453,7 +461,7 @@ const CreateFollowUpPage: React.FC = () => {
                   onClick={() => navigate("/doctor-consultation")}
                   className="px-8"
                 >
-                  Quay về trang khám
+                  {t("createFollowUp.buttons.backToConsultation")}
                 </Button>
               </div>
             </div>

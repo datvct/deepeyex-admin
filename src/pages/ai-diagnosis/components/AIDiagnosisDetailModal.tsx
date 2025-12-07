@@ -13,21 +13,12 @@ import {
   EditOutlined,
   ClearOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import { AIDiagnosis } from "../../../modules/aidiagnosis/types/aidiagnosis";
 import SignaturePad from "./SignaturePad";
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
-
-// Disease labels mapping
-const diseaseLabels: Record<string, string> = {
-  conjunctivitis: "Viêm kết mạc",
-  eyelidedema: "Phù mi mắt",
-  healthy_eye: "Mắt khỏe mạnh",
-  hordeolum: "Lẹo mắt",
-  keratitiswithulcer: "Viêm giác mạc có loét",
-  subconjunctival_hemorrhage: "Xuất huyết dưới kết mạc",
-};
 
 interface AIDiagnosisDetailModalProps {
   diagnosis: AIDiagnosis;
@@ -42,6 +33,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  const { t } = useTranslation();
   const [doctorNotes, setDoctorNotes] = useState("");
   const [signatureFile, setSignatureFile] = useState<File | null>(null);
   const [signaturePreview, setSignaturePreview] = useState<string>("");
@@ -50,13 +42,13 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
   const handleConfirm = (isCorrect: boolean) => {
     // Chỉ yêu cầu ghi chú khi đánh dấu KHÔNG CHÍNH XÁC
     if (!isCorrect && !doctorNotes.trim()) {
-      message.warning("Vui lòng nhập ghi chú khi đánh dấu chẩn đoán không chính xác");
+      message.warning(t("aiDiagnosis.detailModal.notesRequiredWarning"));
       return;
     }
 
     // Yêu cầu chữ ký
     if (!signatureFile) {
-      message.warning("Vui lòng ký xác nhận trước khi gửi");
+      message.warning(t("aiDiagnosis.detailModal.signatureRequiredWarning"));
       setShowSignaturePad(true);
       return;
     }
@@ -67,7 +59,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
   const handleReject = () => {
     // Yêu cầu chữ ký
     if (!signatureFile) {
-      message.warning("Vui lòng ký xác nhận trước khi gửi");
+      message.warning(t("aiDiagnosis.detailModal.signatureRequiredWarning"));
       setShowSignaturePad(true);
       return;
     }
@@ -80,13 +72,13 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
     const previewUrl = URL.createObjectURL(file);
     setSignaturePreview(previewUrl);
     setShowSignaturePad(false);
-    message.success("Đã lưu chữ ký");
+    message.success(t("aiDiagnosis.detailModal.signatureSaved"));
   };
 
   const handleRemoveSignature = () => {
     setSignatureFile(null);
     setSignaturePreview("");
-    message.info("Đã xóa chữ ký");
+    message.info(t("aiDiagnosis.detailModal.signatureRemoved"));
   };
 
   const getConfidenceColor = (score: number) => {
@@ -96,14 +88,18 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
   };
 
   const confidencePercent = Math.round(diagnosis.confidence * 100);
-  const diseaseName = diseaseLabels[diagnosis.disease_code] || diagnosis.disease_code;
+  const diseaseName = t(`aiDiagnosis.diseaseLabels.${diagnosis.disease_code}`, {
+    defaultValue: diagnosis.disease_code,
+  });
 
   return (
     <Modal
       title={
         <div className="flex items-center gap-2">
           <RobotOutlined className="text-blue-600" />
-          <span>Chẩn đoán AI - Patient ID: {diagnosis.patient_id.slice(0, 8)}...</span>
+          <span>
+            {t("aiDiagnosis.detailModal.title", { id: diagnosis.patient_id.slice(0, 8) })}
+          </span>
         </div>
       }
       open={isOpen}
@@ -111,7 +107,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
       width={800}
       footer={[
         <Button key="cancel" onClick={onClose}>
-          Đóng
+          {t("aiDiagnosis.detailModal.close")}
         </Button>,
         <Button
           key="reject"
@@ -120,7 +116,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
           icon={<CloseOutlined />}
           onClick={() => handleReject()}
         >
-          Không chính xác
+          {t("aiDiagnosis.detailModal.reject")}
         </Button>,
         <Button
           key="confirm"
@@ -128,7 +124,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
           icon={<CheckOutlined />}
           onClick={() => handleConfirm(true)}
         >
-          Xác nhận đúng
+          {t("aiDiagnosis.detailModal.confirm")}
         </Button>,
       ]}
     >
@@ -140,12 +136,16 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
               <div className="flex items-center gap-2">
                 <UserOutlined className="text-gray-500" />
                 <span className="font-medium">
-                  Patient ID: {diagnosis.patient_id.slice(0, 13)}...
+                  {t("aiDiagnosis.detailModal.patientId", {
+                    id: diagnosis.patient_id.slice(0, 13),
+                  })}
                 </span>
               </div>
               {diagnosis.eye_type && (
                 <Tag color="blue">
-                  {diagnosis.eye_type === "both" ? "Cả 2 mắt" : diagnosis.eye_type}
+                  {diagnosis.eye_type === "both"
+                    ? t("aiDiagnosis.detailModal.bothEyes")
+                    : diagnosis.eye_type}
                 </Tag>
               )}
             </div>
@@ -163,7 +163,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
           <div className="flex items-center justify-between mb-3">
             <h4 className="font-semibold text-blue-800 flex items-center gap-2">
               <EyeOutlined />
-              Chẩn đoán AI
+              {t("aiDiagnosis.detailModal.aiDiagnosis")}
             </h4>
             <div className="flex items-center gap-2">
               <Progress
@@ -180,7 +180,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
           </p>
           {diagnosis.notes && (
             <div className="mt-2 text-sm text-gray-600">
-              <strong>Ghi chú:</strong> {diagnosis.notes}
+              <strong>{t("aiDiagnosis.detailModal.notes")}</strong> {diagnosis.notes}
             </div>
           )}
         </Card>
@@ -191,7 +191,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
             tab={
               <span className="flex items-center gap-1">
                 <CameraOutlined />
-                Ảnh mắt
+                {t("aiDiagnosis.detailModal.eyeImageTab")}
               </span>
             }
             key="images"
@@ -200,7 +200,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
               <div className="flex justify-center">
                 <Image
                   src={diagnosis.main_image_url}
-                  alt="Ảnh mắt"
+                  alt={t("aiDiagnosis.detailModal.eyeImage")}
                   className="rounded-lg border"
                   style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
                   placeholder={
@@ -213,7 +213,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <CameraOutlined className="text-4xl mb-2" />
-                <p>Không có ảnh mắt</p>
+                <p>{t("aiDiagnosis.detailModal.noEyeImage")}</p>
               </div>
             )}
           </TabPane>
@@ -222,15 +222,17 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
         {/* Ghi chú của bác sĩ */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Ghi chú của bác sĩ
-            <span className="text-red-500 ml-1">*</span>
+            {t("aiDiagnosis.detailModal.doctorNotes")}
+            <span className="text-red-500 ml-1">
+              {t("aiDiagnosis.detailModal.doctorNotesRequired")}
+            </span>
             <span className="text-xs text-gray-500 ml-2">
-              (Bắt buộc khi đánh dấu không chính xác)
+              {t("aiDiagnosis.detailModal.doctorNotesRequiredHint")}
             </span>
           </label>
           <TextArea
             rows={3}
-            placeholder="Nhập ghi chú của bạn về chẩn đoán này..."
+            placeholder={t("aiDiagnosis.detailModal.doctorNotesPlaceholder")}
             value={doctorNotes}
             onChange={(e) => setDoctorNotes(e.target.value)}
             className="text-sm"
@@ -241,12 +243,14 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="block text-sm font-medium text-gray-700">
-              Chữ ký xác nhận
-              <span className="text-red-500 ml-1">*</span>
+              {t("aiDiagnosis.detailModal.signature")}
+              <span className="text-red-500 ml-1">
+                {t("aiDiagnosis.detailModal.signatureRequired")}
+              </span>
             </label>
             {signatureFile && (
               <Button size="small" danger icon={<ClearOutlined />} onClick={handleRemoveSignature}>
-                Xóa chữ ký
+                {t("aiDiagnosis.detailModal.removeSignature")}
               </Button>
             )}
           </div>
@@ -255,11 +259,13 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
             <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
               <div className="flex items-center gap-2 mb-2">
                 <CheckOutlined className="text-green-600" />
-                <span className="text-sm font-medium text-green-700">Đã ký xác nhận</span>
+                <span className="text-sm font-medium text-green-700">
+                  {t("aiDiagnosis.detailModal.signed")}
+                </span>
               </div>
               <img
                 src={signaturePreview}
-                alt="Chữ ký"
+                alt={t("aiDiagnosis.detailModal.signatureAlt")}
                 className="border border-gray-200 rounded bg-white w-full"
                 style={{ maxHeight: "120px", objectFit: "contain" }}
               />
@@ -277,7 +283,7 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
                   size="large"
                   className="h-24"
                 >
-                  Click để ký xác nhận
+                  {t("aiDiagnosis.detailModal.clickToSign")}
                 </Button>
               )}
             </div>

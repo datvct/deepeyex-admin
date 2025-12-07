@@ -1,5 +1,6 @@
 // src/pages/doctor-consultation/components/PrescriptionTab.tsx
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Form, Input, Button, Row, Col, TimePicker, Tag, Space } from "antd";
 import {
   MedicineBoxOutlined,
@@ -35,6 +36,7 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
   onAddPrescription,
   onRemovePrescription,
 }) => {
+  const { t } = useTranslation();
   const [customTimes, setCustomTimes] = useState<dayjs.Dayjs[]>([]);
   const [frequency, setFrequency] = useState<number>(0);
 
@@ -101,41 +103,45 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
         <ExistingPrescriptions prescriptions={existingPrescriptions} />
       )}
 
-      <Card title="Thêm toa thuốc mới">
+      <Card title={t("medicalRecord.prescriptionTab.addNewTitle")}>
         <Form form={form} onFinish={handleFinish} layout="vertical">
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item
                 name="drug_name"
-                label="Tên thuốc"
-                rules={[{ required: true, message: "Vui lòng nhập tên thuốc" }]}
+                label={t("medicalRecord.prescriptionTab.drugName")}
+                rules={[
+                  { required: true, message: t("medicalRecord.prescriptionTab.drugNameRequired") },
+                ]}
               >
-                <Input placeholder="Nhập tên thuốc" />
+                <Input placeholder={t("medicalRecord.prescriptionTab.drugNamePlaceholder")} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
                 name="dosage"
-                label="Liều lượng"
-                rules={[{ required: true, message: "Vui lòng nhập liều lượng" }]}
+                label={t("medicalRecord.prescriptionTab.dosage")}
+                rules={[
+                  { required: true, message: t("medicalRecord.prescriptionTab.dosageRequired") },
+                ]}
               >
-                <Input placeholder="Ví dụ: 500mg" />
+                <Input placeholder={t("medicalRecord.prescriptionTab.dosagePlaceholder")} />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
                 name="frequency"
-                label="Tần suất (số lần/ngày)"
+                label={t("medicalRecord.prescriptionTab.frequency")}
                 rules={[
-                  { required: true, message: "Vui lòng nhập tần suất" },
+                  { required: true, message: t("medicalRecord.prescriptionTab.frequencyRequired") },
                   {
                     pattern: /^[1-9]\d*$/,
-                    message: "Vui lòng nhập số nguyên dương",
+                    message: t("medicalRecord.prescriptionTab.frequencyInvalid"),
                   },
                 ]}
               >
                 <Input
-                  placeholder="Ví dụ: 3"
+                  placeholder={t("medicalRecord.prescriptionTab.frequencyPlaceholder")}
                   type="number"
                   min={1}
                   onChange={(e) => handleFrequencyChange(e.target.value)}
@@ -147,15 +153,20 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
             <Col span={12}>
               <Form.Item
                 name="duration"
-                label="Thời gian dùng (số ngày)"
-                rules={[{ required: true, message: "Vui lòng nhập thời gian dùng" }]}
+                label={t("medicalRecord.prescriptionTab.duration")}
+                rules={[
+                  { required: true, message: t("medicalRecord.prescriptionTab.durationRequired") },
+                ]}
               >
-                <Input placeholder="Ví dụ: 7" type="number" />
+                <Input
+                  placeholder={t("medicalRecord.prescriptionTab.durationPlaceholder")}
+                  type="number"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="notes" label="Ghi chú">
-                <Input placeholder="Ghi chú thêm (tùy chọn)" />
+              <Form.Item name="notes" label={t("medicalRecord.prescriptionTab.notes")}>
+                <Input placeholder={t("medicalRecord.prescriptionTab.notesPlaceholder")} />
               </Form.Item>
             </Col>
           </Row>
@@ -166,7 +177,7 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-semibold text-gray-700">
                     <ClockCircleOutlined className="mr-1" />
-                    Giờ uống thuốc (nhắc nhở bệnh nhân)
+                    {t("medicalRecord.prescriptionTab.medicationTimes")}
                   </label>
                   {frequency >= 4 && (
                     <Button
@@ -175,7 +186,7 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                       icon={<PlusOutlined />}
                       onClick={handleAddTime}
                     >
-                      Thêm giờ uống
+                      {t("medicalRecord.prescriptionTab.addTime")}
                     </Button>
                   )}
                 </div>
@@ -183,7 +194,8 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                   <div className="space-y-2">
                     <div>
                       <p className="text-sm text-blue-600 mb-2">
-                        Thời gian uống thuốc ({frequency} lần/ngày):
+                        {t("medicalRecord.prescriptionTab.timesPerDay")} ({frequency}{" "}
+                        {t("medicalRecord.prescriptionTab.timesPerDaySuffix")}):
                       </p>
                       <div className="grid grid-cols-3 gap-3">
                         {customTimes.map((time, index) => (
@@ -192,7 +204,7 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                               value={time}
                               format="HH:mm"
                               onChange={(t) => handleTimeChange(t, index)}
-                              placeholder="Chọn giờ"
+                              placeholder={t("medicalRecord.prescriptionTab.selectTime")}
                               className="flex-1"
                             />
                             {frequency >= 4 && (
@@ -212,10 +224,10 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                 ) : (
                   <div className="text-center p-4 bg-gray-50 rounded border border-dashed border-gray-300">
                     <p className="text-sm text-gray-500">
-                      Nhập tần suất để tự động thiết lập giờ uống
+                      {t("medicalRecord.prescriptionTab.autoSetupHint")}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      1 lần: 08:00 | 2 lần: 08:00, 18:00 | 3 lần: 08:00, 12:00, 18:00
+                      {t("medicalRecord.prescriptionTab.autoSetupExample")}
                     </p>
                   </div>
                 )}
@@ -225,14 +237,14 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
 
           <Form.Item>
             <Button type="primary" htmlType="submit" icon={<MedicineBoxOutlined />} block>
-              Thêm toa thuốc
+              {t("medicalRecord.prescriptionTab.addPrescription")}
             </Button>
           </Form.Item>
         </Form>
       </Card>
 
       {prescriptions.length > 0 && (
-        <Card title="Danh sách toa thuốc">
+        <Card title={t("medicalRecord.prescriptionTab.prescriptionList")}>
           <div className="space-y-3">
             {prescriptions.map((prescription, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
@@ -241,19 +253,27 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                     <h4 className="font-medium text-gray-800">{prescription.drug_name}</h4>
                     <div className="grid grid-cols-2 gap-2 mt-2 text-sm">
                       <div>
-                        <span className="text-gray-600">Liều lượng:</span> {prescription.dosage}
+                        <span className="text-gray-600">{t("medicalRecord.viewModal.dosage")}</span>{" "}
+                        {prescription.dosage}
                       </div>
                       <div>
-                        <span className="text-gray-600">Tần suất:</span> {prescription.frequency}{" "}
-                        lần/ngày
+                        <span className="text-gray-600">
+                          {t("medicalRecord.viewModal.frequency")}
+                        </span>{" "}
+                        {prescription.frequency}{" "}
+                        {t("medicalRecord.prescriptionTab.timesPerDaySuffix")}
                       </div>
                       <div>
-                        <span className="text-gray-600">Thời gian:</span> {prescription.duration}{" "}
-                        ngày
+                        <span className="text-gray-600">
+                          {t("medicalRecord.viewModal.duration")}
+                        </span>{" "}
+                        {prescription.duration} {t("medicalRecord.viewModal.days")}
                       </div>
                       {prescription.custom_times && prescription.custom_times.length > 0 && (
                         <div className="col-span-2">
-                          <span className="text-gray-600">Giờ uống:</span>{" "}
+                          <span className="text-gray-600">
+                            {t("medicalRecord.prescriptionTab.times")}
+                          </span>{" "}
                           <Space size={[4, 4]} wrap>
                             {prescription.custom_times.map((time, idx) => (
                               <Tag key={idx} color="blue" icon={<ClockCircleOutlined />}>
@@ -265,13 +285,16 @@ const PrescriptionTab: React.FC<PrescriptionTabProps> = ({
                       )}
                       {prescription.notes && (
                         <div className="col-span-2">
-                          <span className="text-gray-600">Ghi chú:</span> {prescription.notes}
+                          <span className="text-gray-600">
+                            {t("medicalRecord.viewModal.notes")}
+                          </span>{" "}
+                          {prescription.notes}
                         </div>
                       )}
                     </div>
                   </div>
                   <Button type="text" danger onClick={() => onRemovePrescription(index)}>
-                    Xóa
+                    {t("medicalRecord.prescriptionTab.remove")}
                   </Button>
                 </div>
               </div>

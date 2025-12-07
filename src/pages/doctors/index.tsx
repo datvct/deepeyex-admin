@@ -155,14 +155,14 @@ export default function DoctorsPage() {
       name: "full_name",
       label: t("doctor.form.name"),
       type: "text",
-      placeholder: "Nhập tên bác sĩ",
+      placeholder: t("doctor.form.placeholder.name"),
       width: 200,
     },
     {
       name: "specialty",
       label: t("doctor.form.specialty"),
       type: "select",
-      placeholder: "Chọn chuyên khoa",
+      placeholder: t("doctor.form.placeholder.specialty"),
       options: Object.values(Specialty).map((specialty) => ({
         label: SpecialtyLabel[specialty],
         value: specialty,
@@ -173,7 +173,7 @@ export default function DoctorsPage() {
       name: "hospital_id",
       label: t("doctor.form.hospital"),
       type: "select",
-      placeholder: "Chọn bệnh viện",
+      placeholder: t("doctor.form.placeholder.hospital"),
       options:
         hospitalData?.data?.map((hospital) => ({
           label: hospital.name,
@@ -327,13 +327,29 @@ export default function DoctorsPage() {
             rules={[{ required: true, message: t("doctor.validation.userRequired") }]}
           >
             <Select placeholder={t("doctor.form.placeholder.user")} allowClear>
-              {dataUser?.data
-                ?.filter((user) => user.role === "doctor" || user.role === "receptionist")
-                .map((user) => (
-                  <Select.Option key={user.id} value={user.id}>
-                    {user.username || user.email || user.id}
-                  </Select.Option>
-                ))}
+              {(() => {
+                const usedUserIds = new Set(
+                  doctors
+                    .filter(
+                      (doctor) => doctor.user_id && doctor.doctor_id !== editingDoctor?.doctor_id,
+                    )
+                    .map((doctor) => doctor.user_id),
+                );
+
+                return dataUser?.data
+                  ?.filter(
+                    (user) =>
+                      (user.role === "doctor" ||
+                        user.role === "receptionist" ||
+                        user.role === "hospital") &&
+                      !usedUserIds.has(user.id),
+                  )
+                  .map((user) => (
+                    <Select.Option key={user.id} value={user.id}>
+                      {user.username || user.email || user.id}
+                    </Select.Option>
+                  ));
+              })()}
             </Select>
           </Form.Item>
 

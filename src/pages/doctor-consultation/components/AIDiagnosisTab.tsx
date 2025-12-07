@@ -1,5 +1,6 @@
 // src/pages/doctor-consultation/components/AIDiagnosisTab.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Row, Col, Tag, Image } from "antd";
 import dayjs from "dayjs";
 import { AIDiagnosis } from "../../../modules/aidiagnosis/types/aidiagnosis";
@@ -20,6 +21,7 @@ const diseaseLabels: Record<string, string> = {
 };
 
 const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       {aiDiagnoses.map((aiDiag, index) => {
@@ -32,7 +34,10 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
             className="border-l-4 border-l-purple-500"
             title={
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-purple-700">Chẩn đoán AI #{index + 1}</span>
+                <span className="font-semibold text-purple-700">
+                  {t("medicalRecord.aiDiagnosisTab.title")}
+                  {index + 1}
+                </span>
                 <Tag
                   color={
                     aiDiag.status === "APPROVED"
@@ -42,11 +47,7 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
                       : "orange"
                   }
                 >
-                  {aiDiag.status === "APPROVED"
-                    ? "Đã xác nhận"
-                    : aiDiag.status === "REJECTED"
-                    ? "Đã từ chối"
-                    : "Chờ xác nhận"}
+                  {t(`medicalRecord.aiDiagnosisTab.status.${aiDiag.status}`)}
                 </Tag>
               </div>
             }
@@ -54,13 +55,17 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
             <Row gutter={[16, 16]}>
               <Col span={12}>
                 <div>
-                  <label className="text-sm font-semibold text-gray-600">Bệnh chẩn đoán</label>
+                  <label className="text-sm font-semibold text-gray-600">
+                    {t("medicalRecord.aiDiagnosisTab.disease")}
+                  </label>
                   <p className="text-gray-800 text-lg font-medium">{diseaseName}</p>
                 </div>
               </Col>
               <Col span={12}>
                 <div>
-                  <label className="text-sm font-semibold text-gray-600">Độ tin cậy</label>
+                  <label className="text-sm font-semibold text-gray-600">
+                    {t("medicalRecord.aiDiagnosisTab.confidence")}
+                  </label>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 bg-gray-200 rounded-full h-2">
                       <div
@@ -81,20 +86,20 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
               {aiDiag.eye_type && (
                 <Col span={12}>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Vị trí mắt</label>
+                    <label className="text-sm font-semibold text-gray-600">
+                      {t("medicalRecord.aiDiagnosisTab.eyePosition")}
+                    </label>
                     <p className="text-gray-800">
-                      {aiDiag.eye_type === "LEFT"
-                        ? "Mắt trái"
-                        : aiDiag.eye_type === "RIGHT"
-                        ? "Mắt phải"
-                        : "Cả hai mắt"}
+                      {t(`medicalRecord.aiDiagnosisTab.eyeTypes.${aiDiag.eye_type}`)}
                     </p>
                   </div>
                 </Col>
               )}
               <Col span={12}>
                 <div>
-                  <label className="text-sm font-semibold text-gray-600">Thời gian chẩn đoán</label>
+                  <label className="text-sm font-semibold text-gray-600">
+                    {t("medicalRecord.aiDiagnosisTab.diagnosisTime")}
+                  </label>
                   <p className="text-gray-800">
                     {dayjs(aiDiag.created_at).format("DD/MM/YYYY HH:mm")}
                   </p>
@@ -104,7 +109,7 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
                 <Col span={24}>
                   <div>
                     <label className="text-sm font-semibold text-gray-600 mb-2 block">
-                      Hình ảnh chẩn đoán
+                      {t("medicalRecord.aiDiagnosisTab.diagnosisImage")}
                     </label>
                     <Image
                       src={aiDiag.main_image_url}
@@ -118,7 +123,9 @@ const AIDiagnosisTab: React.FC<AIDiagnosisTabProps> = ({ aiDiagnoses }) => {
               {aiDiag.notes && (
                 <Col span={24}>
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Ghi chú</label>
+                    <label className="text-sm font-semibold text-gray-600">
+                      {t("medicalRecord.aiDiagnosisTab.notes")}
+                    </label>
                     <p className="text-gray-800 bg-purple-50 p-3 rounded border-l-4 border-purple-400">
                       {aiDiag.notes}
                     </p>

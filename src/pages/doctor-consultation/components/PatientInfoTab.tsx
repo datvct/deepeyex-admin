@@ -1,5 +1,6 @@
 // src/pages/doctor-consultation/components/PatientInfoTab.tsx
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Row, Col, Form, Input, Upload } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -26,60 +27,77 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
   existingAttachments,
   onUploadChange,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <Row gutter={[16, 16]}>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Họ và tên</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.fullName")}
+              </label>
               <p className="text-gray-800">{appointment.patient.full_name}</p>
             </div>
           </Col>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Giới tính</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.gender")}
+              </label>
               <p className="text-gray-800">{getGenderLabel(appointment.patient.gender)}</p>
             </div>
           </Col>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Ngày sinh</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.dob")}
+              </label>
               <p className="text-gray-800">{dayjs(appointment.patient.dob).format("DD/MM/YYYY")}</p>
             </div>
           </Col>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Số điện thoại</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.phone")}
+              </label>
               <p className="text-gray-800">{appointment.patient.phone}</p>
             </div>
           </Col>
           <Col span={24}>
             <div>
-              <label className="text-sm font-semibold">Địa chỉ</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.address")}
+              </label>
               <p className="text-gray-800">{appointment.patient.address}</p>
             </div>
           </Col>
         </Row>
       </Card>
 
-      <Card title="Thông tin lịch khám">
+      <Card title={t("medicalRecord.patientInfoTab.appointmentInfo")}>
         <Row gutter={[16, 16]}>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Bác sĩ</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.doctor")}
+              </label>
               <p className="text-gray-800">{appointment.doctor.full_name}</p>
             </div>
           </Col>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Chuyên khoa</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.specialty")}
+              </label>
               <p className="text-gray-800">{SpecialtyLabel[appointment.doctor.specialty]}</p>
             </div>
           </Col>
           <Col span={12}>
             <div>
-              <label className="text-sm font-semibold">Thời gian khám</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.examinationTime")}
+              </label>
               <p className="text-gray-800">
                 {appointment.time_slots[0]?.start_time
                   ? new Date(appointment.time_slots[0].start_time).toLocaleString("vi-VN", {
@@ -105,7 +123,9 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
           </Col>
           <Col span={12}>
             <div className="flex items-center gap-2">
-              <label className="text-sm font-semibold">Trạng thái:</label>
+              <label className="text-sm font-semibold">
+                {t("medicalRecord.patientInfoTab.status")}
+              </label>
               <span
                 className={`px-2 py-1 rounded text-sm ${
                   appointment.status === "PENDING"
@@ -117,13 +137,7 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
                     : "bg-gray-100 text-gray-800"
                 }`}
               >
-                {appointment.status === "PENDING"
-                  ? "Chờ xác nhận"
-                  : appointment.status === "CONFIRMED"
-                  ? "Đã xác nhận"
-                  : appointment.status === "COMPLETED"
-                  ? "Hoàn thành"
-                  : appointment.status}
+                {t(`doctorConsultation.statusLabels.${appointment.status}`)}
               </span>
             </div>
           </Col>
@@ -133,10 +147,10 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
       <Card
         title={
           <div className="flex items-center justify-between">
-            <span>Chẩn đoán</span>
+            <span>{t("medicalRecord.patientInfoTab.diagnosis")}</span>
             {medicalRecordAction === "update" && (
               <span className="text-sm font-normal text-orange-600">
-                Đang cập nhật hồ sơ có sẵn
+                {t("medicalRecord.patientInfoTab.updatingRecord")}
               </span>
             )}
           </div>
@@ -150,12 +164,23 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
                 name="diagnosis"
                 label={
                   <span className="text-sm font-semibold text-gray-700">
-                    Chẩn đoán <span className="text-red-500">*</span>
+                    {t("medicalRecord.patientInfoTab.diagnosisLabel")}{" "}
+                    <span className="text-red-500">
+                      {t("medicalRecord.patientInfoTab.diagnosisRequired")}
+                    </span>
                   </span>
                 }
-                rules={[{ required: true, message: "Vui lòng nhập chẩn đoán" }]}
+                rules={[
+                  {
+                    required: true,
+                    message: t("medicalRecord.patientInfoTab.diagnosisRequiredMessage"),
+                  },
+                ]}
               >
-                <Input.TextArea rows={4} placeholder="Nhập chẩn đoán của bệnh nhân..." />
+                <Input.TextArea
+                  rows={4}
+                  placeholder={t("medicalRecord.patientInfoTab.diagnosisPlaceholder")}
+                />
               </Form.Item>
             </Col>
 
@@ -170,8 +195,8 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
               <div>
                 <label className="text-sm font-semibold text-gray-700">
                   {existingAttachments && existingAttachments.length > 0
-                    ? "Thêm file đính kèm mới"
-                    : "Đính kèm file (ảnh, tài liệu)"}
+                    ? t("medicalRecord.patientInfoTab.addNewAttachment")
+                    : t("medicalRecord.patientInfoTab.attachFile")}
                 </label>
                 <Upload
                   listType="picture-card"
@@ -184,19 +209,28 @@ const PatientInfoTab: React.FC<PatientInfoTabProps> = ({
                   {attachmentFileList.length < 5 && (
                     <div>
                       <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>Upload</div>
+                      <div style={{ marginTop: 8 }}>{t("medicalRecord.patientInfoTab.upload")}</div>
                     </div>
                   )}
                 </Upload>
-                <p className="text-xs text-gray-500 mt-1">Tối đa 5 file (ảnh, PDF, Word, v.v.)</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {t("medicalRecord.patientInfoTab.maxFiles")}
+                </p>
               </div>
             </Col>
             <Col span={24}>
               <Form.Item
                 name="notes"
-                label={<span className="text-sm font-semibold text-gray-700">Ghi chú thêm</span>}
+                label={
+                  <span className="text-sm font-semibold text-gray-700">
+                    {t("medicalRecord.patientInfoTab.additionalNotes")}
+                  </span>
+                }
               >
-                <Input.TextArea rows={3} placeholder="Nhập ghi chú bổ sung (nếu có)..." />
+                <Input.TextArea
+                  rows={3}
+                  placeholder={t("medicalRecord.patientInfoTab.additionalNotesPlaceholder")}
+                />
               </Form.Item>
             </Col>
           </Row>

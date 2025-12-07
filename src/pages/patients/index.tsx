@@ -14,8 +14,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeyEnum } from "../../shares/enums/queryKey";
 import { createPatientSchema } from "../../modules/patients/schemas/createPatient.schema";
 import z from "zod";
-import { userData } from "../../shares/constants/mockApiUser";
 import { FilterField } from "../../shares/components/AdvancedFilter";
+import { useListUsersQuery } from "../../modules/users/hooks/queries/use-get-users.query";
 
 const { Option } = Select;
 
@@ -29,7 +29,7 @@ export default function PatientsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
   const [patients, setPatients] = useState<Patient[]>([]);
-
+  const { data: usersData } = useListUsersQuery({ filters: { role: "patient" } });
   // Mutation: Delete
   const deletePatient = useDeletePatientMutation({
     onSuccess: (data) => {
@@ -138,14 +138,14 @@ export default function PatientsPage() {
       name: "full_name",
       label: t("patient.columns.full_name"),
       type: "text",
-      placeholder: "Nhập tên bệnh nhân",
+      placeholder: t("patient.filter.fullNamePlaceholder"),
       width: 200,
     },
     {
       name: "gender",
       label: t("patient.columns.gender"),
       type: "select",
-      placeholder: "Chọn giới tính",
+      placeholder: t("patient.filter.genderPlaceholder"),
       options: [
         { label: t("patient.gender.male"), value: "male" },
         { label: t("patient.gender.female"), value: "female" },
@@ -155,9 +155,9 @@ export default function PatientsPage() {
     },
     {
       name: "birth_date",
-      label: "Tháng/Năm sinh",
+      label: t("patient.filter.birthDate"),
       type: "month",
-      placeholder: "Chọn tháng/năm sinh",
+      placeholder: t("patient.filter.birthDatePlaceholder"),
       width: 200,
     },
   ];
@@ -307,7 +307,7 @@ export default function PatientsPage() {
                 <Upload listType="picture-card" beforeUpload={() => false} maxCount={1}>
                   <div>
                     <PlusOutlined />
-                    <div style={{ marginTop: 8 }}>Upload</div>
+                    <div style={{ marginTop: 8 }}>{t("patient.form.placeholder.upload")}</div>
                   </div>
                 </Upload>
               </Form.Item>
@@ -318,11 +318,11 @@ export default function PatientsPage() {
                 rules={[{ required: true, message: t("patient.form.placeholder.user") }]}
               >
                 <Select placeholder={t("patient.form.placeholder.user")} allowClear>
-                  {userData?.data
+                  {usersData?.data
                     ?.filter((user) => user.role === "patient")
                     .map((user) => (
-                      <Option key={user.user_id} value={user.user_id}>
-                        {user.username || user.email || user.user_id}
+                      <Option key={user.id} value={user.id}>
+                        {user.username || user.email || user.id}
                       </Option>
                     ))}
                 </Select>

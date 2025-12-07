@@ -10,6 +10,8 @@ export const specialtyEnum = z.enum([
   "neurology", // Thần kinh
   "endocrinology", // Nội tiết
   "pediatrics", // Nhi khoa
+  "receptionist", // Lễ tân
+  "dermatology", // Da liễu
 ]);
 
 export const createDoctorSchema = z.object({

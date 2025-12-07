@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Appointment } from "../../modules/appointments/types/appointment";
 import PatientProfileModal from "./components/PatientProfileModal";
 import FollowUpModal from "./components/FollowUpModal";
@@ -23,6 +24,7 @@ import { EmailApi } from "../../modules/emails/apis/emailApi";
 import dayjs from "dayjs";
 
 const DoctorConsultationPage: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
@@ -50,9 +52,7 @@ const DoctorConsultationPage: React.FC = () => {
 
   const emergencyCancelMutation = useEmergencyCancelAppointmentMutation({
     onSuccess: (data) => {
-      message.success(
-        data.data?.note || "Hủy lịch khám thành công và tự động chuyển đến bác sĩ thay thế!",
-      );
+      message.success(data.data?.note || t("doctorConsultation.cancelSuccess"));
       setIsCancelModalOpen(false);
       setCancelReason("");
       queryClient.invalidateQueries({
@@ -62,15 +62,15 @@ const DoctorConsultationPage: React.FC = () => {
     onError: (error: any) => {
       // Parse error message from response
       const errorMessage =
-        error?.response?.data?.message || error?.message || "Có lỗi xảy ra khi hủy lịch khám!";
+        error?.response?.data?.message || error?.message || t("doctorConsultation.cancelError");
 
-      toast.error("Không có bác sĩ nào thay thế! Vui lòng liên hệ với admin để được hỗ trợ.");
+      toast.error(t("doctorConsultation.noReplacementDoctor"));
     },
   });
 
   const updateStatusMutation = useUpdateAppointmentStatusMutation({
     onSuccess: async () => {
-      message.success("Cập nhật trạng thái thành công!");
+      message.success(t("doctorConsultation.updateStatusSuccess"));
 
       // Gửi email thông báo hủy lịch
       if (cancelingAppointment) {
@@ -90,7 +90,7 @@ const DoctorConsultationPage: React.FC = () => {
             appointment_time: cancelingAppointment.time_slots[0]?.start_time
               ? dayjs(cancelingAppointment.time_slots[0].start_time).format("HH:mm")
               : "",
-            reason: cancelReason || "Hủy lịch khẩn cấp",
+            reason: cancelReason || t("doctorConsultation.cancelAppointment"),
           });
         } catch (error) {
           console.error("Lỗi gửi email:", error);
@@ -106,7 +106,9 @@ const DoctorConsultationPage: React.FC = () => {
     },
     onError: (error: any) => {
       const errorMessage =
-        error?.response?.data?.message || error?.message || "Không thể cập nhật trạng thái!";
+        error?.response?.data?.message ||
+        error?.message ||
+        t("doctorConsultation.updateStatusError");
       message.error(errorMessage);
     },
   });
@@ -184,7 +186,7 @@ const DoctorConsultationPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-96">
-        <Spin size="large" tip="Đang tải dữ liệu..." />
+        <Spin size="large" tip={t("doctorConsultation.loading")} />
       </div>
     );
   }
@@ -193,8 +195,8 @@ const DoctorConsultationPage: React.FC = () => {
     return (
       <Alert
         type="error"
-        message="Lỗi tải dữ liệu"
-        description="Không thể tải danh sách lịch khám hôm nay. Vui lòng thử lại sau."
+        message={t("doctorConsultation.errorTitle")}
+        description={t("doctorConsultation.errorDescription")}
         showIcon
         className="m-4"
       />
@@ -205,9 +207,9 @@ const DoctorConsultationPage: React.FC = () => {
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Danh sách khám bệnh</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">{t("doctorConsultation.title")}</h1>
           <p className="text-gray-600">
-            Danh sách lịch khám hôm nay ({inProgressAppointments.length})
+            {t("doctorConsultation.subtitle")} ({inProgressAppointments.length})
           </p>
         </div>
       </div>
@@ -216,9 +218,9 @@ const DoctorConsultationPage: React.FC = () => {
         <div className="text-center py-12">
           <UserOutlined className="text-6xl text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-gray-500 mb-2">
-            Không có lịch khám nào đang diễn ra
+            {t("doctorConsultation.noAppointments")}
           </h3>
-          <p className="text-gray-400">Hiện tại không có bệnh nhân nào đang được khám</p>
+          <p className="text-gray-400">{t("doctorConsultation.noAppointmentsDescription")}</p>
         </div>
       ) : (
         <div className="grid gap-4">
@@ -243,25 +245,35 @@ const DoctorConsultationPage: React.FC = () => {
                     )}
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">
-                        {appointment.patient?.full_name || "Không có thông tin"}
+                        {appointment.patient?.full_name || t("doctorConsultation.noInfo")}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        Mã lịch: {appointment.appointment_code}
+                        {t("doctorConsultation.appointmentCode")} {appointment.appointment_code}
                       </p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Dịch vụ</p>
-                      <p className="text-gray-800">{appointment.service_name || "Không có"}</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.service")}
+                      </p>
+                      <p className="text-gray-800">
+                        {appointment.service_name || t("doctorConsultation.none")}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Bệnh nhân</p>
-                      <p className="text-gray-800">{appointment.patient?.phone || "Không có"}</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.patient")}
+                      </p>
+                      <p className="text-gray-800">
+                        {appointment.patient?.phone || t("doctorConsultation.none")}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Trạng thái</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.status")}
+                      </p>
                       <p className="text-gray-800">
                         <span
                           className={`px-2 py-1 rounded text-sm ${
@@ -275,17 +287,19 @@ const DoctorConsultationPage: React.FC = () => {
                           }`}
                         >
                           {appointment.status === "PENDING"
-                            ? "Chờ xác nhận"
+                            ? t("doctorConsultation.statusLabels.PENDING")
                             : appointment.status === "CONFIRMED"
-                            ? "Đã xác nhận"
+                            ? t("doctorConsultation.statusLabels.CONFIRMED")
                             : appointment.status === "COMPLETED"
-                            ? "Hoàn thành"
+                            ? t("doctorConsultation.statusLabels.COMPLETED")
                             : appointment.status}
                         </span>
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Thời gian khám</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.examinationTime")}
+                      </p>
                       <p className="text-gray-800">
                         {appointment.time_slots[0]?.start_time
                           ? new Date(appointment.time_slots[0].start_time).toLocaleTimeString(
@@ -312,22 +326,28 @@ const DoctorConsultationPage: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Địa chỉ</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.address")}
+                      </p>
                       <p className="text-gray-800 text-sm">
-                        {appointment.patient?.address || "Không có"}
+                        {appointment.patient?.address || t("doctorConsultation.none")}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Email</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.email")}
+                      </p>
                       <p className="text-gray-800 text-sm">
-                        {appointment.patient?.email || "Không có"}
+                        {appointment.patient?.email || t("doctorConsultation.none")}
                       </p>
                     </div>
                   </div>
 
                   {appointment.notes && appointment.notes.trim() !== "" && (
                     <div className="mb-4">
-                      <p className="text-sm font-medium text-gray-600">Ghi chú</p>
+                      <p className="text-sm font-medium text-gray-600">
+                        {t("doctorConsultation.notes")}
+                      </p>
                       <p className="text-gray-800 bg-amber-50 p-2 rounded border-l-4 border-amber-400">
                         {appointment.notes}
                       </p>
@@ -343,7 +363,7 @@ const DoctorConsultationPage: React.FC = () => {
                     size="large"
                     className="flex items-center gap-2"
                   >
-                    Tạo hồ sơ
+                    {t("doctorConsultation.createProfile")}
                   </Button>
 
                   {/* Nút xem hồ sơ cũ */}
@@ -352,13 +372,13 @@ const DoctorConsultationPage: React.FC = () => {
                     onClick={() =>
                       handleViewOldRecord(
                         appointment.patient_id,
-                        appointment.patient?.full_name || "Bệnh nhân",
+                        appointment.patient?.full_name || t("doctorConsultation.patient"),
                       )
                     }
                     size="large"
                     className="flex items-center gap-2"
                   >
-                    Xem hồ sơ cũ
+                    {t("doctorConsultation.viewOldRecord")}
                   </Button>
 
                   {/* Nút hủy lịch - chỉ hiện khi status PENDING hoặc CONFIRMED */}
@@ -371,7 +391,7 @@ const DoctorConsultationPage: React.FC = () => {
                       size="large"
                       className="flex items-center gap-2"
                     >
-                      Hủy lịch
+                      {t("doctorConsultation.cancelAppointment")}
                     </Button>
                   )}
                 </div>
@@ -392,15 +412,15 @@ const DoctorConsultationPage: React.FC = () => {
 
       {/* Confirm Modal - Hỏi có muốn tạo lịch tái khám không */}
       <Modal
-        title="Tạo hồ sơ thành công!"
+        title={t("doctorConsultation.createProfileSuccess")}
         open={showConfirmModal}
         onOk={handleConfirmFollowUp}
         onCancel={handleCancelFollowUp}
-        okText="Có, tạo lịch tái khám"
-        cancelText="Không, đóng lại"
+        okText={t("doctorConsultation.createFollowUp")}
+        cancelText={t("doctorConsultation.cancelFollowUp")}
         centered
       >
-        <p>Bạn có muốn tạo lịch hẹn tái khám cho bệnh nhân không?</p>
+        <p>{t("doctorConsultation.followUpQuestion")}</p>
       </Modal>
 
       {/* Follow-up Modal - Render ở ngoài để không bị unmount */}
@@ -437,12 +457,12 @@ const DoctorConsultationPage: React.FC = () => {
 
       {/* Cancel Appointment Modal */}
       <Modal
-        title="Xác nhận hủy lịch khám"
+        title={t("doctorConsultation.confirmCancelTitle")}
         open={isCancelModalOpen}
         onOk={handleConfirmCancel}
         onCancel={handleCancelCancelModal}
-        okText="Xác nhận hủy"
-        cancelText="Hủy"
+        okText={t("doctorConsultation.confirmCancelButton")}
+        cancelText={t("doctorConsultation.cancelButton")}
         okButtonProps={{ danger: true, loading: updateStatusMutation.isPending }}
         centered
       >
@@ -450,29 +470,31 @@ const DoctorConsultationPage: React.FC = () => {
           {cancelingAppointment && (
             <>
               <p className="text-gray-700 mb-2">
-                Bạn có chắc chắn muốn hủy lịch khám của bệnh nhân{" "}
+                {t("doctorConsultation.confirmCancelMessage")}{" "}
                 <strong>{cancelingAppointment.patient?.full_name}</strong>?
               </p>
               <div className="bg-gray-50 p-3 rounded">
                 <p className="text-sm text-gray-600 mb-1">
-                  <strong>Mã lịch:</strong> {cancelingAppointment.appointment_code}
+                  <strong>{t("doctorConsultation.appointmentCode")}</strong>{" "}
+                  {cancelingAppointment.appointment_code}
                 </p>
                 <p className="text-sm text-gray-600 mb-1">
-                  <strong>Dịch vụ:</strong> {cancelingAppointment.service_name || "Khám tổng quát"}
+                  <strong>{t("doctorConsultation.service")}:</strong>{" "}
+                  {cancelingAppointment.service_name || t("doctorConsultation.generalCheckup")}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>Thời gian:</strong>{" "}
+                  <strong>{t("doctorConsultation.examinationTime")}:</strong>{" "}
                   {cancelingAppointment.time_slots[0]?.start_time &&
                     new Date(cancelingAppointment.time_slots[0].start_time).toLocaleString("vi-VN")}
                 </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lý do hủy (tùy chọn):
+                  {t("doctorConsultation.cancelReasonLabel")}
                 </label>
                 <Input.TextArea
                   rows={3}
-                  placeholder="Ví dụ: Có ca khám gấp, bác sĩ nghỉ phép..."
+                  placeholder={t("doctorConsultation.cancelReasonPlaceholder")}
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                 />
