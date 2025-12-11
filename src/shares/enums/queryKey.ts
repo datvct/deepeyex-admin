@@ -10,4 +10,5 @@ export enum QueryKeyEnum {
   Service = "services",
   AIDiagnosis = "ai-diagnoses",
   MedicalRecord = "medical-records",
+  Statistics = "statistics",
 }

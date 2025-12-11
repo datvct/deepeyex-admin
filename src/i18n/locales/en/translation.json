@@ -11,7 +11,11 @@
       "completionRate": "Completion Rate",
       "comparedToLastWeek": "compared to last week",
       "comparedToLastMonth": "compared to last month",
-      "stable": "Stable"
+      "stable": "Stable",
+      "totalBookings": "Total bookings",
+      "totalRevenue": "Total revenue",
+      "totalOrders": "Total orders",
+      "completed": "completed"
     },
     "charts": {
       "traffic": {
@@ -1215,6 +1219,10 @@
     "updateAppointment": "📝 Appointment {appointmentCode} has been updated",
     "cancelAppointment": "❌ Appointment {appointmentCode} has been canceled",
     "patient": "patient"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred"
   }
 }
    
