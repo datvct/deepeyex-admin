@@ -105,7 +105,7 @@
     "generateTimeSlot": "Tạo lịch khám",
     "services": "Dịch vụ",
     "doctorConsultation": "Khám bệnh",
-    "aiDiagnosis": "Chẩn đoán AI Nhãn khoa",
+    "aiDiagnosis": "Xác nhận kết quả AI chẩn đoán",
     "eyeDiagnosis": "Chẩn đoán bằng hình ảnh",
     "createFollowUp": "Tạo lịch tái khám"
   },
@@ -1017,7 +1017,7 @@
     }
   },
   "aiDiagnosis": {
-    "title": "Chẩn đoán AI - Nhãn khoa",
+    "title": "Xác nhận kết quả chẩn đoán AI",
     "subtitle": "Danh sách các chẩn đoán bệnh mắt do AI thực hiện cần xác nhận ({{count}})",
     "loading": "Đang tải danh sách chẩn đoán...",
     "error": "Lỗi: {{message}}",

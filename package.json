@@ -15,6 +15,7 @@
     "antd": "^5.27.2",
     "axios": "^1.11.0",
     "emoji-picker-react": "^4.14.0",
+    "ethers": "5.7.2",
     "eventemitter3": "^5.0.1",
     "firebase": "^12.4.0",
     "framer-motion": "^12.23.22",

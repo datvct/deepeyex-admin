@@ -8,6 +8,7 @@ import { AIDiagnosis as AIDiagnosisType } from "../../modules/aidiagnosis/types/
 import AIDiagnosisDetailModal from "./components/AIDiagnosisDetailModal";
 import { useSelector } from "react-redux";
 import { RootState } from "../../shares/stores";
+import { verifyAIResult } from "../../blockchain/verifyAI";
 
 const AIDiagnosisPage: React.FC = () => {
   const { t } = useTranslation();
@@ -40,7 +41,7 @@ const AIDiagnosisPage: React.FC = () => {
     setSelectedDiagnosis(null);
   };
 
-  const handleConfirmDiagnosis = (
+  const handleConfirmDiagnosis = async (
     diagnosisId: string,
     isCorrect: boolean,
     notes?: string,
@@ -65,7 +66,24 @@ const AIDiagnosisPage: React.FC = () => {
       signature: signature,
     };
 
-    verifyDiagnosis(verifyData);
+    try {
+      // 1️⃣ Gọi API backend để update result trong database
+      await verifyDiagnosis(verifyData);
+
+      // 2️⃣ Chuẩn bị data để ghi blockchain
+      const dataHash = diagnosisId; // Bạn có thể hash ảnh hoặc hash JSON tùy ý
+      const aiResult = verifyData.status;
+      const isConfirmed = isCorrect;
+
+      // 3️⃣ Ghi lên blockchain qua MetaMask
+      const txHash = await verifyAIResult(dataHash, aiResult, isConfirmed, doctorId);
+
+      if (txHash) {
+        message.success("Ghi blockchain thành công!\nTX: " + txHash);
+      }
+    } catch (err: any) {
+      message.error("Lỗi blockchain: " + err.message);
+    }
   };
 
   const getStatusColor = (status: string) => {
