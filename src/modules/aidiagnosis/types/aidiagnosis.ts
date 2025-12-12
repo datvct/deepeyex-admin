@@ -11,4 +11,6 @@ export type AIDiagnosis = {
   created_at: string;
   verified_by?: string;
   verified_at?: string;
+  doctor_notes?: string;
+  verification_sig?: string;
 };

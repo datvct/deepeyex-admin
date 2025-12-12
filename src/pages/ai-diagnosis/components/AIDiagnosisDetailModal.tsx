@@ -39,6 +39,9 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
   const [signaturePreview, setSignaturePreview] = useState<string>("");
   const [showSignaturePad, setShowSignaturePad] = useState(false);
 
+  // Chỉ cho phép edit khi status là PENDING
+  const isReadOnly = diagnosis.status !== "PENDING";
+
   const handleConfirm = (isCorrect: boolean) => {
     // Chỉ yêu cầu ghi chú khi đánh dấu KHÔNG CHÍNH XÁC
     if (!isCorrect && !doctorNotes.trim()) {
@@ -109,23 +112,27 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
         <Button key="cancel" onClick={onClose}>
           {t("aiDiagnosis.detailModal.close")}
         </Button>,
-        <Button
-          key="reject"
-          type="primary"
-          danger
-          icon={<CloseOutlined />}
-          onClick={() => handleReject()}
-        >
-          {t("aiDiagnosis.detailModal.reject")}
-        </Button>,
-        <Button
-          key="confirm"
-          type="primary"
-          icon={<CheckOutlined />}
-          onClick={() => handleConfirm(true)}
-        >
-          {t("aiDiagnosis.detailModal.confirm")}
-        </Button>,
+        ...(isReadOnly
+          ? []
+          : [
+              <Button
+                key="reject"
+                type="primary"
+                danger
+                icon={<CloseOutlined />}
+                onClick={() => handleReject()}
+              >
+                {t("aiDiagnosis.detailModal.reject")}
+              </Button>,
+              <Button
+                key="confirm"
+                type="primary"
+                icon={<CheckOutlined />}
+                onClick={() => handleConfirm(true)}
+              >
+                {t("aiDiagnosis.detailModal.confirm")}
+              </Button>,
+            ]),
       ]}
     >
       <div className="space-y-4">
@@ -219,76 +226,119 @@ const AIDiagnosisDetailModal: React.FC<AIDiagnosisDetailModalProps> = ({
           </TabPane>
         </Tabs>
 
-        {/* Ghi chú của bác sĩ */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            {t("aiDiagnosis.detailModal.doctorNotes")}
-            <span className="text-red-500 ml-1">
-              {t("aiDiagnosis.detailModal.doctorNotesRequired")}
-            </span>
-            <span className="text-xs text-gray-500 ml-2">
-              {t("aiDiagnosis.detailModal.doctorNotesRequiredHint")}
-            </span>
-          </label>
-          <TextArea
-            rows={3}
-            placeholder={t("aiDiagnosis.detailModal.doctorNotesPlaceholder")}
-            value={doctorNotes}
-            onChange={(e) => setDoctorNotes(e.target.value)}
-            className="text-sm"
-          />
-        </div>
-
-        {/* Chữ ký điện tử */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              {t("aiDiagnosis.detailModal.signature")}
-              <span className="text-red-500 ml-1">
-                {t("aiDiagnosis.detailModal.signatureRequired")}
-              </span>
-            </label>
-            {signatureFile && (
-              <Button size="small" danger icon={<ClearOutlined />} onClick={handleRemoveSignature}>
-                {t("aiDiagnosis.detailModal.removeSignature")}
-              </Button>
-            )}
-          </div>
-
-          {signatureFile ? (
-            <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckOutlined className="text-green-600" />
-                <span className="text-sm font-medium text-green-700">
-                  {t("aiDiagnosis.detailModal.signed")}
-                </span>
+        {/* Ghi chú của bác sĩ - chỉ hiển thị nếu đã verified */}
+        {isReadOnly && diagnosis.verified_by && (
+          <Card size="small" className="border-green-200 bg-green-50">
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("aiDiagnosis.detailModal.doctorNotes")}
+              </label>
+              <p className="text-sm text-gray-800 bg-white p-2 rounded">
+                {diagnosis.doctor_notes || diagnosis.notes || "-"}
+              </p>
+            </div>
+            {diagnosis.verification_sig && (
+              <div className="mt-3">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t("aiDiagnosis.detailModal.signature")}
+                </label>
+                <img
+                  src={diagnosis.verification_sig}
+                  alt={t("aiDiagnosis.detailModal.signatureAlt")}
+                  className="border border-gray-200 rounded bg-white w-full"
+                  style={{ maxHeight: "120px", objectFit: "contain" }}
+                />
               </div>
-              <img
-                src={signaturePreview}
-                alt={t("aiDiagnosis.detailModal.signatureAlt")}
-                className="border border-gray-200 rounded bg-white w-full"
-                style={{ maxHeight: "120px", objectFit: "contain" }}
+            )}
+            {diagnosis.verified_at && (
+              <div className="mt-2 text-xs text-gray-500">
+                {t("aiDiagnosis.verifiedAt")}:{" "}
+                {new Date(diagnosis.verified_at).toLocaleString("vi-VN")}
+              </div>
+            )}
+          </Card>
+        )}
+
+        {/* Form nhập ghi chú và chữ ký - chỉ hiển thị khi PENDING */}
+        {!isReadOnly && (
+          <>
+            {/* Ghi chú của bác sĩ */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("aiDiagnosis.detailModal.doctorNotes")}
+                <span className="text-red-500 ml-1">
+                  {t("aiDiagnosis.detailModal.doctorNotesRequired")}
+                </span>
+                <span className="text-xs text-gray-500 ml-2">
+                  {t("aiDiagnosis.detailModal.doctorNotesRequiredHint")}
+                </span>
+              </label>
+              <TextArea
+                rows={3}
+                placeholder={t("aiDiagnosis.detailModal.doctorNotesPlaceholder")}
+                value={doctorNotes}
+                onChange={(e) => setDoctorNotes(e.target.value)}
+                className="text-sm"
               />
             </div>
-          ) : (
+
+            {/* Chữ ký điện tử */}
             <div>
-              {showSignaturePad ? (
-                <SignaturePad onSave={handleSaveSignature} width={700} height={150} />
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t("aiDiagnosis.detailModal.signature")}
+                  <span className="text-red-500 ml-1">
+                    {t("aiDiagnosis.detailModal.signatureRequired")}
+                  </span>
+                </label>
+                {signatureFile && (
+                  <Button
+                    size="small"
+                    danger
+                    icon={<ClearOutlined />}
+                    onClick={handleRemoveSignature}
+                  >
+                    {t("aiDiagnosis.detailModal.removeSignature")}
+                  </Button>
+                )}
+              </div>
+
+              {signatureFile ? (
+                <div className="border-2 border-green-300 rounded-lg p-4 bg-green-50">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CheckOutlined className="text-green-600" />
+                    <span className="text-sm font-medium text-green-700">
+                      {t("aiDiagnosis.detailModal.signed")}
+                    </span>
+                  </div>
+                  <img
+                    src={signaturePreview}
+                    alt={t("aiDiagnosis.detailModal.signatureAlt")}
+                    className="border border-gray-200 rounded bg-white w-full"
+                    style={{ maxHeight: "120px", objectFit: "contain" }}
+                  />
+                </div>
               ) : (
-                <Button
-                  type="dashed"
-                  icon={<EditOutlined />}
-                  onClick={() => setShowSignaturePad(true)}
-                  block
-                  size="large"
-                  className="h-24"
-                >
-                  {t("aiDiagnosis.detailModal.clickToSign")}
-                </Button>
+                <div>
+                  {showSignaturePad ? (
+                    <SignaturePad onSave={handleSaveSignature} width={700} height={150} />
+                  ) : (
+                    <Button
+                      type="dashed"
+                      icon={<EditOutlined />}
+                      onClick={() => setShowSignaturePad(true)}
+                      block
+                      size="large"
+                      className="h-24"
+                    >
+                      {t("aiDiagnosis.detailModal.clickToSign")}
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </Modal>
   );

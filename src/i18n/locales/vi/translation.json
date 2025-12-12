@@ -1027,6 +1027,10 @@
     "error": "Lỗi: {{message}}",
     "noDiagnosis": "Không có chẩn đoán AI nào",
     "noDiagnosisDescription": "Hiện tại không có chẩn đoán bệnh mắt AI nào cần xác nhận",
+    "tabs": {
+      "pending": "Chờ xác nhận",
+      "approved": "Đã chấp thuận"
+    },
     "viewDetails": "Xem chi tiết",
     "patientId": "ID: {{id}}...",
     "code": "Mã: {{code}}...",
@@ -1044,6 +1048,10 @@
     "verifySuccess": "Đã xác nhận chẩn đoán thành công",
     "verifyError": "Xác nhận thất bại: {{message}}",
     "doctorNotFound": "Không tìm thấy thông tin bác sĩ",
+    "verifiedAt": "Đã xác nhận lúc",
+    "trainModel": "Huấn luyện mô hình",
+    "trainSuccess": "Huấn luyện mô hình thành công: {{message}}",
+    "trainError": "Huấn luyện mô hình thất bại: {{message}}",
     "defaultNotes": {
       "approved": "Đã xác nhận",
       "rejected": "Không chính xác"
