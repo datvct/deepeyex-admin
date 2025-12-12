@@ -11,7 +11,11 @@
       "completionRate": "Tỷ lệ hoàn thành",
       "comparedToLastWeek": "so với tuần trước",
       "comparedToLastMonth": "so với tháng trước",
-      "stable": "Ổn định"
+      "stable": "Ổn định",
+      "totalBookings": "Tổng số lượt đặt khám",
+      "totalRevenue": "Tổng doanh thu",
+      "totalOrders": "Tổng số đơn hàng",
+      "completed": "đã hoàn thành"
     },
     "charts": {
       "traffic": {
@@ -449,10 +453,10 @@
       }
     },
     "status": {
-      "PENDING": "Chờ xử lý",
+      "PENDING": "Đang đợi",
       "PAID": "Đã thanh toán",
       "CANCELED": "Đã hủy",
-      "DELIVERED": "Đã giao"
+      "DELIVERED": "Đã giao hàng"
     },
     "messages": {
       "update_success": "Cập nhật trạng thái thành công",
@@ -1214,6 +1218,10 @@
     "updateAppointment": "📝 Lịch hẹn {appointmentCode} được cập nhật",
     "cancelAppointment": "❌ Lịch hẹn {appointmentCode} bị hủy",
     "patient": "bệnh nhân"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Đã xảy ra lỗi"
   }
 }
 
