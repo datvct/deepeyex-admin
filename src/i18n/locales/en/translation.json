@@ -1028,6 +1028,10 @@
     "error": "Error: {{message}}",
     "noDiagnosis": "No AI diagnoses",
     "noDiagnosisDescription": "Currently there are no AI eye disease diagnoses requiring confirmation",
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved"
+    },
     "viewDetails": "View Details",
     "patientId": "ID: {{id}}...",
     "code": "Code: {{code}}...",
@@ -1045,6 +1049,10 @@
     "verifySuccess": "Diagnosis confirmed successfully",
     "verifyError": "Verification failed: {{message}}",
     "doctorNotFound": "Doctor information not found",
+    "verifiedAt": "Verified at",
+    "trainModel": "Train Model",
+    "trainSuccess": "Model training successful: {{message}}",
+    "trainError": "Model training failed: {{message}}",
     "defaultNotes": {
       "approved": "Approved",
       "rejected": "Incorrect"

@@ -41,6 +41,18 @@ class AIDiagnosisClient {
     return response.data;
   }
 
+  // ---------------- Get Approved Diagnoses ----------------
+  async getApproved(): Promise<ListAIDiagnosesResponse> {
+    const response = await this.client.get<ListAIDiagnosesResponse>(`${endpoint}/approved`);
+    return response.data;
+  }
+
+  // ---------------- Train Model ----------------
+  async trainModel(): Promise<{ message: string }> {
+    const response = await this.client.post<{ message: string }>(`${endpoint}/train`);
+    return response.data;
+  }
+
   // ---------------- Get Diagnoses By Patient ID ----------------
   async getByPatientId(patientId: string): Promise<AIDiagnosisResponse[]> {
     const response = await this.client.get<AIDiagnosisResponse[]>(
