@@ -41,7 +41,7 @@ class WebSocketService {
     this.shouldReconnect = true;
 
     // WebSocket URL - thay đổi nếu backend khác
-    const wsUrl = `ws://localhost:8084/ws?doctor_id=${doctorId}`;
+    const wsUrl = `ws://34.143.170.79:8084/ws?doctor_id=${doctorId}`;
 
     // console.log("🔌 Đang kết nối WebSocket...");
     // console.log("📍 URL:", wsUrl);

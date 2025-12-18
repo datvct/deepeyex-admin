@@ -4,7 +4,7 @@ import { clearTokens, setTokens } from "../stores/authSlice";
 import { refreshToken } from "./refreshToken";
 
 const api: AxiosInstance = axios.create({
-  baseURL: "http://localhost:8000",
+  baseURL: "https://deepeyex.online",
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
